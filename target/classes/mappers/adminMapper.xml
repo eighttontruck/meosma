@@ -1,0 +1,665 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaweb11S.dao.AdminDAO">
+	<select id="orderHistoryTotRecCnt" resultType="int">
+		<if test="searchString == '' and filter == '' and startDate == '' and endDate == '' ">
+	        SELECT COUNT(*) FROM orderhistory;
+	    </if>
+	    <if test="searchString == '' and filter == '' and startDate != '' and endDate != '' ">
+	        SELECT COUNT(*) FROM orderhistory WHERE orderdate BETWEEN #{startDate} AND #{endDate};
+	    </if>
+	    <if test="searchString == '' and filter != '' ">
+	        SELECT COUNT(*)
+			FROM orderHistory
+		    WHERE status = #{filter}
+			AND orderdate BETWEEN #{startDate} AND #{endDate};
+	    </if>
+	    <if test="searchString != '' and filter == '' ">
+	       	SELECT COUNT(*) 
+			FROM orderHistory WHERE 
+			<choose>
+	        	<when test="searchKeyword == 'idx'">idx</when>
+	        	<when test="searchKeyword == 'member_Idx'">member_Idx</when>
+	        	<when test="searchKeyword == 'recipient_Name'">recipient_Name</when>
+	        	<when test="searchKeyword == 'recipient_TelNum'">recipient_TelNum</when>
+	        	<when test="searchKeyword == 'recipient_Address'">recipient_Address</when>
+		    </choose>
+			LIKE CONCAT('%',#{searchString},'%')
+			AND orderdate BETWEEN #{startDate} AND #{endDate};
+	    </if>
+	    <if test="searchString != '' and filter != '' ">
+	       	SELECT COUNT(*) 
+			FROM orderHistory WHERE 
+			<choose>
+	        	<when test="searchKeyword == 'idx'">idx</when>
+	        	<when test="searchKeyword == 'member_Idx'">member_Idx</when>
+	        	<when test="searchKeyword == 'recipient_Name'">recipient_Name</when>
+	        	<when test="searchKeyword == 'recipient_TelNum'">recipient_TelNum</when>
+	        	<when test="searchKeyword == 'recipient_Address'">recipient_Address</when>
+		    </choose>
+			LIKE CONCAT('%',#{searchString},'%') AND status = #{filter}
+			AND orderdate BETWEEN #{startDate} AND #{endDate};
+	    </if>
+	</select>
+	
+	
+	<select id="goodsTotRecCnt" resultType="int">
+		<if test="mainCategory == '' and subCategory == '' and secondCategory == '' and searchString == '' and startFilter == '' and endFilter == '' ">
+	        SELECT COUNT(*) FROM goods;
+	    </if>
+	    <if test="mainCategory != '' and subCategory == '' and secondCategory == '' and searchString == '' and startFilter == '' and endFilter == '' ">
+	       	SELECT COUNT(*)
+			FROM maincategory
+			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			WHERE maincategory.Category_Idx = #{mainCategory};
+	    </if>
+	    <if test="mainCategory != '' and subCategory != '' and secondCategory == '' and searchString == '' and startFilter == '' and endFilter == '' ">
+	       	SELECT COUNT(*)
+			FROM subcategory
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			WHERE subcategory.subCategory_Idx = #{subCategory};
+	    </if>
+	    <if test="mainCategory != '' and subCategory != '' and secondCategory != '' and searchString == '' and startFilter == '' and endFilter == '' ">
+	       	SELECT COUNT(*)
+			FROM secondCategory
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcatagory_idx
+			WHERE secondCategory.secondCategory_Idx = #{secondCategory};
+	    </if>
+	    
+	    
+	    <if test="mainCategory == '' and subCategory == '' and secondCategory == '' and searchString != '' and startFilter == '' and endFilter == '' ">
+	       	SELECT COUNT(*)
+			FROM goods
+			JOIN brand ON goods.brand_idx = brand.idx WHERE 
+			<choose>
+	        	<when test="searchKeyword == 'idx'">goods.idx</when>
+	        	<when test="searchKeyword == 'brand'">brand.name</when>
+	        	<when test="searchKeyword == 'name'">goods.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{searchString},'%');
+	    </if>
+	    <if test="mainCategory != '' and subCategory == '' and secondCategory == '' and searchString != '' and startFilter == '' and endFilter == '' ">
+	       	SELECT COUNT(*)
+			FROM maincategory
+			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE maincategory.Category_Idx = #{mainCategory} AND
+			<choose>
+	        	<when test="searchKeyword == 'idx'">goods.idx</when>
+	        	<when test="searchKeyword == 'brand'">brand.name</when>
+	        	<when test="searchKeyword == 'name'">goods.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{searchString},'%');
+	    </if>
+	    <if test="mainCategory != '' and subCategory != '' and secondCategory == '' and searchString != '' and startFilter == '' and endFilter == '' ">
+	       	SELECT COUNT(*)
+			FROM subcategory
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE subcategory.subCategory_Idx = #{subCategory} AND
+			<choose>
+	        	<when test="searchKeyword == 'idx'">goods.idx</when>
+	        	<when test="searchKeyword == 'brand'">brand.name</when>
+	        	<when test="searchKeyword == 'name'">goods.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{searchString},'%'); 
+	    </if>
+	    <if test="mainCategory != '' and subCategory != '' and secondCategory != '' and searchString != '' and startFilter == '' and endFilter == '' ">
+	       	SELECT COUNT(*)
+			FROM secondCategory
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE secondCategory.secondCategory_Idx = #{secondCategory} AND
+			<choose>
+	        	<when test="searchKeyword == 'idx'">goods.idx</when>
+	        	<when test="searchKeyword == 'brand'">brand.name</when>
+	        	<when test="searchKeyword == 'name'">goods.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{searchString},'%');
+	    </if>
+	    
+	    
+	    
+	    <if test="mainCategory == '' and subCategory == '' and secondCategory == '' and searchString == '' and startFilter != '' and endFilter != '' ">
+	    	SELECT COUNT(*)
+			FROM goods
+			WHERE price BETWEEN #{startFilter} AND #{endFilter};
+	    </if>
+	    <if test="mainCategory != '' and subCategory == '' and secondCategory == '' and searchString == '' and startFilter != '' and endFilter != '' ">
+	       	SELECT COUNT(*)
+			FROM maincategory
+			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			WHERE maincategory.Category_Idx = #{mainCategory} AND
+			price BETWEEN #{startFilter} AND #{endFilter};
+	    </if>
+	    <if test="mainCategory != '' and subCategory != '' and secondCategory == '' and searchString == '' and startFilter != '' and endFilter != '' ">
+	       	SELECT COUNT(*)
+			FROM subcategory
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			WHERE subcategory.subCategory_Idx = #{subCategory} AND
+			price BETWEEN #{startFilter} AND #{endFilter};
+	    </if>
+	    <if test="mainCategory != '' and subCategory != '' and secondCategory != '' and searchString == '' and startFilter != '' and endFilter != '' ">
+	       	SELECT COUNT(*)
+			FROM secondCategory
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcatagory_idx
+			WHERE secondCategory.secondCategory_Idx = #{secondCategory} AND
+			price BETWEEN #{startFilter} AND #{endFilter};
+	    </if>
+	    
+	    
+	    <if test="mainCategory == '' and subCategory == '' and secondCategory == '' and searchString != '' and startFilter != '' and endFilter != '' ">
+	    	SELECT COUNT(*)
+			FROM goods WHERE
+			<choose>
+	        	<when test="searchKeyword == 'idx'">goods.idx</when>
+	        	<when test="searchKeyword == 'brand'">brand.name</when>
+	        	<when test="searchKeyword == 'name'">goods.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{searchString},'%') AND 
+			price BETWEEN #{startFilter} AND #{endFilter};
+	    </if>
+	    <if test="mainCategory != '' and subCategory == '' and secondCategory == '' and searchString != '' and startFilter != '' and endFilter != '' ">
+	       	SELECT COUNT(*)
+			FROM maincategory
+			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE maincategory.Category_Idx = #{mainCategory} AND
+			<choose>
+	        	<when test="searchKeyword == 'idx'">goods.idx</when>
+	        	<when test="searchKeyword == 'brand'">brand.name</when>
+	        	<when test="searchKeyword == 'name'">goods.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{searchString},'%') AND 
+			price BETWEEN #{startFilter} AND #{endFilter};
+	    </if>
+	    <if test="mainCategory != '' and subCategory != '' and secondCategory == '' and searchString != '' and startFilter != '' and endFilter != '' ">
+	       	SELECT COUNT(*)
+			FROM subcategory
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE subcategory.subCategory_Idx = #{subCategory} AND
+			<choose>
+	        	<when test="searchKeyword == 'idx'">goods.idx</when>
+	        	<when test="searchKeyword == 'brand'">brand.name</when>
+	        	<when test="searchKeyword == 'name'">goods.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{searchString},'%') AND 
+			price BETWEEN #{startFilter} AND #{endFilter};
+	    </if>
+	    <if test="mainCategory != '' and subCategory != '' and secondCategory != '' and searchString != '' and startFilter != '' and endFilter != '' ">
+	       	SELECT COUNT(*)
+			FROM secondCategory
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE secondCategory.secondCategory_Idx = #{secondCategory} AND
+			<choose>
+	        	<when test="searchKeyword == 'idx'">goods.idx</when>
+	        	<when test="searchKeyword == 'brand'">brand.name</when>
+	        	<when test="searchKeyword == 'name'">goods.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{searchString},'%') AND 
+			price BETWEEN #{startFilter} AND #{endFilter};
+	    </if>
+	</select>
+	
+	<select id="brandTotRecCnt" resultType="int">
+	    <if test="searchString == ''">
+	       	SELECT COUNT(*) FROM brand;
+	    </if>
+	    <if test="searchString != ''">
+	       	SELECT COUNT(*)
+			FROM brand WHERE
+			<choose>
+	        	<when test="searchKeyword == 'idx'">idx</when>
+	        	<when test="searchKeyword == 'name'">name</when>
+		    </choose>
+			LIKE CONCAT('%',#{searchString},'%'); 
+	    </if>
+	</select>
+	
+	<select id="getBrandFilterList" resultType="com.spring.javaweb11S.vo.BrandVO">
+		<if test="pageVO.filter == '' and pageVO.searchString == ''">
+	       	SELECT brand.idx, brand.name, brand.content, brand.brand_like, COUNT(goods.idx) AS goods_Count
+			FROM brand
+			LEFT JOIN goods ON brand.idx = goods.brand_idx
+			GROUP BY brand.idx
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+		<if test="pageVO.filter != '' and pageVO.searchString == ''">
+	       	SELECT brand.idx, brand.name, brand.content, brand.brand_like, COUNT(goods.idx) AS goods_Count
+			FROM brand
+			LEFT JOIN goods ON brand.idx = goods.brand_idx
+			GROUP BY brand.idx
+			ORDER BY
+			<choose>
+	        	<when test="pageVO.filter == 'goodsCountUp'">goods_Count ASC,</when>
+	        	<when test="pageVO.filter == 'goodsCountDown'">goods_Count DESC,</when>
+	        	<when test="pageVO.filter == 'brandNameUp'">brand.name ASC,</when>
+	        	<when test="pageVO.filter == 'brandNameDown'">brand.name DESC,</when>
+		    </choose>
+			brand.idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+		<if test="pageVO.filter == '' and pageVO.searchString != ''">
+	       	SELECT brand.idx, brand.name, brand.content, brand.brand_like, COUNT(goods.idx) AS goods_Count
+			FROM brand
+			LEFT JOIN goods ON brand.idx = goods.brand_idx WHERE
+			<choose>
+	        	<when test="pageVO.searchKeyword == 'idx'">brand.idx</when>
+	        	<when test="pageVO.searchKeyword == 'name'">brand.name</when>
+		    </choose>
+		    LIKE CONCAT('%',#{pageVO.searchString},'%')
+		    GROUP BY brand.idx
+		    ORDER BY brand.idx DESC 
+		    LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+		<if test="pageVO.filter != '' and pageVO.searchString != ''">
+	       	SELECT brand.idx, brand.name, brand.content, brand.brand_like, COUNT(goods.idx) AS goods_Count
+			FROM brand
+			LEFT JOIN goods ON brand.idx = goods.brand_idx WHERE
+			<choose>
+	        	<when test="pageVO.searchKeyword == 'idx'">brand.idx</when>
+	        	<when test="pageVO.searchKeyword == 'name'">brand.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{pageVO.searchString},'%')
+			GROUP BY brand.idx 
+			ORDER BY
+			<choose>
+	        	<when test="pageVO.filter == 'goodsCountUp'">goods_Count ASC,</when>
+	        	<when test="pageVO.filter == 'goodsCountDown'">goods_Count DESC,</when>
+	        	<when test="pageVO.filter == 'brandNameUp'">brand.name ASC,</when>
+	        	<when test="pageVO.filter == 'brandNameDown'">brand.name DESC,</when>
+		    </choose>
+		   	brand.idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	</select>
+	
+	<select id="getBrandList" resultType="com.spring.javaweb11S.vo.BrandVO">
+		SELECT b.idx, b.name, b.content, b.brand_like, COUNT(g.idx) AS goods_Count
+		FROM brand b
+		LEFT JOIN goods g ON b.idx = g.brand_idx
+		GROUP BY b.idx, b.name, b.content;
+	</select>
+	
+	<select id="getMainCateArrayList" resultType="com.spring.javaweb11S.vo.MainCategoryVO">
+		SELECT * FROM maincategory;
+	</select>
+	
+	<select id="getSubCateArrayList" resultType="com.spring.javaweb11S.vo.SubCategoryVO">
+		SELECT * FROM subCategory WHERE category_idx = #{mainCategory};
+	</select>
+	
+	<select id="getSecondCateArrayList" resultType="com.spring.javaweb11S.vo.SecondCategoryVO">
+		SELECT * FROM secondcategory WHERE subcategory_idx = #{subCategory};
+	</select>
+	
+	<select id="getGoodsStock" resultType="com.spring.javaweb11S.vo.Goods_StockVO">
+		SELECT gs.goods_idx, gs.option_idx, gs.stock, go.goods_option
+		FROM goods_stock gs
+		JOIN goods_option go ON gs.option_idx = go.option_idx
+		WHERE gs.goods_idx=#{goods_Idx};
+	</select>
+	
+	<select id="getGoodsTableList" resultType="com.spring.javaweb11S.vo.GoodsVO">
+		<if test="pageVO.mainCategory == '' and pageVO.subCategory == '' and pageVO.secondCategory == '' and pageVO.searchString == '' and pageVO.startFilter == '' and pageVO.endFilter == '' ">
+	        SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name 
+	        FROM goods
+	        JOIN brand ON goods.brand_idx = brand.idx
+	        ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    <if test="pageVO.mainCategory != '' and pageVO.subCategory == '' and pageVO.secondCategory == '' and pageVO.searchString == '' and pageVO.startFilter == '' and pageVO.endFilter == '' ">
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+			FROM maincategory
+			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE maincategory.Category_Idx = #{pageVO.mainCategory}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    <if test="pageVO.mainCategory != '' and pageVO.subCategory != '' and pageVO.secondCategory == '' and pageVO.searchString == '' and pageVO.startFilter == '' and pageVO.endFilter == '' ">
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+			FROM subcategory
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE subcategory.subCategory_Idx = #{pageVO.subCategory}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    <if test="pageVO.mainCategory != '' and pageVO.subCategory != '' and pageVO.secondCategory != '' and pageVO.searchString == '' and pageVO.startFilter == '' and pageVO.endFilter == '' ">
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+			FROM secondCategory
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE secondCategory.secondCategory_Idx = #{pageVO.secondCategory}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    
+	    
+	    <if test="pageVO.mainCategory == '' and pageVO.subCategory == '' and pageVO.secondCategory == '' and pageVO.searchString != '' and pageVO.startFilter == '' and pageVO.endFilter == '' ">
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+			FROM goods
+			JOIN brand ON goods.brand_idx = brand.idx WHERE 
+			<choose>
+	        	<when test="pageVO.searchKeyword == 'idx'">goods.idx</when>
+	        	<when test="pageVO.searchKeyword == 'brand'">brand.name</when>
+	        	<when test="pageVO.searchKeyword == 'name'">goods.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{pageVO.searchString},'%')
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    <if test="pageVO.mainCategory != '' and pageVO.subCategory == '' and pageVO.secondCategory == '' and pageVO.searchString != '' and pageVO.startFilter == '' and pageVO.endFilter == '' ">
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+			FROM maincategory
+			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE maincategory.Category_Idx = #{pageVO.mainCategory} AND
+			<choose>
+	        	<when test="pageVO.searchKeyword == 'idx'">goods.idx</when>
+	        	<when test="pageVO.searchKeyword == 'brand'">brand.name</when>
+	        	<when test="pageVO.searchKeyword == 'name'">goods.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{pageVO.searchString},'%')
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    <if test="pageVO.mainCategory != '' and pageVO.subCategory != '' and pageVO.secondCategory == '' and pageVO.searchString != '' and pageVO.startFilter == '' and pageVO.endFilter == '' ">
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+			FROM subcategory
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE subcategory.subCategory_Idx = #{pageVO.subCategory} AND
+			<choose>
+	        	<when test="pageVO.searchKeyword == 'idx'">goods.idx</when>
+	        	<when test="pageVO.searchKeyword == 'brand'">brand.name</when>
+	        	<when test="pageVO.searchKeyword == 'name'">goods.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{pageVO.searchString},'%')
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    <if test="pageVO.mainCategory != '' and pageVO.subCategory != '' and pageVO.secondCategory != '' and pageVO.searchString != '' and pageVO.startFilter == '' and pageVO.endFilter == '' ">
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+			FROM secondCategory
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE secondCategory.secondCategory_Idx = #{pageVO.secondCategory} AND
+			<choose>
+	        	<when test="pageVO.searchKeyword == 'idx'">goods.idx</when>
+	        	<when test="pageVO.searchKeyword == 'brand'">brand.name</when>
+	        	<when test="pageVO.searchKeyword == 'name'">goods.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{pageVO.searchString},'%')
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    
+	    
+	    
+	    <if test="pageVO.mainCategory == '' and pageVO.subCategory == '' and pageVO.secondCategory == '' and pageVO.searchString == '' and pageVO.startFilter != '' and pageVO.endFilter != '' ">
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+			FROM goods
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE price BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    <if test="pageVO.mainCategory != '' and pageVO.subCategory == '' and pageVO.secondCategory == '' and pageVO.searchString == '' and pageVO.startFilter != '' and pageVO.endFilter != '' ">
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+			FROM maincategory
+			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE maincategory.Category_Idx = #{pageVO.mainCategory} AND
+			price BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    <if test="pageVO.mainCategory != '' and pageVO.subCategory != '' and pageVO.secondCategory == '' and pageVO.searchString == '' and pageVO.startFilter != '' and pageVO.endFilter != '' ">
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+			FROM subcategory
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE subcategory.subCategory_Idx = #{pageVO.subCategory} AND
+			price BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    <if test="pageVO.mainCategory != '' and pageVO.subCategory != '' and pageVO.secondCategory != '' and pageVO.searchString == '' and pageVO.startFilter != '' and pageVO.endFilter != '' ">
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+			FROM secondCategory
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE secondCategory.secondCategory_Idx = #{pageVO.secondCategory} AND
+			price BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    
+	    
+	    <if test="pageVO.mainCategory == '' and pageVO.subCategory == '' and pageVO.secondCategory == '' and pageVO.searchString != '' and pageVO.startFilter != '' and pageVO.endFilter != '' ">
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+			FROM goods
+			JOIN brand ON goods.brand_idx = brand.idx WHERE 
+			<choose>
+	        	<when test="pageVO.searchKeyword == 'idx'">goods.idx</when>
+	        	<when test="pageVO.searchKeyword == 'brand'">brand.name</when>
+	        	<when test="pageVO.searchKeyword == 'name'">goods.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{pageVO.searchString},'%') AND 
+			price BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    <if test="pageVO.mainCategory != '' and pageVO.subCategory == '' and pageVO.secondCategory == '' and pageVO.searchString != '' and pageVO.startFilter != '' and pageVO.endFilter != '' ">
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+			FROM maincategory
+			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE maincategory.Category_Idx = #{pageVO.mainCategory} AND
+			<choose>
+	        	<when test="pageVO.searchKeyword == 'idx'">goods.idx</when>
+	        	<when test="pageVO.searchKeyword == 'brand'">brand.name</when>
+	        	<when test="pageVO.searchKeyword == 'name'">goods.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{pageVO.searchString},'%') AND 
+			price BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    <if test="pageVO.mainCategory != '' and pageVO.subCategory != '' and pageVO.secondCategory == '' and pageVO.searchString != '' and pageVO.startFilter != '' and pageVO.endFilter != '' ">
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+			FROM subcategory
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE subcategory.subCategory_Idx = #{pageVO.subCategory} AND
+			<choose>
+	        	<when test="pageVO.searchKeyword == 'idx'">goods.idx</when>
+	        	<when test="pageVO.searchKeyword == 'brand'">brand.name</when>
+	        	<when test="pageVO.searchKeyword == 'name'">goods.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{pageVO.searchString},'%') AND 
+			price BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    <if test="pageVO.mainCategory != '' and pageVO.subCategory != '' and pageVO.secondCategory != '' and pageVO.searchString != '' and pageVO.startFilter != '' and pageVO.endFilter != '' ">
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+			FROM secondCategory
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE secondCategory.secondCategory_Idx = #{pageVO.secondCategory} AND
+			<choose>
+	        	<when test="pageVO.searchKeyword == 'idx'">goods.idx</when>
+	        	<when test="pageVO.searchKeyword == 'brand'">brand.name</when>
+	        	<when test="pageVO.searchKeyword == 'name'">goods.name</when>
+		    </choose>
+			LIKE CONCAT('%',#{pageVO.searchString},'%') AND 
+			price BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	</select>
+	
+	<select id="getGoodsDetail" resultType="com.spring.javaweb11S.vo.GoodsVO">
+		SELECT goods.idx, goods.brand_idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+		FROM goods
+		JOIN brand ON goods.brand_idx = brand.idx
+		WHERE goods.idx = #{goods_Idx};
+	</select>
+	
+	<select id="getGoodsCategory" resultType="com.spring.javaweb11S.vo.CategoryVO">
+		SELECT mc.category_idx, sc.subcategory_idx, scc.secondcategory_idx, mc.category_name, sc.subcategory_name,  scc.secondcategory_name
+		FROM secondcategory scc
+		JOIN subcategory sc ON sc.subcategory_idx = scc.subcategory_idx
+		JOIN maincategory mc ON mc.category_idx = sc.category_idx
+		where scc.secondCategory_Idx = #{secondCatagory_Idx};
+	</select>
+	
+	<select id="getgoodsOrderHistoryList" resultType="com.spring.javaweb11S.vo.OrderHistoryVO">
+	    <if test="delivery_Status != '' and searchKeyword == '' and searchString == ''">
+	        SELECT *
+			FROM orderHistory
+			WHERE status = #{delivery_Status}
+			AND orderdate BETWEEN #{startDate} AND #{endDate}
+	    </if>
+	    <if test="delivery_Status == '' and searchKeyword != '' and searchString != ''">
+	        SELECT * FROM orderHistory WHERE
+	        <choose>
+	        	<when test="searchKeyword == 'idx'">idx</when>
+	        	<when test="searchKeyword == 'member_Idx'">member_Idx</when>
+	        	<when test="searchKeyword == 'recipient_Name'">recipient_Name</when>
+	        	<when test="searchKeyword == 'recipient_TelNum'">recipient_TelNum</when>
+	        	<when test="searchKeyword == 'recipient_Address'">recipient_Address</when>
+	        </choose>
+	        LIKE CONCAT('%', #{searchString}, '%')
+	        AND orderdate BETWEEN #{startDate} AND #{endDate};
+	    </if>
+	    <if test="delivery_Status != '' and searchKeyword != '' and searchString != ''">
+	        SELECT * FROM orderHistory WHERE status = #{delivery_Status} AND
+	        <choose>
+	        	<when test="searchKeyword == 'idx'">idx</when>
+	        	<when test="searchKeyword == 'member_Idx'">member_Idx</when>
+	        	<when test="searchKeyword == 'recipient_Name'">recipient_Name</when>
+	        	<when test="searchKeyword == 'recipient_TelNum'">recipient_TelNum</when>
+	        	<when test="searchKeyword == 'recipient_Address'">recipient_Address</when>
+	        </choose>
+	        LIKE CONCAT('%', #{searchString}, '%')
+	        AND orderdate BETWEEN #{startDate} AND #{endDate};
+	    </if>
+	    <if test="delivery_Status == '' and searchString == '' and startDate != '' and endDate != ''">
+	        SELECT * FROM orderHistory 
+	        WHERE orderdate BETWEEN #{startDate} AND #{endDate};
+	    </if>
+	    <if test="delivery_Status == '' and searchString == '' and startDate == '' and endDate == ''">
+	        SELECT * FROM orderHistory;
+	    </if>
+	</select>
+	
+	<select id="getgoodsOrderHistoryList2" resultType="com.spring.javaweb11S.vo.OrderHistoryVO">
+	    <if test="delivery_Status != '' and pageVO.searchString == ''">
+	        SELECT *
+			FROM orderHistory
+			WHERE status = #{delivery_Status}
+			AND orderdate BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    <if test="delivery_Status == '' and pageVO.searchString != ''">
+	        SELECT * FROM orderHistory WHERE
+	        <choose>
+	        	<when test="pageVO.searchKeyword == 'idx'">idx</when>
+	        	<when test="pageVO.searchKeyword == 'member_Idx'">member_Idx</when>
+	        	<when test="pageVO.searchKeyword == 'recipient_Name'">recipient_Name</when>
+	        	<when test="pageVO.searchKeyword == 'recipient_TelNum'">recipient_TelNum</when>
+	        	<when test="pageVO.searchKeyword == 'recipient_Address'">recipient_Address</when>
+	        </choose>
+	        LIKE CONCAT('%', #{pageVO.searchString}, '%')
+	        AND orderdate BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
+	        ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    <if test="delivery_Status != '' and pageVO.searchString != ''">
+	        SELECT * FROM orderHistory WHERE status = #{delivery_Status} AND
+	        <choose>
+	        	<when test="pageVO.searchKeyword == 'idx'">idx</when>
+	        	<when test="pageVO.searchKeyword == 'member_Idx'">member_Idx</when>
+	        	<when test="pageVO.searchKeyword == 'recipient_Name'">recipient_Name</when>
+	        	<when test="pageVO.searchKeyword == 'recipient_TelNum'">recipient_TelNum</when>
+	        	<when test="pageVO.searchKeyword == 'recipient_Address'">recipient_Address</when>
+	        </choose>
+	        LIKE CONCAT('%', #{pageVO.searchString}, '%')
+	        AND orderdate BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
+	        ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    <if test="delivery_Status == '' and pageVO.searchString == '' and pageVO.startDate != '' and pageVO.endDate != ''">
+	        SELECT * FROM orderHistory 
+	        WHERE orderdate BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
+	        ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	    <if test="delivery_Status == '' and pageVO.searchString == '' and pageVO.startDate == '' and pageVO.endDate == ''">
+	        SELECT * FROM orderHistory ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+	    </if>
+	</select>
+		
+	<select id="getOrderHistory_DetailListAJAX" resultType="com.spring.javaweb11S.vo.OrderHistory_DetailVO">
+		SELECT ohd.idx, ohd.orderhistory_idx, oh.orderdate, ohd.returns_status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, ohd.totalPrice, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand
+		FROM orderhistory oh
+		JOIN orderhistory_detail ohd ON ohd.orderhistory_idx = oh.idx
+		JOIN goods g ON g.idx = ohd.goods_idx
+		JOIN goods_option go ON go.option_idx = ohd.option_idx
+		JOIN brand b ON b.idx = g.brand_idx
+		WHERE oh.idx = #{idx};
+	</select>		
+
+	<select id="getMemberList" resultType="com.spring.javaweb11S.vo.MemberVO">
+		SELECT m.*, COUNT(o.idx) AS order_count
+		FROM member m
+		LEFT JOIN orderhistory o ON m.idx = o.member_idx
+		GROUP BY m.idx;
+	</select>
+	
+	<select id="getBrandVO" resultType="com.spring.javaweb11S.vo.BrandVO">
+		SELECT * FROM brand WHERE idx = #{brand_Idx};
+	</select>
+
+	<insert id="setBrandRegister">
+		INSERT INTO brand VALUES(default,#{vo.name}, #{vo.content}, default);
+	</insert>
+	
+	<insert id="setGoodsRegister">
+		INSERT INTO goods VALUES(default,#{vo.brand_Idx},#{vo.name},#{vo.price},#{vo.thumbNail},default,#{vo.secondCatagory_Idx});
+	</insert>
+	
+	<insert id="setGoodsStockRegister" parameterType="java.util.Map">
+		INSERT INTO goods_stock (goods_idx, option_idx, stock)
+		VALUES 
+		<foreach item="value" collection="vos" index="key" separator=",">
+			((SELECT idx FROM goods ORDER BY idx DESC LIMIT 0, 1), (SELECT option_idx FROM goods_option WHERE goods_option = #{key}), #{value})
+		</foreach>
+		;
+	</insert>
+	
+	<update id="setorderShippingNumRegister">
+		UPDATE orderhistory
+		SET shipping_num = #{shippingNum}, status = '배송중'
+		WHERE idx = #{orderHistoryIdx};
+	</update>
+	
+	<update id="setBrandUpdate">
+		UPDATE brand
+		SET name = #{brandVO.name}, content = #{brandVO.content}
+		WHERE idx = #{brandVO.idx};
+	</update>
+	
+	<delete id="setBrandDelete">
+		DELETE FROM brand WHERE idx = #{brand_Idx};
+	</delete>
+</mapper>

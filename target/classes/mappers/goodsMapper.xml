@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaweb11S.dao.GoodsDAO">
+	<select id="getGoodsList" resultType="com.spring.javaweb11S.vo.GoodsVO">
+		SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+		FROM goods
+		JOIN brand ON goods.brand_idx = brand.idx;
+	</select>
+	
+	<select id="getGoodsDetail" resultType="com.spring.javaweb11S.vo.GoodsVO">
+		SELECT goods.idx, goods.brand_idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+		FROM goods
+		JOIN brand ON goods.brand_idx = brand.idx
+		WHERE goods.idx = #{goods_Idx};
+	</select>
+	
+	<select id="getGoodsStock" resultType="com.spring.javaweb11S.vo.Goods_StockVO">
+		SELECT gs.goods_idx, gs.option_idx, gs.stock, go.goods_option
+		FROM goods_stock gs
+		JOIN goods_option go ON gs.option_idx = go.option_idx
+		WHERE gs.goods_idx=#{goods_Idx};
+	</select>
+	
+	<select id="getMainCateArrayList" resultType="com.spring.javaweb11S.vo.MainCategoryVO">
+		SELECT * FROM maincategory;
+	</select>
+	
+	<select id="getSubCateArrayList" resultType="com.spring.javaweb11S.vo.SubCategoryVO">
+		SELECT * FROM subCategory WHERE category_idx = #{mainCategory};
+	</select>
+	
+	<select id="getSecondCateArrayList" resultType="com.spring.javaweb11S.vo.SecondCategoryVO">
+		SELECT * FROM secondcategory WHERE subcategory_idx = #{subCategory};
+	</select>
+	
+	<select id="getGoodsCategory" resultType="com.spring.javaweb11S.vo.CategoryVO">
+		SELECT mc.category_idx, sc.subcategory_idx, scc.secondcategory_idx, mc.category_name, sc.subcategory_name,  scc.secondcategory_name
+		FROM secondcategory scc
+		JOIN subcategory sc ON sc.subcategory_idx = scc.subcategory_idx
+		JOIN maincategory mc ON mc.category_idx = sc.category_idx
+		where scc.secondCategory_Idx = #{secondCatagory_Idx};
+	</select>
+	
+	<select id="getOrderMemberInfo" resultType="com.spring.javaweb11S.vo.MemberVO">
+		SELECT * FROM member WHERE idx = #{sIdx};
+	</select>
+	
+	<select id="getMemberCouponList" resultType="com.spring.javaweb11S.vo.CouponVO">
+		SELECT * FROM coupon where idx = #{sIdx};	
+	</select>
+	
+	<select id="getBrandList" resultType="com.spring.javaweb11S.vo.BrandVO">
+		SELECT * FROM brand;
+	</select>
+	
+	<select id="getBrandContent" resultType="com.spring.javaweb11S.vo.BrandVO">
+		SELECT b.idx, b.name, b.content, b.brand_like
+		FROM goods g
+		JOIN brand b ON b.idx = g.brand_idx
+		WHERE g.idx = #{goods_Idx};
+	</select>
+	
+	<select id="getGoodsTableList" resultType="com.spring.javaweb11S.vo.GoodsVO">
+		SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+		FROM goods
+		JOIN brand ON goods.brand_idx = brand.idx;
+	</select>
+	
+	<select id="getGoodsStockAJAX" resultType="com.spring.javaweb11S.vo.Goods_StockVO">
+		SELECT gs.goods_idx, gs.option_idx, gs.stock, go.goods_option
+		FROM goods_stock gs
+		JOIN goods_option go ON gs.option_idx = go.option_idx
+		WHERE gs.goods_idx = #{goods_Idx};
+	</select>
+	
+	<select id="getMemberShipAddList" resultType="com.spring.javaweb11S.vo.Member_ShippingAddressVO">
+		SELECT * FROM member_shippingaddress WHERE member_idx = #{sIdx};
+	</select>
+	
+	<select id="getCartList" resultType="com.spring.javaweb11S.vo.OrderVO">
+		SELECT cart.idx AS idx, goods.thumbnail AS order_ThumbNail, brand.name AS order_Brand, goods.name AS order_Name, goods_option.goods_option AS order_Option, goods.price AS order_Price,  cart.stock AS order_Stock, cart.goods_idx, cart.option_idx
+		FROM cart
+		JOIN goods ON goods.idx = cart.goods_idx
+		JOIN goods_option ON goods_option.option_idx = cart.option_idx
+		JOIN brand ON brand.idx = goods.brand_idx
+		WHERE cart.member_idx = #{sIdx};
+	</select>
+	
+	<insert id="setGoodsRegister">
+		INSERT INTO goods VALUES(default,#{vo.brand_Idx},#{vo.name},#{vo.price},#{vo.thumbNail},default,#{vo.secondCatagory_Idx});
+	</insert>
+	
+	<insert id="setGoodsStockRegister" parameterType="java.util.Map">
+		INSERT INTO goods_stock (goods_idx, option_idx, stock)
+		VALUES 
+		<foreach item="value" collection="vos" index="key" separator=",">
+			((SELECT idx FROM goods ORDER BY idx DESC LIMIT 0, 1), (SELECT option_idx FROM goods_option WHERE goods_option = #{key}), #{value})
+		</foreach>
+		;
+	</insert>
+	
+	<insert id="setOrderHistory">
+		INSERT INTO orderHistory(idx, member_idx, orderdate, finalprice, status, recipient_name, recipient_telnum, recipient_address) VALUES(default, #{vo.member_Idx}, default, #{vo.finalPrice}, default, #{vo.recipient_Name}, #{vo.recipient_TelNum}, #{vo.recipient_Address});
+	</insert>
+	
+	<insert id="setOrderHistory_Detail">
+		INSERT INTO orderHistory_detail
+		VALUES
+		<foreach collection="vos" item="item" separator=",">
+			(default,(SELECT idx FROM orderHistory ORDER BY idx DESC LIMIT 0, 1) ,#{item.goods_Idx}, #{item.option_Idx}, #{item.goods_Stock}, #{item.totalPrice}, default)
+		</foreach>
+		;
+	</insert>
+	
+	<insert id="setInsertCart">
+		INSERT INTO cart
+		VALUES
+		<foreach collection="vos" item="item" separator=",">
+			(default, #{member_Idx}, #{item.goods_Idx}, #{item.option_Idx}, #{item.order_Stock})
+		</foreach>
+		;
+	</insert>
+	
+	<delete id="setDeleteCart" parameterType="int[]">
+		<foreach item="item" collection="cartArray" separator=";">
+	    	DELETE FROM cart WHERE idx = #{item}
+	  	</foreach>
+	</delete>
+</mapper>

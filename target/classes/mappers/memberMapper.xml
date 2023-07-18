@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaweb11S.dao.MemberDAO">
+	<select id="getMemberEmailIdCheck" resultType="com.spring.javaweb11S.vo.MemberVO">
+		SELECT * FROM member WHERE emailId=#{emailId};
+	</select>
+	
+	<select id="getMemberIdFind" resultType="com.spring.javaweb11S.vo.MemberVO">
+		SELECT * FROM member WHERE name=#{name} AND telNum=#{telNum};
+	</select>
+	
+	<select id="getMemberPwdFind" resultType="com.spring.javaweb11S.vo.MemberVO">
+		SELECT *  FROM member WHERE name=#{name} AND telNum=#{telNum} AND emailId=#{emailId};
+	</select>
+	
+	<select id="getMemberIdxCheck" resultType="com.spring.javaweb11S.vo.MemberVO">
+		SELECT * FROM member WHERE idx = #{sIdx};
+	</select>
+	
+	<select id="getMemberOrderHistory" resultType="com.spring.javaweb11S.vo.OrderHistoryVO">
+		SELECT * FROM orderhistory WHERE member_Idx = #{sIdx} ORDER BY orderdate DESC;
+	</select>
+	
+	<select id="setMemberOrderHistory_Detail" resultType="com.spring.javaweb11S.vo.OrderHistory_DetailVO">
+		SELECT ohd.idx, ohd.orderhistory_idx, oh.shipping_num, oh.orderdate, oh.status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, ohd.totalPrice, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand
+		FROM orderhistory oh
+		JOIN orderhistory_detail ohd ON ohd.orderhistory_idx = oh.idx
+		JOIN goods g ON g.idx = ohd.goods_idx
+		JOIN goods_option go ON go.option_idx = ohd.option_idx
+		JOIN brand b ON b.idx = g.brand_idx
+		WHERE oh.member_idx = #{sIdx}
+		ORDER BY ohd.idx DESC;
+	</select>
+	
+	<insert id="setMemberJoinOk">
+		INSERT INTO member VALUES(default,#{vo.emailId},#{vo.pwd},#{vo.name},#{vo.gender},#{vo.birthday},#{vo.telNum},default,default,default,default,default,default,default);
+	</insert>
+	
+	
+	
+	
+	
+	<update id="setMemberVisitProcess">
+		update member set totVisitCnt=totVisitCnt+1, todayVisitCnt=todayVisitCnt+1, point=point+100, lastVisitDay=now() where emailId = #{vo.emailId};
+	</update>
+	
+	<update id="setMemberPwdUpdate">
+		update member set pwd = #{updatePwd} where emailId = #{emailIdForm};
+	</update>
+</mapper>

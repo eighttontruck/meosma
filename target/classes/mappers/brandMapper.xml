@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaweb11S.dao.BrandDAO">
+	<select id="getBrandList" resultType="com.spring.javaweb11S.vo.BrandVO">
+		SELECT * FROM brand;
+	</select>
+	
+	<insert id="setBrandRegister">
+		INSERT INTO brand VALUES(default,#{vo.name}, #{vo.content}, default);
+	</insert>
+	
+	
+</mapper>
