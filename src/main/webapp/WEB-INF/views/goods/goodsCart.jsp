@@ -254,7 +254,7 @@
 						
 					</dl>
 					<dl>
-						<dt>합계</dt>
+						<dt>합계</dt> 
 						<dd>
 							<strong id="lastPrice">₩0</strong>
 							<input type="hidden" id="lastPriceInput">

@@ -125,6 +125,25 @@
 
 </script>
 <style>
+	#listTable{
+		margin-top:20px;
+		width:100%;
+		text-align:center;
+		margin: 0 auto;
+		margin-bottom:40px;
+	}
+	th{
+		border-top:1px solid #ddd;
+		border-bottom:1px solid #ddd;
+		padding:7px 0;
+		background:#f8f8f8;
+		height:50px;
+		font-size:18px;
+	}
+	#listTable td{
+		border-bottom:1px solid lightgray;
+		height:50px;
+	}
  	form{
  		width:1000px;
  	}
@@ -137,6 +156,11 @@
 		text-align:center;
 		width:900px;
 		margin:0 auto;
+	}
+	.flex{
+		display:flex;
+		align-items:center;
+		justify-content: flex-start;
 	}
 	.container{
 		display:flex;
@@ -330,10 +354,10 @@
 		  </div>
 		</div>
   		
-  		<form name="myform" method="post" action="${ctp}/goods/goodsPaymentOk">
+  		<form name="myform" method="post" action="${ctp}/goods/goodsPaymentOk" class="container">
 			<div id="orderList">
 				<div class="ml-2"><h1><strong>ORDER</strong></h1></div>
-				<table>
+				<table id="listTable">
 					<thead>
 						<tr>
 							<th>상품/옵션 정보</th>
@@ -347,19 +371,28 @@
 						<c:forEach var="vo" items="${vos}" varStatus="st">
 							<tr>
 								<td>
-									<div id="orderImage2">
-										<span class="orderImage"><img alt="" src="${ctp}/images/${vo.order_ThumbNail}"></span>
-										<div></div>
-									</div>
-									<div class="orderImage">
-										${vo.order_Name}
-										${vo.order_Name}
+									<div class="flex">
+										<div style="margin-right:20px;">
+											<img alt="" src="${ctp}/images/${vo.order_ThumbNail}">
+										</div>
+										<div id="dd">
+											<div class="row">${vo.order_Brand}</div>
+											<div class="row">${vo.order_Name}</div>
+											<div class="row">SIZE : ${vo.order_Option}</div>
+										</div>
 									</div>
 								</td>
 								<td>${vo.order_Stock}</td>
-								<td>${vo.order_Price}</td>
-								<td>${vo.expectPoint}</td>
-								<td>${vo.goodsStockPrice}</td>
+								<td>₩<fmt:formatNumber value="${vo.order_Price}" pattern="#,###"/></td>
+								<td>
+									<c:set var="accumulatedPoints" value="${vo.order_Price * vo.order_Stock * 0.05}" />
+									₩<fmt:formatNumber value="${accumulatedPoints}" pattern="#,###"/>
+								</td>
+								<td>
+									<c:set var="totalPrice" value="${vo.order_Price * vo.order_Stock}" />
+									₩<fmt:formatNumber value="${totalPrice}" pattern="#,###"/>
+									<input type="hidden" value="${totalPrice}" id="totalPrice${vo.idx}">
+								</td>
 							</tr>
 							<input type="hidden" name="goods_Idx" value="${vo.goods_Idx}">
 							<input type="hidden" name="option_Idx" value="${vo.option_Idx}">

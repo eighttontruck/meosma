@@ -41,15 +41,16 @@
 				str += '<tbody id="goods_Option'+option_Idx+'">';
 					str += '<tr>';
 						str += '<td class="td">'+option_Name+'</td>';
-						str += '<input type="hidden" name="order_ThumbNail" value="${goodsVo.thumbNail}">'
-						str += '<input type="hidden" name="order_Name" value="${goodsVo.name}">'
-						str += '<input type="hidden" name="order_Option" value="'+option_Name+'">'
-						str += '<input type="hidden" name="order_Price" value="${goodsVo.price}">'
-						str += '<input type="hidden" name="goods_Idx" value="${goodsVo.idx}">'
-						str += '<input type="hidden" name="option_Idx" value="'+option_Idx+'">'
+						str += '<input type="hidden" name="order_ThumbNail" value="${goodsVo.thumbNail}">';
+						str += '<input type="hidden" name="order_Name" value="${goodsVo.name}">';
+						str += '<input type="hidden" name="order_Option" value="'+option_Name+'">';
+						str += '<input type="checkbox" name="idxChecked" value="${goodsVo.idx}">';
+						str += '<input type="hidden" name="order_Price" value="${goodsVo.price}">';
+						str += '<input type="hidden" name="goods_Idx" value="${goodsVo.idx}">';
+						str += '<input type="hidden" name="option_Idx" value="'+option_Idx+'">';
 						str += '<td class="td"><span id="goods_qty">';
 							str += '<input type="text" id="cntInput'+option_Idx+'" name="order_Stock" value="1" class="goodsCnt" readonly>';
-							str += '<span class="stockCntBtn"><button type="button" onclick="stockCntUp('+option_Idx+','+goods_Stock+','+${goodsVo.price}+')" class="upgoods_cnt" id="upgoods_cnt2"></button>'
+							str += '<span class="stockCntBtn"><button type="button" onclick="stockCntUp('+option_Idx+','+goods_Stock+','+${goodsVo.price}+')" class="upgoods_cnt" id="upgoods_cnt2"></button>';
 							str += '<button type="button" class="downgoods_cnt" onclick="stockCntDown('+option_Idx+','+${goodsVo.price}+')"></button></span>';
 						str += '</span></td>';
 						str += '<td class="td" id="optionPrice'+option_Idx+'" style="text-align:right;">₩'+goods_Price+'</td>';

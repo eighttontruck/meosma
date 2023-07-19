@@ -150,6 +150,7 @@ public class GoodsController {
 	}
 	
 	
+	// 상품 뷰 창에서 옵션 장바구니에 넣기
 	@ResponseBody
 	@RequestMapping(value="/insertCartAJAX", method=RequestMethod.POST)
 	public String insertCartAJAXPost(
