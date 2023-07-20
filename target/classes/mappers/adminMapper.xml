@@ -599,12 +599,12 @@
 	        AND orderdate BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
 	        ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	    </if>
-	    <if test="delivery_Status == '' and pageVO.searchString == '' and pageVO.startDate != '' and pageVO.endDate != ''">
+	    <if test="delivery_Status == '' and pageVO.searchString == '' and pageVO.startFilter != '' and pageVO.endFilter != ''">
 	        SELECT * FROM orderHistory 
 	        WHERE orderdate BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
 	        ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	    </if>
-	    <if test="delivery_Status == '' and pageVO.searchString == '' and pageVO.startDate == '' and pageVO.endDate == ''">
+	    <if test="delivery_Status == '' and pageVO.searchString == '' and pageVO.startFilter == '' and pageVO.endFilter == ''">
 	        SELECT * FROM orderHistory ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	    </if>
 	</select>

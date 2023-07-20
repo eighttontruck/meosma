@@ -31,5 +31,9 @@ public interface MemberDAO {
 
 	public int totRecCnt(String searchString);
 
+	public List<OrderHistory_DetailVO> getMemberOrderHistory_Detail(@Param("sIdx") int sIdx);
+
+	public void setMemberGoodsConfirmAJAX(@Param("orderHistory_Detail_Idx") int orderHistory_Detail_Idx);
+
 
 }

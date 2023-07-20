@@ -166,10 +166,9 @@ public class MemberController {
 	}
 	
 	@RequestMapping(value="/memberMyPage",method=RequestMethod.GET)
-	public String memberPwdUpdateGet(Model model,
-			@RequestParam(name="sIdx", defaultValue="", required=false) int sIdx) {
+	public String memberMyPageGet(Model model, HttpSession session) {
+		int sIdx = (int) session.getAttribute("sIdx");
 		MemberVO vo = memberService.getMemberIdxCheck(sIdx);
-		
 		List<OrderHistoryVO> ohVos=memberService.getMemberOrderHistory(sIdx);
 		model.addAttribute("vo",vo);
 		model.addAttribute("vos",ohVos);
@@ -177,14 +176,23 @@ public class MemberController {
 		return "member/memberMyPage";
 	}
 	
-	@RequestMapping(value="/memberGoodsOrderList",method=RequestMethod.GET)
-	public String memberGoodsOrderListGet(Model model,
-			@RequestParam(name="sIdx", defaultValue="", required=false) int sIdx) {
-		List<OrderHistoryVO> ohVos=memberService.getMemberOrderHistory(sIdx);
+	@RequestMapping(value="/orderHistory_Detail",method=RequestMethod.GET)
+	public String memberOrderHistory_DetailGet(Model model, HttpSession session) {
+		int sIdx = (int) session.getAttribute("sIdx");
+		List<OrderHistory_DetailVO> ohVos=memberService.getMemberOrderHistory_Detail(sIdx);
 		
 		model.addAttribute("ohVos",ohVos);
 		
-		return "member/memberOrderHistoryList";
+		return "member/memberOrderHistory_DetailList";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/goodsConfirmAJAX",method=RequestMethod.POST)
+	public String memberGoodsConfirmAJAXPost(int orderHistory_Detail_Idx) {
+		
+		memberService.setMemberGoodsConfirmAJAX(orderHistory_Detail_Idx);
+		
+		return "";
 	}
 	
 	@ResponseBody

@@ -24,7 +24,7 @@
 	      }
 	    }
 	    document.getElementById("total").innerHTML='₩'+numberWithCommas(total);
-	    document.getElementById("totalInput").value=total;
+	    document.getElementById("totalPriceInput").value=total;
 	    
 	    if(total>=200000||total==0){
 	      document.getElementById("baeSong").innerHTML = '₩0';
@@ -35,7 +35,7 @@
 	    }
 	    let lastPrice=parseInt(document.getElementById("baeSongInput").value)+total;
 	    document.getElementById("lastPrice").innerHTML = '₩'+numberWithCommas(lastPrice);
-	    document.getElementById("lastPriceInput").value = lastPrice;
+	    document.getElementById("finalPriceInput").value = lastPrice;
 	}
 
 	function onCheck(){
@@ -114,6 +114,10 @@
 			}
 		});
 	}
+	
+	function payMentCheck(){
+		myform.submit();
+	}
 </script>
 <style>
 	#listTable{
@@ -177,56 +181,63 @@
 	<jsp:include page="/WEB-INF/views/include/header.jsp" />
 	<div>
 		<div class="text-center mt-4"><h1><strong>CART</strong></h1></div>
-		<table id="listTable">
-			<thead>
-				<tr>
-					<th><input type="checkbox" id="allcheck" onClick="allCheck()" class="m-2"/></th>
-					<th>상품/옵션 정보</th>
-					<th>수량</th>
-					<th>상품금액</th>
-					<th>적립예정액</th>
-					<th>합계금액</th>
-				</tr>
-			</thead>
-			<tbody>
-				<c:if test="${empty vos}">
+		<form method="post" name="myform" action="${ctp}/goods/goodsPayment">
+			<table id="listTable">
+				<thead>
 					<tr>
-						<td colspan=6>장바구니에 물건 없음</td>
+						<th><input type="checkbox" id="allcheck" onClick="allCheck()" class="m-2"/></th>
+						<th>상품/옵션 정보</th>
+						<th>수량</th>
+						<th>상품금액</th>
+						<th>적립예정액</th>
+						<th>합계금액</th>
 					</tr>
-				</c:if>
-				<c:forEach var="vo" items="${vos}" varStatus="st">
-					<tr>
-						<td><input type="checkbox" name="idxChecked" id="idx${vo.idx}" value="${vo.idx}" onClick="onCheck()" /></td>
-						<td>
-							<div class="flex">
-								<div style="margin-right:20px;">
-									<img alt="" src="${ctp}/images/${vo.order_ThumbNail}">
+				</thead>
+				<tbody>
+					<c:if test="${empty vos}">
+						<tr>
+							<td colspan=6>장바구니에 물건 없음</td>
+						</tr>
+					</c:if>
+					
+					<c:forEach var="vo" items="${vos}" varStatus="st">
+						<tr>
+							<td><input type="checkbox" name="idxChecked" id="idx${vo.idx}" value="${vo.idx}" onClick="onCheck()" /></td>
+							<td>
+								<div class="flex">
+									<div style="margin-right:20px;">
+										<img alt="" src="${ctp}/images/${vo.order_ThumbNail}">
+									</div>
+									<div id="dd">
+										<div class="row">${vo.order_Brand}</div>
+										<div class="row">${vo.order_Name}</div>
+										<div class="row">SIZE : ${vo.order_Option}</div>
+									</div>
 								</div>
-								<div id="dd">
-									<div class="row">${vo.order_Brand}</div>
-									<div class="row">${vo.order_Name}</div>
-									<div class="row">SIZE : ${vo.order_Option}</div>
-								</div>
-							</div>
-						</td>
-						<td>${vo.order_Stock}</td>
-						<td>₩<fmt:formatNumber value="${vo.order_Price}" pattern="#,###"/></td>
-						<td>
-							<c:set var="accumulatedPoints" value="${vo.order_Price * vo.order_Stock * 0.05}" />
-							₩<fmt:formatNumber value="${accumulatedPoints}" pattern="#,###"/>
-						</td>
-						<td>
-							<c:set var="totalPrice" value="${vo.order_Price * vo.order_Stock}" />
-							₩<fmt:formatNumber value="${totalPrice}" pattern="#,###"/>
-							<input type="hidden" value="${totalPrice}" id="totalPrice${vo.idx}">
-						</td>
-					</tr>
-					<input type="hidden" name="goods_Idx" value="${vo.goods_Idx}">
-					<input type="hidden" name="option_Idx" value="${vo.option_Idx}">
-					<input type="hidden" name="goods_Stock" value="${vo.order_Stock}">
-				</c:forEach>
-			</tbody>
-		</table>
+							</td>
+							<td>${vo.order_Stock}</td>
+							<td>₩<fmt:formatNumber value="${vo.order_Price}" pattern="#,###"/></td>
+							<td>
+								<c:set var="accumulatedPoints" value="${vo.order_Price * vo.order_Stock * 0.05}" />
+								₩<fmt:formatNumber value="${accumulatedPoints}" pattern="#,###"/>
+							</td>
+							<td>
+								<c:set var="totalPrice" value="${vo.order_Price * vo.order_Stock}" />
+								₩<fmt:formatNumber value="${totalPrice}" pattern="#,###"/>
+								<input type="hidden" value="${totalPrice}" id="totalPrice${vo.idx}">
+							</td>
+						</tr>
+						<input type="hidden" name="goods_Idx" value="${vo.goods_Idx}">
+						<input type="hidden" name="option_Idx" value="${vo.option_Idx}">
+						<input type="hidden" name="order_Stock" value="${vo.order_Stock}">
+						<input type="hidden" name="order_Option" value="${vo.order_Option}">
+						<input type="hidden" name="sIdx" value="${sIdx}">
+					</c:forEach>
+				</tbody>
+			</table>
+			<input type="hidden" name="totalPrice" id="totalPriceInput">
+			<input type="hidden" name="buyStatus" value="cart">
+		</form>
 		<c:set var="minIdx" value="${vos[0].idx}"/>						<!-- 구매한 첫번째 상품의 idx -->
 		<c:set var="maxSize" value="${fn:length(vos)-1}"/>		
 		<c:set var="maxIdx" value="${vos[maxSize].idx}"/>			<!-- 구매한 마지막 상품의 idx -->
@@ -242,7 +253,6 @@
 						<dt>총 1개의 상품금액</dt>
 						<dd>
 							<strong id="total">₩0</strong>
-							<input type="hidden" id="totalInput">
 						</dd>
 					</dl>
 					<dl>
@@ -257,7 +267,7 @@
 						<dt>합계</dt> 
 						<dd>
 							<strong id="lastPrice">₩0</strong>
-							<input type="hidden" id="lastPriceInput">
+							<input type="hidden" id="finalPriceInput">
 						</dd>
 					</dl>
 				</div>
@@ -267,8 +277,7 @@
 					<button type="button" onclick="deleteCart()">선택 삭제</button>
 				</div>
 				<div class="flex2">
-					<button type="button">선택 주문</button>
-					<button type="button">전체 주문</button>
+					<button type="button" onclick="payMentCheck()">주문</button>
 				</div>
 			</div>
 		</c:if>

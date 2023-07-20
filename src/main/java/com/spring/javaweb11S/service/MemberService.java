@@ -27,5 +27,7 @@ public interface MemberService {
 
 	public List<OrderHistory_DetailVO> getMemberOrderHistory_Detail(int sIdx);
 
+	public void setMemberGoodsConfirmAJAX(int orderHistory_Detail_Idx);
+
 
 }

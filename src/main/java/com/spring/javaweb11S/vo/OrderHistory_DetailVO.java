@@ -19,4 +19,5 @@ public class OrderHistory_DetailVO {
 	String returns_status;
 	String status;
 	int shipping_Num;
+	int goods_Price;
 }

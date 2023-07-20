@@ -14,7 +14,7 @@
 </head>
 <script>
 	function showPopup(){
-		window.open("/product/inquiryPopUp","test","width=400, height=400,left=0, top=0");
+		window.open("${ctp}/goods/goodsList","test","width=400, height=400,left=0, top=0");
 	}
 	
 	let option_IdxArray = new Array();
@@ -28,35 +28,25 @@
 			if($("#goods_Option"+option_Idx).length == 0){
 				let str='';
 				option_IdxArray[option_Idx]=option_Idx;
-				/* str += '<div class="options" id="option'+idx+'">';
-				str += '<div>'+optionSelect+'</div>';
-				str += '<div id="div2"><span><input type="text" value="1" class="goodsCnt">';
-				str += '<span id="span2"><button class="upgoods_cnt"></button>'
-				str += '<button class="downgoods_cnt"></button></span></span></div>'
-				str += '<div><button type="button" id="closebtn" onclick=delete('+idx+')><img src="${ctp}/images/closebtn.PNG"></img></button></div>';
-				str += '<div></div>';
-				str += '<div></div>';
-				str += '</div><hr>'; */
-				
-				str += '<tbody id="goods_Option'+option_Idx+'">';
-					str += '<tr>';
-						str += '<td class="td">'+option_Name+'</td>';
-						str += '<input type="hidden" name="order_ThumbNail" value="${goodsVo.thumbNail}">';
-						str += '<input type="hidden" name="order_Name" value="${goodsVo.name}">';
-						str += '<input type="hidden" name="order_Option" value="'+option_Name+'">';
-						str += '<input type="checkbox" name="idxChecked" value="${goodsVo.idx}">';
-						str += '<input type="hidden" name="order_Price" value="${goodsVo.price}">';
-						str += '<input type="hidden" name="goods_Idx" value="${goodsVo.idx}">';
-						str += '<input type="hidden" name="option_Idx" value="'+option_Idx+'">';
+
+				str += '<tbody id="goods_Option'+option_Idx+'">'
+					str += '<tr>'
+						str += '<td class="td">'+option_Name+'<input type="checkbox" name="idxChecked" value="${goodsVo.idx}" checked style="display:none;"/></td>'
+						str += '<input type="hidden" name="order_ThumbNail" value="${goodsVo.thumbNail}">'
+						str += '<input type="hidden" name="order_Name" value="${goodsVo.name}">'
+						str += '<input type="hidden" name="order_Option" value="'+option_Name+'">'
+						str += '<input type="hidden" name="order_Price" value="${goodsVo.price}">'
+						str += '<input type="hidden" name="goods_Idx" value="${goodsVo.idx}">'
+						str += '<input type="hidden" name="option_Idx" value="'+option_Idx+'">'
 						str += '<td class="td"><span id="goods_qty">';
-							str += '<input type="text" id="cntInput'+option_Idx+'" name="order_Stock" value="1" class="goodsCnt" readonly>';
-							str += '<span class="stockCntBtn"><button type="button" onclick="stockCntUp('+option_Idx+','+goods_Stock+','+${goodsVo.price}+')" class="upgoods_cnt" id="upgoods_cnt2"></button>';
-							str += '<button type="button" class="downgoods_cnt" onclick="stockCntDown('+option_Idx+','+${goodsVo.price}+')"></button></span>';
+							str += '<input type="text" id="cntInput'+option_Idx+'" name="order_Stock" value="1" class="goodsCnt" readonly>'
+							str += '<span class="stockCntBtn"><button type="button" onclick="stockCntUp('+option_Idx+','+goods_Stock+','+${goodsVo.price}+')" class="upgoods_cnt" id="upgoods_cnt2"></button>'
+							str += '<button type="button" class="downgoods_cnt" onclick="stockCntDown('+option_Idx+','+${goodsVo.price}+')"></button></span>'
 						str += '</span></td>';
-						str += '<td class="td" id="optionPrice'+option_Idx+'" style="text-align:right;">₩'+goods_Price+'</td>';
-						str += '<td style="text-align:center;"><button type="button" id="closebtn" onclick=delOption('+option_Idx+')><img src="${ctp}/images/closebtn.PNG"></img></button></td>';
-					str += '</tr>';
-				str += '</tbody>';
+						str += '<td class="td" id="optionPrice'+option_Idx+'" style="text-align:right;">₩'+goods_Price+'</td>'
+						str += '<td style="text-align:center;"><button type="button" id="closebtn" onclick=delOption('+option_Idx+')><img src="${ctp}/images/closebtn.PNG"></img></button></td>'
+					str += '</tr>'
+				str += '</tbody>'
 				$("#selectedOption").append(str);
 				onTotal();
 				
@@ -320,36 +310,6 @@
 		margin-bottom:20px;
 		border:none;
 	}
-	
-	/* #dropdownMenu {
-  
-  position: absolute;
-  background-color: #fff;
-  padding: 10px;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-} */
-
-/* #dropdownButton:hover + #dropdownMenu,
-#dropdownMenu:hover {
-  display: block;
-} */
-
-/* .submenu {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 100%;
-  margin-top: -10px;
-  padding: 10px;
-  background-color: #fff;
-  border: 1px solid #ccc;
-} */
-
-/* .dropdown-submenu:hover > .submenu {
-  display: block;
-} */
-	
 </style>
 <body>
 	<jsp:include page="/WEB-INF/views/include/header.jsp" />
@@ -390,6 +350,7 @@
 						<table id="selectedOption"></table>
 						<input type="hidden" id="sIdx" name="sIdx" value="${sIdx}">
 						<input type="hidden" name="totalPrice" id="totalPriceInput">
+						<input type="hidden" name="buyStatus" value="direct">
 					</form>
 					<hr>
 				</div>

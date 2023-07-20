@@ -156,8 +156,8 @@
 				$("#endDate").val(endYear+"-"+endMonth+"-"+endDate);
 	        	
 	        	if(sdate!="" && edate!=""){
-	        		$("#startDate").val("${pageVO.startDate}");
-					$("#endDate").val("${pageVO.endDate}");
+	        		$("#startDate").val("${pageVO.startFilter}");
+					$("#endDate").val("${pageVO.endFilter}");
 	        		
 		        	let sdateParts = sdate.split("-");
 		        	let syear = sdateParts[0];
@@ -476,7 +476,7 @@
 					    </div>
 					  </div>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">주문내역</h1>
+                        <h1 class="mt-4"><a href="${ctp}/admin/orderHistoryList">주문내역</a></h1>
                         <div class="card mb-4">
                             <div class="card-body">
                             	<div class="flex">	
@@ -525,8 +525,8 @@
 		                            	</select>
 	                            	</div>
 	                            	<div>
-	                            	<input type="hidden" value="${pageVO.startDate}" id="sdateCheck">
-	                            	<input type="hidden" value="${pageVO.endDate}" id="edateCheck">
+	                            	<input type="hidden" value="${pageVO.startFilter}" id="sdateCheck">
+	                            	<input type="hidden" value="${pageVO.endFilter}" id="edateCheck">
 	                            	<form method="get" name="myform">
 		                            	<select class="searchSelect" name="searchKeyword" id="searchKeyword">
 		                            		<option <c:if test="${pageVO.searchKeyword eq 'idx'}">selected</c:if> value="idx">주문번호</option>
@@ -577,14 +577,14 @@
 								</table>
 								<div class="text-center m-4">
 								    <ul class="pagination justify-content-center pagination-sm">
-								      <c:if test="${pageVO.pag > 1}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/admin/orderHistoryList?pageSize=${pageVO.pageSize}&pag=1&delivery_Status=${delivery_Status}&searchKeyword=${pageVO.searchKeyword}&searchString=${pageVO.searchString}&startDate=${pageVO.startDate}&endDate=${pageVO.endDate}">첫페이지</a></li></c:if>
-								      <c:if test="${pageVO.curBlock > 0}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/admin/orderHistoryList?pageSize=${pageVO.pageSize}&pag=${(pageVO.curBlock-1)*pageVO.blockSize + 1}&delivery_Status=${delivery_Status}&searchKeyword=${pageVO.searchKeyword}&searchString=${pageVO.searchString}&startDate=${pageVO.startDate}&endDate=${pageVO.endDate}">이전블록</a></li></c:if>
+								      <c:if test="${pageVO.pag > 1}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/admin/orderHistoryList?pageSize=${pageVO.pageSize}&pag=1&delivery_Status=${delivery_Status}&searchKeyword=${pageVO.searchKeyword}&searchString=${pageVO.searchString}&startDate=${pageVO.startFilter}&endDate=${pageVO.endFilter}">첫페이지</a></li></c:if>
+								      <c:if test="${pageVO.curBlock > 0}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/admin/orderHistoryList?pageSize=${pageVO.pageSize}&pag=${(pageVO.curBlock-1)*pageVO.blockSize + 1}&delivery_Status=${delivery_Status}&searchKeyword=${pageVO.searchKeyword}&searchString=${pageVO.searchString}&startDate=${pageVO.startFilter}&endDate=${pageVO.endFilter}">이전블록</a></li></c:if>
 								      <c:forEach var="i" begin="${pageVO.curBlock*pageVO.blockSize + 1}" end="${pageVO.curBlock*pageVO.blockSize + pageVO.blockSize}" varStatus="st">
-							              <c:if test="${i <= pageVO.totPage && i == pageVO.pag}"><li class="page-item active"><a class="page-link text-white bg-secondary border-secondary" href="${ctp}/admin/orderHistoryList?pageSize=${pageVO.pageSize}&pag=${i}&delivery_Status=${delivery_Status}&searchKeyword=${pageVO.searchKeyword}&searchString=${pageVO.searchString}&startDate=${pageVO.startDate}&endDate=${pageVO.endDate}">${i}</a></li></c:if>
-								       	  <c:if test="${i <= pageVO.totPage && i != pageVO.pag}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/admin/orderHistoryList?pageSize=${pageVO.pageSize}&pag=${i}&delivery_Status=${delivery_Status}&searchKeyword=${pageVO.searchKeyword}&searchString=${pageVO.searchString}&startDate=${pageVO.startDate}&endDate=${pageVO.endDate}">${i}</a></li></c:if>
+							              <c:if test="${i <= pageVO.totPage && i == pageVO.pag}"><li class="page-item active"><a class="page-link text-white bg-secondary border-secondary" href="${ctp}/admin/orderHistoryList?pageSize=${pageVO.pageSize}&pag=${i}&delivery_Status=${delivery_Status}&searchKeyword=${pageVO.searchKeyword}&searchString=${pageVO.searchString}&startDate=${pageVO.startFilter}&endDate=${pageVO.endFilter}">${i}</a></li></c:if>
+								       	  <c:if test="${i <= pageVO.totPage && i != pageVO.pag}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/admin/orderHistoryList?pageSize=${pageVO.pageSize}&pag=${i}&delivery_Status=${delivery_Status}&searchKeyword=${pageVO.searchKeyword}&searchString=${pageVO.searchString}&startDate=${pageVO.startFilter}&endDate=${pageVO.endFilter}">${i}</a></li></c:if>
 								      </c:forEach>
-								      <c:if test="${pageVO.curBlock < pageVO.lastBlock}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/admin/orderHistoryList?pageSize=${pageVO.pageSize}&pag=${(pageVO.curBlock+1)*pageVO.blockSize + 1}&delivery_Status=${delivery_Status}&searchKeyword=${pageVO.searchKeyword}&searchString=${pageVO.searchString}&startDate=${pageVO.startDate}&endDate=${pageVO.endDate}">다음블록</a></li></c:if>
-								      <c:if test="${pageVO.pag < pageVO.totPage}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/admin/orderHistoryList?pageSize=${pageVO.pageSize}&pag=${pageVO.totPage}&delivery_Status=${delivery_Status}&searchKeyword=${pageVO.searchKeyword}&searchString=${pageVO.searchString}&startDate=${pageVO.startDate}&endDate=${pageVO.endDate}">마지막페이지</a></li></c:if>
+								      <c:if test="${pageVO.curBlock < pageVO.lastBlock}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/admin/orderHistoryList?pageSize=${pageVO.pageSize}&pag=${(pageVO.curBlock+1)*pageVO.blockSize + 1}&delivery_Status=${delivery_Status}&searchKeyword=${pageVO.searchKeyword}&searchString=${pageVO.searchString}&startDate=${pageVO.startFilter}&endDate=${pageVO.endFilter}">다음블록</a></li></c:if>
+								      <c:if test="${pageVO.pag < pageVO.totPage}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/admin/orderHistoryList?pageSize=${pageVO.pageSize}&pag=${pageVO.totPage}&delivery_Status=${delivery_Status}&searchKeyword=${pageVO.searchKeyword}&searchString=${pageVO.searchString}&startDate=${pageVO.startFilter}&endDate=${pageVO.endFilter}">마지막페이지</a></li></c:if>
 								   </ul>
 							   </div>
                             </div>

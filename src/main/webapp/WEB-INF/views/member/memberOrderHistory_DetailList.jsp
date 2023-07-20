@@ -14,40 +14,66 @@
 	<jsp:include page="/WEB-INF/views/include/bs4.jsp"/>
 </head>
 <script>
-function numberWithCommas(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
- }
-function getOrderHistory_DetailList(idx){
-	$.ajax({
-		type : "post",
-		url : "${ctp}/admin/orderHistory_DetailListAJAX",
-		data : {
-			idx : idx,
-		},
-		success : function(data){
-			let str='';
-			for(let i=0; i<data.length; i++){
-				if(data[i] == null) break;
-				str += '<tr>';
-				str += '<td><div class="flex">';
-				str += '<div style="margin-right:20px;"><img class="orderListImg" src="${ctp}/images/'+data[i].goods_ThumbNail+'"></div>';
-				/* str += '<div>'+data[i].goods_Brand+'<br><strong>'+data[i].goods_Name+'</strong><br>'+data[i].goods_Option+'</div>'; */
-				str += '<div><div class="row">'+data[i].goods_Brand+'</div>';
-				str += '<div class="row">'+data[i].goods_Name+'</div>';
-				str += '<div class="row">SIZE : '+data[i].goods_Option+'</div></div';
-				str += '</div></td>';
-				str += '<td>'+data[i].idx+'</td>';
-				str += '<td>₩'+numberWithCommas(data[i].totalPrice)+'('+data[i].goods_Stock+'개)</td>';
-				str += '<td><button>반품&교환&환불 신청</button></td>';
-				str += '</tr>';
-			}
-			$("#orderHistory_DetailtBody").html(str);
-		},
-		error : function() {
-			alert("전송오류!");
+	function numberWithCommas(x) {
+	    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}
+	
+	function popUp(idx, goods_Idx){
+		window.open("${ctp}/goods/inquiryPopUp?idx="+idx+"&goods_Idx="+goods_Idx,"test","width=600, height=800,left=650px, top=200px");
+	}
+	
+	function goodsConfirm(orderHistory_Detail_Idx){
+		let goodsConfirm = confirm("상품을 수령하셨나요? 구매확정 후에는 교환, 환불이 불가능합니다.");
+		
+		if(goodsConfirm){
+			$.ajax({
+				type : "post",
+				url : "${ctp}/member/goodsConfirmAJAX",
+				data : {
+					orderHistory_Detail_Idx : orderHistory_Detail_Idx
+				},
+				success : function(data){
+					location.reload();
+				},
+				error : function() {
+					alert("전송오류!");
+				}
+			});
 		}
-	});
-}
+		
+	}
+	
+	function getOrderHistory_DetailList(idx){
+		$.ajax({
+			type : "post",
+			url : "${ctp}/admin/orderHistory_DetailListAJAX",
+			data : {
+				idx : idx
+			},
+			success : function(data){
+				let str='';
+				for(let i=0; i<data.length; i++){
+					if(data[i] == null) break;
+					str += '<tr>';
+					str += '<td><div class="flex">';
+					str += '<div style="margin-right:20px;"><img class="orderListImg" src="${ctp}/images/'+data[i].goods_ThumbNail+'"></div>';
+					/* str += '<div>'+data[i].goods_Brand+'<br><strong>'+data[i].goods_Name+'</strong><br>'+data[i].goods_Option+'</div>'; */
+					str += '<div><div class="row">'+data[i].goods_Brand+'</div>';
+					str += '<div class="row">'+data[i].goods_Name+'</div>';
+					str += '<div class="row">SIZE : '+data[i].goods_Option+'</div></div';
+					str += '</div></td>';
+					str += '<td>'+data[i].idx+'</td>';
+					str += '<td>₩'+numberWithCommas(data[i].totalPrice)+'('+data[i].goods_Stock+'개)</td>';
+					str += '<td><button>반품&교환&환불 신청</button></td>';
+					str += '</tr>';
+				}
+				$("#orderHistory_DetailtBody").html(str);
+			},
+			error : function() {
+				alert("전송오류!");
+			}
+		});
+	}
 </script>
 <style>
 	#memberInfo{
@@ -64,19 +90,12 @@ function getOrderHistory_DetailList(idx){
 		margin:0 auto;
 		width:100%;
 	}
-	.sidebar2{
-		display:flex;
-		flex-direction:column;
-		padding-bottom:15px;
-		width:150px;
+	#sidebar{
+		width:300px;
+		padding:50px;
 	}
-	.sidebar2 > a{
-		display: flex; 
-		margin-top: 2px;
-		font-size: 16px; 
-		line-height: 40px;
-		color:rgb(110,110,110);
-
+	#sidebar div{
+		text-align:center;
 	}
 	#mainDiv{
 		padding:50px;
@@ -138,9 +157,13 @@ function getOrderHistory_DetailList(idx){
 	  float:left;
 	  margin-right:50px;
 	}
+	img{
+		width:100px;
+	}
 	.flex{
 		display:flex;
 		align-items:center;
+		justify-content: flex-start;
 	}
 	.orderListImg{
 		width:100px;
@@ -149,9 +172,19 @@ function getOrderHistory_DetailList(idx){
 		font-size:10px;
 		font-height:10px;
 	}
-	#sidebar{
-		margin-top:50px;
-		margin-left:50px;
+	#blackBtn{
+		width:100px;
+		height:30px;
+		border:none;
+		background-color:black;
+		color:white;
+	}
+	#whiteBtn{
+		width:130px;
+		height:30px;
+		border:1px solid black;
+		background-color:white;
+		color:black;
 	}
 </style>
 <body>
@@ -220,23 +253,39 @@ function getOrderHistory_DetailList(idx){
 		      </div>
 		    </div>
 		  </div>
+		 <form name="frmData" id="frmData" method="post">
+			<input type="text" name="goods_Idx" id="name" value="홍길동" />
+		 </form>
 		<div id="memberInfo2">
 			<div id="sidebar">
-				<div class="sidebar2">
+				<div>
 					<h3>나의 쇼핑 활동</h3>
-					<a href="${ctp}/member/orderHistory_Detail">주문 내역 조회</a>
-					<a href="#">구매후기</a>
-					<a href="#">래플 응모내역</a>
-					<a href="#">상품문의</a>
-					<a href="#">1:1문의</a>
-					<a href="#">최근 본 상품</a>
-					<a href="#">좋아요</a>
-					<a href="#">나의 맞춤 정보</a>
-					<a href="#">회원 혜택</a>
+					<a href="${ctp}/member/orderHistory_Detail">주문 내역 조회</a><br>
+					<a>구매후기</a><br>
+					<a>래플 응모내역</a>
+					<a>상품문의</a>
+					<a>1:1문의</a>
+					<a>최근 본 상품</a>
+					<a>좋아요</a>
+					<a>나의 맞춤 정보</a>
+					<a>회원 혜택</a>
+					<a>래플 응모내역</a>
+					<a>래플 응모내역</a>
+				</div>
+				<div>
+					<h3>커뮤니티</h3>
+					<a>게시물/스크랩/댓글</a><br>
+					<a>포인트 & 쿠폰</a><br>
+					<a>라플(응모내역)</a>
+				</div>
+				<div>
+					<a>고객센터</a><br>
+					<a>자주 묻는 질문</a><br>
+					<a>로그아웃</a>
 				</div>
 			</div>
 			<div id="mainDiv">
-				<h2>주문 내역 조회</h2>
+				<h2>주문 내역 상세 조회</h2>
 				<div>
 					<a>입금/결제</a>
 					<a>배송중/픽업대기</a>
@@ -250,25 +299,65 @@ function getOrderHistory_DetailList(idx){
 				<table id="listTable">
 					<thead>
 						<tr>
-							<th>주문번호</th>
+							<th>상품정보</th>
 							<th>주문일자</th>
+							<th>주문상세번호(주문번호)</th>
 							<th>주문금액(수량)</th>
 							<th>주문상태</th>
-							<th>수령인 이름</th>
-							<th>수령인 전화번호</th>
-							<th>수령인 주소</th>
+							<th>비고</th>
 						</tr>
 					</thead>
 					<tbody>
-						<c:forEach var="order" items="${vos}" varStatus="st">
+						<c:forEach var="order" items="${ohVos}" varStatus="st">
 							<tr>
-								<td><button type="button" data-toggle="modal" data-target="#detailModal" onclick="getOrderHistory_DetailList(${order.idx})">${order.idx}</button></td>
+								<td>
+									<div class="flex">
+										<div style="margin-right:20px;">
+											<img alt="" src="${ctp}/images/${order.goods_ThumbNail}">
+										</div>
+										<div id="dd">
+											<div class="row">${order.goods_Brand}</div>
+											<div class="row">${order.goods_Name}</div>
+											<div class="row">SIZE : ${order.goods_Option}</div>
+										</div>
+									</div>
+								</td>
 								<td>${fn:substring(order.orderDate,2,11)}</td>
-								<td>₩<fmt:formatNumber value="${order.finalPrice}" pattern="#,###"/></td>
-								<td>${order.status}</td>
-								<td>${order.recipient_Name}</td>
-								<td>${order.recipient_TelNum}</td>
-								<td>${order.recipient_Address}</td>
+								<td>${order.idx}(${order.orderHistory_Idx})</td>
+								<td>₩<fmt:formatNumber value="${order.totalPrice}" pattern="#,###"/>(${order.goods_Stock}개)</td>
+								<td>
+									<c:if test="${order.returns_status eq '구매확정'}">
+										<div>
+											${order.returns_status}
+										</div>
+									</c:if>
+									<c:if test="${order.returns_status ne '구매확정'}">
+										<div>
+											${order.status}
+										</div>
+									</c:if>
+									<c:if test="${order.status eq '배송중' and order.returns_status ne '구매확정'}">
+										<div>
+											<a href="https://trace.cjlogistics.com/web/detail.jsp?slipno=${order.shipping_Num}">배송조회</a>
+										</div>
+									</c:if>
+								</td>
+								<c:if test="${order.returns_status ne '구매확정' and order.status eq '배송중'}">
+									<td>
+										<button onclick="goodsConfirm(${order.idx})" id="blackBtn">구매확정</button>
+										<button onclick="popUp(${order.idx},${order.goods_Idx})" id="whiteBtn">교환 및 환불 요청</button>
+									</td>
+								</c:if>
+								<c:if test="${order.status eq '결제완료' and order.returns_status ne '구매확정'}">
+									<td>
+
+									</td>
+								</c:if>
+								<c:if test="${order.returns_status eq '구매확정'}">
+									<td>
+
+									</td>
+								</c:if>
 							</tr>
 						</c:forEach>
 					</tbody>

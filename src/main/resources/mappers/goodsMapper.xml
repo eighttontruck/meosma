@@ -46,7 +46,7 @@
 	</select>
 	
 	<select id="getMemberCouponList" resultType="com.spring.javaweb11S.vo.CouponVO">
-		SELECT * FROM coupon where idx = #{sIdx};	
+		SELECT * FROM coupon where member_idx = #{sIdx};	
 	</select>
 	
 	<select id="getBrandList" resultType="com.spring.javaweb11S.vo.BrandVO">
@@ -86,6 +86,25 @@
 		WHERE cart.member_idx = #{sIdx};
 	</select>
 	
+	<select id="getCart" resultType="com.spring.javaweb11S.vo.OrderVO">
+		SELECT cart.idx AS idx, goods.thumbnail AS order_ThumbNail, brand.name AS order_Brand, goods.name AS order_Name, goods_option.goods_option AS order_Option, goods.price AS order_Price,  cart.stock AS order_Stock, cart.goods_idx, cart.option_idx
+		FROM cart
+		JOIN goods ON goods.idx = cart.goods_idx
+		JOIN goods_option ON goods_option.option_idx = cart.option_idx
+		JOIN brand ON brand.idx = goods.brand_idx
+		WHERE cart.idx = #{cart_Idx};
+	</select>
+	
+	<select id="getIdxOrderHistory_Detail" resultType="com.spring.javaweb11S.vo.OrderHistory_DetailVO">
+		SELECT ohd.idx, ohd.orderhistory_idx, oh.shipping_num, oh.orderdate, oh.status, ohd.returns_status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, ohd.totalPrice, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand, g.price AS goods_Price
+		FROM orderhistory_detail ohd
+		JOIN orderhistory oh ON ohd.orderhistory_idx = oh.idx
+		JOIN goods g ON g.idx = ohd.goods_idx
+		JOIN goods_option go ON go.option_idx = ohd.option_idx
+		JOIN brand b ON b.idx = g.brand_idx
+		WHERE ohd.idx = #{idx};
+	</select>
+	
 	<insert id="setGoodsRegister">
 		INSERT INTO goods VALUES(default,#{vo.brand_Idx},#{vo.name},#{vo.price},#{vo.thumbNail},default,#{vo.secondCatagory_Idx});
 	</insert>
@@ -121,9 +140,29 @@
 		;
 	</insert>
 	
+	<update id="setMinusPoint">
+		UPDATE member
+		SET point = point - #{usedPoint}
+		WHERE idx = #{sIdx};
+	</update>
+	
+	<update id="setPlusPoint">
+		UPDATE member
+		SET point = point + #{savePoint}
+		WHERE idx = #{sIdx};
+	</update>
+	
+	<update id="setUsedCoupon">
+		UPDATE coupon
+		SET status = true, usedDate = NOW()
+		WHERE idx = #{coupon_Idx};
+	</update>
+	
 	<delete id="setDeleteCart" parameterType="int[]">
 		<foreach item="item" collection="cartArray" separator=";">
-	    	DELETE FROM cart WHERE idx = #{item}
+			<if test="item != 0">
+		    	DELETE FROM cart WHERE idx = #{item}
+			</if>
 	  	</foreach>
 	</delete>
 </mapper>

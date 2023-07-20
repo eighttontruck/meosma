@@ -175,7 +175,10 @@
 								<td>${ordhi.finalPrice}</td>
 								<td>${ordhi.pay_Status}</td>
 								<td>${ordhi.shipping_Status}</td>
-								<td><button class="detail-btn">상세 정보</button></td>
+								<td>
+									<button class="detail-btn">구매확정</button>
+									<button class="detail-btn">상</button>
+								</td>
 							</tr>
 						</c:forEach>
 					</tbody>

@@ -32,99 +32,92 @@
 		if(point==0){
 			$("#pointCheckBox").attr("disabled",true);
 		}
+		let point2=0;
+		let inputArray = $('input[name="expectSavePoint"]').toArray();
+		for(let i=0; i< inputArray.length; i++){
+			point2 += parseInt(inputArray[i].value);
+		}
 		
-		
-		$("#goodsStockPrice").val()
-		
-		$("#expectPoint").val()
+		$("#expectPoint").html("₩"+numberWithCommas(point2));
+		$("#savePoint").val(point2);
+		if(${totalPrice}>=100000){
+			$("#shipFeeText").html(0);
+		}
 		
 	});
 	
 	$(function(){
 		$("#pointCheckBox").change(function(){
 			if ($(this).is(":checked")) {
-				if(totalPrice<point){
-					$("#pointInput").val(totalPrice);
-					usePoint(1);
-				} else{
-					$("#pointInput").val(point);
-					usePoint(1);
-				}
+				$("#pointInput").val(${memberVo.point});
+				usePoint2();
 			} else {
 				$("#pointInput").val(0);
-				usePoint(0);
+				usePoint2();
 			}
-		});
-		
-		$("#pointInput").change(function() {
-			 let val=$("#pointInput").val();
-			 if(val>point){
-				 $("#pointInput").val(point);
-				 usePoint();
-				 return false;
-			 } if(val>totalPrice){
-				 $("#pointInput").val(totalPrice);
-				 usePoint();
-			 }
 		});
 		
 	});
 	
-	function useCouponBtn(couponIdx,name,dcP){
-		let dcPercentage=$("#coupon"+couponIdx).val();
+	function usePoint2(){
+		let memberPoint = ${memberVo.point};
+		let usedPoint = $("#pointInput").val().replace(/(^0+)/, "");
+		let usedPoint2 = $("#pointInput").val();
+		if(usedPoint >= memberPoint){
+			$("#pointInput").val(${memberVo.point});
+			$("#usedPoint").val(${memberVo.point});
+			$("#pointCheckBox").prop("checked", true);
+			ontotal2();
+			return false;
+		} else{
+			$("#pointCheckBox").prop("checked", false);
+		}
+		$("#usedPoint").val(usedPoint2);
+		$("#pointInput").val(usedPoint);
+		if(usedPoint==""){
+			$("#usedPoint").val(0);
+		}
+		
+		ontotal2();
+	}
+	
+	function useCoupon2(couponIdx,name,dcP){
+		$("#usedCouponText").html(name+" 할인율 "+dcP+"% 적용됨");
+		
 		$("#coupon_Idx").val(couponIdx);
-		if($("#afterPoint").val()==0){
-			price = ${totalPrice};
-		} else{
-			price = $("#afterPoint").val();
-		}
+		$("#usedCoupon").val(${totalPrice}/100*dcP);
 		
-		let afterCouponPrice = ${totalPrice} * dcPercentage / 100;
-		price = price - afterCouponPrice
-		$("#finalPriceInput").val(price);
-		$("#afterCoupon").val(price);
-		$("#usedCoupon").html(name+" 할인율 "+dcP+"% 적용됨")
+		ontotal2();
+	}
+	
+	function ontotal2(){
+		let point = $("#usedPoint").val();
+		let coupon = $("#usedCoupon").val();
+		
+		/* alert(point);
+		alert(coupon); */
+		
+		let finalPrice = ${totalPrice};
+		let discountPrice = Number(point)+Number(coupon);
+		$("#discountPrice").html("₩"+numberWithCommas(discountPrice));
+		$("#finalPriceDiv").html("₩"+numberWithCommas(finalPrice-point-coupon));
+		$("#finalPriceDiv2").html("₩"+numberWithCommas(finalPrice-point-coupon));
+		$("#finalPriceInput").val(finalPrice-point-coupon);
 		
 	}
 	
-	function usePoint(check) {
-		let price=0;
-		if($("#afterCoupon").val()==0){
-			price = ${totalPrice};
-		} else{
-			price = $("#afterCoupon").val();
-		}
-		let usedPoint = $("#pointInput").val();
-		let afterPointPrice;
-		if(check==1){
-			afterPointPrice = price - usedPoint;
-		} else{
-			if($("#afterCoupon").val()==0){
-				afterPointPrice = ${totalPrice};
-			} else{
-				afterPointPrice = $("#afterCoupon").val();
-			}
-		}
-		$("#finalPriceInput").val(afterPointPrice);
-		$("#afterPoint").val(afterPointPrice);
-	}
-	
-	/* function ontotal(idx){
-		let usedPoint = $("#pointInput").val();
-		let afterPointPrice=totalPrice - usedPoint;
-		alert(afterPointPrice);
-		let usedCoupon = $("#coupon"+idx).val();
-		let afterCouponPrice = afterPointPrice * usedCoupon / 100;
-		let finalPrice = afterPointPrice - afterCouponPrice;
-		alert(finalPrice);
-		$("#finalPriceInput").val(finalPrice);
-		
-	} */
-	
-	
-
+	function numberWithCommas(x) {
+	      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	    }
 </script>
 <style>
+	#couponModal td{
+		border-bottom:1px solid lightgray;
+		height:50px;
+	}
+	strong{
+		font-size:20px;
+	}
 	#listTable{
 		margin-top:20px;
 		width:100%;
@@ -230,8 +223,9 @@
 	}
 	#couponBtn{
 		width:100px;
-		height:30px;
+		height:40px;
 		background-color:white;
+		border:1px solid;
 	}
 	#finalPrice{
 		width:500px;
@@ -243,14 +237,32 @@
 		line-height:70px;
 		margin-bottom:20px;
 	}
-	#finalPriceInput{
+	#finalPriceDiv2{
 		width:500px;
-		height:100px;
-		border-width:3px;
-		border-color:red;
+		height:60px;
+		border: 2px solid lightgray;
 		text-align:center;
-		font-size:50px;
-		outline:none;
+		font-size:30px;
+		color:red;
+		line-height:55px;
+		margin: 10px 0;
+	}
+	input::-webkit-inner-spin-button {
+	  appearance: none;
+	  -moz-appearance: none;
+	  -webkit-appearance: none;
+	}
+	.whiteBtn{
+		width:50px;
+		height:30px;
+		background-color:white;
+		boder:1px solid;
+	}
+	.whiteBigBtn{
+		width:100px;
+		height:40px;
+		background-color:white;
+		boder:1px solid lightgray;
 	}
 </style>
 <body>
@@ -258,7 +270,7 @@
 	<div class="container">
 		
 		<div class="modal" id="myModal">
-		    <div class="modal-dialog modal-dialog-centered">
+		    <div class="modal-dialog modal-dialog-centered modal-lg">
 		      <div class="modal-content">
 		      
 		        <!-- Modal Header -->
@@ -269,7 +281,7 @@
 		        
 		        <!-- Modal body -->
 		        <div class="modal-body">
-		          <table>
+		          <table id="couponModal">
 		          	<thead>
 		          		<tr>
 		          			<th>쿠폰번호</th>
@@ -288,10 +300,15 @@
 			          			<td>${coupon.dcPercentage}%</td>
 			          			<td>${fn:substring(coupon.issuedDate,2,11)}</td>
 			          			<td>${fn:substring(coupon.usageDate,2,11)}</td>
-			          			<td><button type="button" id="useCouponBtn" class="useCouponBtn" onclick="useCouponBtn(${coupon.idx},'${coupon.name}' ,${coupon.dcPercentage})" data-dismiss="modal">사용</button></td>
+			          			<td><button type="button" id="useCouponBtn" class="useCouponBtn whiteBtn" onclick="useCoupon2(${coupon.idx},'${coupon.name}' ,${coupon.dcPercentage})" data-dismiss="modal">사용</button></td>
 			          		</tr>
 			          		<input type="hidden" id="coupon${coupon.idx}" value="${coupon.dcPercentage}" >
 		          		</c:forEach>
+		          		<c:if test="${empty couponVos}"> <!-- List가 비어있는지 확인 -->
+						    <tr>
+						      	<td colspan="4"><h4>적용 가능한 쿠폰이 없습니다.</h4></td> <!-- "없음" 메시지를 표시 -->
+						    </tr>
+						</c:if>
 		          	</tbody>
 		          </table>
 		        </div>
@@ -387,17 +404,19 @@
 								<td>
 									<c:set var="accumulatedPoints" value="${vo.order_Price * vo.order_Stock * 0.05}" />
 									₩<fmt:formatNumber value="${accumulatedPoints}" pattern="#,###"/>
+									<input type="hidden" value="${accumulatedPoints}" name="expectSavePoint">
 								</td>
 								<td>
-									<c:set var="totalPrice" value="${vo.order_Price * vo.order_Stock}" />
-									₩<fmt:formatNumber value="${totalPrice}" pattern="#,###"/>
-									<input type="hidden" value="${totalPrice}" id="totalPrice${vo.idx}">
+									<c:set var="totalPrice2" value="${vo.order_Price * vo.order_Stock}" />
+									₩<fmt:formatNumber value="${totalPrice2}" pattern="#,###"/>
+									<input type="hidden" value="${totalPrice2}" id="totalPrice${vo.idx}">
 								</td>
 							</tr>
+							<input type="hidden" name="cart_Idx" value="${vo.idx}">
 							<input type="hidden" name="goods_Idx" value="${vo.goods_Idx}">
 							<input type="hidden" name="option_Idx" value="${vo.option_Idx}">
 							<input type="hidden" name="goods_Stock" value="${vo.order_Stock}">
-							<input type="hidden" name="totalPrice" value="${vo.goodsStockPrice}">
+							<input type="hidden" name="totalPrice" value="${totalPrice2}">
 						</c:forEach>
 					</tbody>
 				</table>
@@ -430,7 +449,7 @@
 			<div id="deliveryInfo" class="flexDiv">
 				<div class="bigText"><h1><strong>배송지 정보</strong></h1></div>
 				<div class="col">
-					<div class="labelText">배송지 확인&nbsp;<button type="button" data-toggle="modal" data-target="#deliveryModal">배송지 목록</button></div>
+					<div class="labelText">배송지 확인&nbsp;<button type="button" class="whiteBigBtn" data-toggle="modal" data-target="#deliveryModal">배송지 목록</button></div>
 					<div>
 						<input type="radio" name="myGroup" class="inputText" checked>&nbsp;직접 입력
 						<input type="radio" name="myGroup" class="inputText">&nbsp;최근 이용한 주소 가져오기
@@ -473,29 +492,29 @@
 				<div class="bigText"><h1><strong>결제 정보</strong></h1></div>
 				<div class="col">
 					<div class="labelText">상품 합계 금액</div>
-					<div><strong>₩<fmt:formatNumber value="${totalPrice}" pattern="#,###"/></strong></div>
+					<div class="ml-4"><strong>₩<fmt:formatNumber value="${totalPrice}" pattern="#,###"/></strong></div>
 				</div>
 				<div class="col">
 					<div class="labelText">배송비</div>
-					<div><strong>20000</strong></div>
+					<div><strong class="ml-4">₩<span id="shipFeeText">3,000</span></strong></div>
 				</div>
 				<div class="col">
 					<div>할인 및 적립</div>
-					<div>할인 : <strong>20</strong></div>
-					<div>예정된 적립금 : <strong>200</strong></div>
+					<div>할인 : <strong id="discountPrice">0</strong></div>
+					<div>예상적립금 : <strong id="expectPoint"></strong></div>
 				</div>
 				<div class="col">
 					<div class="labelText">적립금 사용</div>
-					<div><input type="text" value=0 class="inputText" id="pointInput" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" style="width:50%;">원</div>
-					<div><input type="checkbox" class="inputText" id="pointCheckBox">&nbsp;전액 사용하기(보유 적립금 ${memberVo.point}원)</div>
+					<div><input type="number" class="inputText" id="pointInput" oninput="usePoint2()" style="width:50%;">원</div>
+					<div><input type="checkbox" class="inputText" id="pointCheckBox">&nbsp;전액 사용하기(보유 적립금 <fmt:formatNumber value="${memberVo.point}" pattern="#,###"/>원)</div>
 				</div>
 				<div class="col">
 					<div class="labelText">쿠폰 사용&nbsp;<button type="button" id="couponBtn" data-toggle="modal" data-target="#myModal">쿠폰 목록</button></div>
-					<div id="usedCoupon">사용 안함</div>
+					<div id="usedCouponText">사용 안함</div>
 				</div>
 				<div class="col">
 					<div class="labelText">최종 결제 금액</div>
-					<div><strong>2000</strong></div>
+					<div><strong class="ml-4" id="finalPriceDiv">${totalPrice}</strong></div>
 				</div>
 			</div>
 			
@@ -506,28 +525,16 @@
 						※ 고객님은 안전거래를 위해 현금으로 결제시 저희 쇼핑몰에서 가입한 구매안전서비스인 KG 이니시스의 구매안전(에스크로)서비스를 이용하실 수 있습니다.
 					</div>
 				</div>
-				<div class="col">
-					<div>무통장입금</div>
-					<div><input type="radio">&nbsp;무통장 입금</div>
-				</div>
-				<div class="col">
-					<div>에스크로결제</div>
-					<div><input type="radio">&nbsp;신용카드</div>
-				</div>
-				
-				<div class="col">
-					<strong>123213</strong>
-				</div>
-				<div class="col">
+				<div id="finalPriceDiv2">₩<fmt:formatNumber value="${totalPrice}" pattern="#,###"/></div>
+				<input type="hidden" id="usedCoupon">
+				<input type="text" value="0" name="usedPoint" id="usedPoint" >
+				<input type="hidden" value="${sIdx}" name="member_Idx">
+				<input type="hidden" id="finalPriceInput" name="finalPrice" value="${totalPrice}" readonly>
+				<input type="hidden" value="0" id="coupon_Idx" name="coupon_Idx">
+				<input type="hidden" value="" name="savePoint" id="savePoint" name="coupon_Idx">
+				<input type="hidden" name="buyStatus" value="${buyStatus}">
+				<div class="col mb-2">
 					<input type="checkbox">&nbsp;(필수) 구매하실 상품의 결제정보를 확인하였으며, 구매진행에 동의합니다. 주문이 폭주하여 실재고보다 많은 주문이 들어올 경우 결제가 취소 될 수 있습니다.
-				</div>
-				<div id="finalPriceDiv">
-					<input type="text" id="finalPriceInput" name="finalPrice" value="${totalPrice}" readonly>
-					<input type="hidden" id="afterCoupon" value="0">
-					<input type="hidden" id="afterPoint" value="0">
-					<input type="hidden" value="${sIdx}" name="member_Idx">
-					<!-- <input type="hidden" value="" id="coupon_Idx" name="coupon_Idx"> -->
-					<!-- <input type="hidden" value="" name="usedPoint"> -->
 				</div>
 				<div>
 					<button type="button" id="paymentBtn" onclick="fCheck()">결제하기</button>

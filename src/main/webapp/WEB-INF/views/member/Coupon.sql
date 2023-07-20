@@ -32,6 +32,12 @@ CREATE TABLE Coupon (
 select * from member;
 insert into coupon(idx,member_idx,name,dcPercentage,issueddate,usageDate,status) values(default, 11,'가입기념쿠폰',10,default,default,default)
 
+drop table COupon;
+UPDATE coupon
+SET status = true ,usedDate = now()
+WHERE idx = 1;
+
 select * from coupon;
+desc coupon;
 
 drop table coupon;

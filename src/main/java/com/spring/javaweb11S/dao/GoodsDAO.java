@@ -67,4 +67,16 @@ public interface GoodsDAO {
 	public List<OrderVO> getCartList(@Param("sIdx") int sIdx);
 
 	public void setDeleteCart(@Param("cartArray") int[] cartArray);
+
+	public OrderVO getCart(@Param("cart_Idx") int cart_Idx);
+
+	public void setMinusPoint(@Param("sIdx") int sIdx, @Param("usedPoint") int usedPoint);
+
+	public void setPlusPoint(@Param("sIdx") int sIdx, @Param("savePoint") int savePoint);
+
+	public void setUsedCoupon(@Param("coupon_Idx") int coupon_Idx);
+
+	public OrderHistory_DetailVO getIdxOrderHistory_Detail(@Param("idx") int idx);
+
+
 }

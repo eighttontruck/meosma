@@ -66,4 +66,16 @@ public interface GoodsService {
 
 	public void setDeleteCart(int[] cartArray);
 
+	public OrderVO getCart(int cart_Idx);
+
+	public void setMinusPoint(int sIdx, int usedPoint);
+
+	public void setPlusPoint(int sIdx, int savePoint);
+
+	public void setUsedCoupon(int coupon_Idx);
+
+	public OrderHistory_DetailVO getIdxOrderHistory_Detail(int idx);
+
+
+
 }

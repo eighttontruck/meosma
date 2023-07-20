@@ -61,6 +61,12 @@ public class MemberServiceImpl implements MemberService{
 
 	@Override
 	public List<OrderHistory_DetailVO> getMemberOrderHistory_Detail(int sIdx) {
-		return memberDAO.setMemberOrderHistory_Detail(sIdx);
+		return memberDAO.getMemberOrderHistory_Detail(sIdx);
+	}
+
+	@Override
+	public void setMemberGoodsConfirmAJAX(int orderHistory_Detail_Idx) {
+		memberDAO.setMemberGoodsConfirmAJAX(orderHistory_Detail_Idx);
+		
 	}
 }

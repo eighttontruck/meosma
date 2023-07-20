@@ -143,6 +143,8 @@ public class AdminController {
 			@RequestParam(name = "pag", defaultValue="1",required=false) int pag,
 			@RequestParam(name = "pagSize", defaultValue="15",required=false) int pagSize
 			) {
+		System.out.println(startDate);
+		System.out.println(endDate);
 		PageVO pageVO = pageProcess.totRecCnt(pag, pagSize, "orderHistory", delivery_Status, searchKeyword, searchString, startDate, endDate);
 		
 		//List<OrderHistoryVO> vos= adminService.getgoodsOrderHistoryList(delivery_Status,searchKeyword,searchString,startDate,endDate);

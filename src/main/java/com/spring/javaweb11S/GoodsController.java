@@ -3,6 +3,7 @@ package com.spring.javaweb11S;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,21 +60,27 @@ public class GoodsController {
 	}
 	
 	@RequestMapping(value="/inquiryPopUp", method=RequestMethod.GET)
-	public String inquiryPopUpGet() {
+	public String inquiryPopUpGet(Model model,
+			@RequestParam(name="idx", defaultValue="", required=false) int idx,
+			@RequestParam(name="goods_Idx", defaultValue="", required=false) int goods_Idx
+			) {
+		System.out.println(idx);
+		List<Goods_StockVO> stockVos = goodsService.getGoodsStock(goods_Idx);
+		OrderHistory_DetailVO vo = goodsService.getIdxOrderHistory_Detail(idx);
+		model.addAttribute("vo",vo);
+		model.addAttribute("stockVos",stockVos);
 		return "goods/inquiryPopUp";
 	}
 	
 	@RequestMapping(value="/goodsPayment", method=RequestMethod.POST)
-	public String goodsPaymentGet(Model model,
-			@RequestParam(name = "order_ThumbNail", defaultValue="", required=false) String[] order_ThumbNail,
-			@RequestParam(name = "order_Name", defaultValue="", required=false) String[] order_Name,
-			@RequestParam(name = "order_Option", defaultValue="", required=false) String[] order_Option,
+	public String goodsPaymentGet(Model model, HttpServletRequest request, HttpSession session,
 			@RequestParam(name = "order_Stock", defaultValue="", required=false) int[] order_Stock,
-			@RequestParam(name = "order_Price", defaultValue="", required=false) int[] order_Price,
 			@RequestParam(name = "goods_Idx", defaultValue="", required=false) int[] goods_Idx,
 			@RequestParam(name = "option_Idx", defaultValue="", required=false) int[] option_Idx,
+			@RequestParam(name = "order_Option", defaultValue="", required=false) String[] order_Option,
 			@RequestParam(name = "sIdx", defaultValue="", required=false) int sIdx,
-			@RequestParam(name = "totalPrice", defaultValue="", required=false) int totalPrice
+			@RequestParam(name = "totalPrice", defaultValue="", required=false) int totalPrice,
+			@RequestParam(name = "buyStatus", defaultValue="", required=false) String buyStatus
 			) {
 		
 		List<OrderVO> vos = new ArrayList<>();
@@ -82,42 +89,57 @@ public class GoodsController {
 		List<CouponVO> couponVos = goodsService.getMemberCouponList(sIdx);
 		List<Member_ShippingAddressVO> member_ShipAddVos = goodsService.getMemberShipAddList(sIdx);
 		
+		String[] idxChecked = request.getParameterValues("idxChecked");
+		
 		OrderVO vo;
-		for(int i = 0; i < order_ThumbNail.length; i++) {
-			int goodsStockPrice=order_Stock[i]*order_Price[i];
-			int expectPrice= goodsStockPrice * 5 / 100;
-			vo = new OrderVO();
-			vo.setOrder_ThumbNail(order_ThumbNail[i]);
-			vo.setOrder_Name(order_Name[i]);
-			vo.setOrder_Option(order_Option[i]);
-			vo.setOrder_Stock(order_Stock[i]);
-			vo.setOrder_Price(order_Price[i]);
-			vo.setExpectPoint(expectPrice);
-			vo.setGoodsStockPrice(goodsStockPrice);
-			vo.setGoods_Idx(goods_Idx[i]);
-			vo.setOption_Idx(option_Idx[i]);
-			vos.add(vo);
+		if(buyStatus.equals("direct")) {
+			for(int i = 0; i<idxChecked.length; i++) {
+				GoodsVO goodsVo = goodsService.getGoodsDetail(Integer.parseInt(idxChecked[i]));
+
+				vo = new OrderVO();
+				vo.setOrder_ThumbNail(goodsVo.getThumbNail());
+				vo.setOrder_Name(goodsVo.getName());
+				vo.setOrder_Price(goodsVo.getPrice());
+				vo.setOrder_Option(order_Option[i]);
+				vo.setOrder_Stock(order_Stock[i]);
+				vo.setGoods_Idx(goods_Idx[i]);
+				vo.setOption_Idx(option_Idx[i]);
+				vos.add(vo);
+			}
+		} else if(buyStatus.equals("cart")) {
+			for(int i = 0; i<idxChecked.length; i++) {
+				OrderVO vo2 = goodsService.getCart(Integer.parseInt(idxChecked[i]));
+
+				vos.add(vo2);
+			}
 		}
 		
+		System.out.println(totalPrice+"dddd");
 		model.addAttribute("sIdx",sIdx);
 		model.addAttribute("couponVos",couponVos);
 		model.addAttribute("memberVo",memberVo);
 		model.addAttribute("member_ShipAddVos",member_ShipAddVos);
 		model.addAttribute("totalPrice",totalPrice);
+		model.addAttribute("buyStatus",buyStatus);
 		model.addAttribute("vos",vos);
 		return "goods/goodsPayment";
 	}
 	
 	@Transactional
 	@RequestMapping(value="/goodsPaymentOk", method=RequestMethod.POST)
-	public String goodsPaymentGet(Model model, OrderHistoryVO vo,
-			//@RequestParam(name = "coupon_Idx", defaultValue="",required=false) int coupon_Idx,
+	public String goodsPaymentGet(Model model, OrderHistoryVO vo, HttpSession session,
+			@RequestParam(name = "coupon_Idx", defaultValue="",required=false) int coupon_Idx,
 			@RequestParam(name = "goods_Idx", defaultValue="",required=false) int[] goods_Idx,
 			@RequestParam(name = "option_Idx", defaultValue="",required=false) int[] option_Idx,
 			@RequestParam(name = "goods_Stock", defaultValue="",required=false) int[] goods_Stock,
-			@RequestParam(name = "totalPrice", defaultValue="",required=false) int[] totalPrice
+			@RequestParam(name = "totalPrice", defaultValue="",required=false) int[] totalPrice,
+			@RequestParam(name = "cart_Idx", defaultValue="",required=false) int[] cart_Idx,
+			@RequestParam(name = "usedPoint", defaultValue="",required=false) int usedPoint,
+			@RequestParam(name = "savePoint", defaultValue="",required=false) int savePoint,
+			@RequestParam(name = "buyStatus", defaultValue="",required=false) String buyStatus
 			
 			) {
+		int sIdx = (int) session.getAttribute("sIdx");
 		
 		List<OrderHistory_DetailVO> vos = new ArrayList<>();
 		
@@ -129,13 +151,20 @@ public class GoodsController {
 			ohdVo.setGoods_Stock(goods_Stock[i]);
 			ohdVo.setTotalPrice(totalPrice[i]);
 			vos.add(ohdVo);
+			System.out.println(totalPrice[i]+"ddd");
 		}
-		
+		if(buyStatus.equals("cart")) {
+			goodsService.setDeleteCart(cart_Idx);
+		}
 		goodsService.setOrderHistory(vo);
 		goodsService.setOrderHistory_Detail(vos);
-		//적립금 주고
-		//쿠폰 사용처리
-		//적립금 감소처리
+		if(usedPoint != 0) {
+			goodsService.setMinusPoint(sIdx, usedPoint);
+		}
+		goodsService.setPlusPoint(sIdx, savePoint);
+		if(coupon_Idx!=0) {
+			goodsService.setUsedCoupon(coupon_Idx);
+		}
 		
 		return "goods/goodsPayMentOk";
 	}
@@ -144,7 +173,7 @@ public class GoodsController {
 	public String goodsCartGet(Model model, HttpSession session) {
 		int sIdx = (int) session.getAttribute("sIdx");
 		List<OrderVO> vos = goodsService.getCartList(sIdx);
-	    System.out.println(sIdx);
+	    //System.out.println(sIdx);
 	    model.addAttribute("vos",vos);
 		return "goods/goodsCart";
 	}

@@ -42,7 +42,7 @@
 <body>
 	<div class="header">
 		<div class="">
-			<a href="#">응모</a>
+			<a href="${ctp}/goods/drawList">응모</a>
 			<a href="#">매장 정보</a>
 			<a href="#">에디토리얼</a>
 		</div>
@@ -58,7 +58,7 @@
 				<a href="${ctp}/member/memberLogin">로그인</a>
 			</c:if>
 			<c:if test="${!empty sLevel}">
-				<a href="${ctp}/member/memberMyPage?sIdx=${sIdx}">마이페이지</a>
+				<a href="${ctp}/member/memberMyPage">마이페이지</a>
 			</c:if>
 			<c:if test="${!empty sLevel}">
 				<a href="${ctp}/member/memberLogOut">로그아웃</a>

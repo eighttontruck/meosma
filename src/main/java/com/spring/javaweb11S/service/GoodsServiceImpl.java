@@ -174,4 +174,32 @@ public class GoodsServiceImpl implements GoodsService {
 		goodsDAO.setDeleteCart(cartArray);
 		
 	}
+
+	@Override
+	public OrderVO getCart(int cart_Idx) {
+		return goodsDAO.getCart(cart_Idx);
+	}
+
+	@Override
+	public void setMinusPoint(int sIdx, int usedPoint) {
+		goodsDAO.setMinusPoint(sIdx, usedPoint);
+		
+	}
+
+	@Override
+	public void setPlusPoint(int sIdx, int savePoint) {
+		goodsDAO.setPlusPoint(sIdx, savePoint);
+	}
+
+	@Override
+	public void setUsedCoupon(int coupon_Idx) {
+		goodsDAO.setUsedCoupon(coupon_Idx);
+	}
+
+	@Override
+	public OrderHistory_DetailVO getIdxOrderHistory_Detail(int idx) {
+		return goodsDAO.getIdxOrderHistory_Detail(idx);
+	}
+
+
 }
