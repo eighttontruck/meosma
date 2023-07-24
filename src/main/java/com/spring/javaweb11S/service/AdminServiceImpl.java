@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -19,6 +18,8 @@ import com.spring.javaweb11S.dao.AdminDAO;
 import com.spring.javaweb11S.pagination.PageVO;
 import com.spring.javaweb11S.vo.BrandVO;
 import com.spring.javaweb11S.vo.CategoryVO;
+import com.spring.javaweb11S.vo.ExchangeVO;
+import com.spring.javaweb11S.vo.Exchange_DetailVO;
 import com.spring.javaweb11S.vo.GoodsVO;
 import com.spring.javaweb11S.vo.Goods_StockVO;
 import com.spring.javaweb11S.vo.MainCategoryVO;
@@ -164,6 +165,28 @@ public class AdminServiceImpl implements AdminService {
 	@Override
 	public void setBrandDelete(int brand_Idx) {
 		adminDAO.setBrandDelete(brand_Idx);
+	}
+
+	@Override
+	public List<ExchangeVO> getExchangeList(PageVO pageVO) {
+		return adminDAO.getExchangeList(pageVO);
+	}
+
+	@Override
+	public void setUpdateExchangeDelivery(int idx) {
+		adminDAO.setUpdateExchangeDelivery(idx);
+		
+	}
+
+	@Override
+	public void setExchangeShippingNumRegister(int idx, int shippingNum) {
+		adminDAO.setExchangeShippingNumRegister(idx, shippingNum);
+		
+	}
+
+	@Override
+	public List<Exchange_DetailVO> getExchange_DetailList(int idx) {
+		return adminDAO.getExchange_DetailList(idx);
 	}
 
 

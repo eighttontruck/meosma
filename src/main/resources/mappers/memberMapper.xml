@@ -22,7 +22,7 @@
 	</select>
 	
 	<select id="getMemberOrderHistory_Detail" resultType="com.spring.javaweb11S.vo.OrderHistory_DetailVO">
-		SELECT ohd.idx, ohd.orderhistory_idx, oh.shipping_num, oh.orderdate, oh.status, ohd.returns_status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, ohd.totalPrice, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand, g.price AS goods_Price
+		SELECT ohd.idx, ohd.orderhistory_idx, oh.shipping_num, oh.orderdate, ohd.status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand, g.price AS goods_Price
 		FROM orderhistory oh
 		JOIN orderhistory_detail ohd ON ohd.orderhistory_idx = oh.idx
 		JOIN goods g ON g.idx = ohd.goods_idx
@@ -32,20 +32,41 @@
 		ORDER BY ohd.idx DESC;
 	</select>
 	
+	<select id="getTodayMemberVisitCheck" resultType="int">
+		SELECT todayVisitCnt FROM member WHERE emailId = #{vo.emailId};
+	</select>
+	
+	<select id="getBirthdayMemberList" resultType="com.spring.javaweb11S.vo.MemberVO">
+		 SELECT * FROM member WHERE DATE(birthday) = CURDATE();
+	</select>
+	
+	<insert id="setInsertMemberBirthdayCoupon">
+		INSERT INTO coupon(idx, member_idx, name, dcpercentage, issuedDate, usageDate, status, usedDate) 
+		<foreach collection="vos" item="item" separator=",">
+			VALUES(default, #{item.idx}, #{coupon_Name}, #{percentage}, default, default, default)
+		</foreach>
+		;
+	</insert>
+	
 	<insert id="setMemberJoinOk">
 		INSERT INTO member VALUES(default,#{vo.emailId},#{vo.pwd},#{vo.name},#{vo.gender},#{vo.birthday},#{vo.telNum},default,default,default,default,default,default,default);
 	</insert>
 	
+	<insert id="setInsertMemberCoupon">
+		INSERT INTO coupon(idx, member_idx, name, dcpercentage, issuedDate, usageDate, status, usedDate) 
+		VALUES(default, #{vo.idx}, #{coupon_Name}, #{percentage}, default, default, default);
+	</insert>
 	
-	
-	
+	<update id="setMemberVisitPoint">
+		UPDATE member SET point = point + 100 WHERE emailId = #{vo.emailId};
+	</update>
 	
 	<update id="setMemberVisitProcess">
-		update member set totVisitCnt=totVisitCnt+1, todayVisitCnt=todayVisitCnt+1, point=point+100, lastVisitDay=now() where emailId = #{vo.emailId};
+		UPDATE member SET totVisitCnt = totVisitCnt + 1, todayVisitCnt = todayVisitCnt+1, lastVisitDay = NOW() WHERE emailId = #{vo.emailId};
 	</update>
 	
 	<update id="setMemberPwdUpdate">
-		update member set pwd = #{updatePwd} where emailId = #{emailIdForm};
+		UPDATE member SET pwd = #{updatePwd} WHERE emailId = #{emailIdForm};
 	</update>
 	
 	<update id="setMemberGoodsConfirmAJAX">

@@ -551,10 +551,10 @@
 											<th>회원번호</th>
 											<th>주문일자</th>
 											<th>주문금액(수량)</th>
-											<th>주문상태</th>
 											<th>수령인 이름</th>
 											<th>수령인 전화번호</th>
 											<th>수령인 주소</th>
+											<th>비고</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -564,13 +564,14 @@
 												<td>${order.member_Idx}</td>
 												<td>${fn:substring(order.orderDate,2,11)}</td>
 												<td>₩<fmt:formatNumber value="${order.finalPrice}" pattern="#,###"/></td>
-												<td>
-													${order.status}
-													<c:if test="${order.status eq '결제완료'}"><button type="button" data-toggle="modal" data-target="#deliveryModal" onclick="shippingNum(${order.idx})">운송장 작성</button></c:if>
-												</td>
 												<td>${order.recipient_Name}</td>
 												<td>${order.recipient_TelNum}</td>
 												<td>${order.recipient_Address}</td>
+												<td>
+													<c:if test="${order.shipping_Num eq 0}">
+														<button type="button" data-toggle="modal" data-target="#deliveryModal" onclick="shippingNum(${order.idx})">운송장 작성</button>
+													</c:if>
+												</td>
 											</tr>
 										</c:forEach>
 									</tbody>

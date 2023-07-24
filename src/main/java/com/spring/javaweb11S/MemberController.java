@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -86,7 +87,11 @@ public class MemberController {
 					}
 				}
 			}
-			
+			int res = memberService.getTodayMemberVisitCheck(vo);
+			System.out.println(res);
+			if(res==0) {
+				memberService.setMemberVisitPoint(vo);
+			}
 			memberService.setMemberVisitProcess(vo);
 			return "redirect:/goods/goodsList";
 			
@@ -111,10 +116,15 @@ public class MemberController {
 	public String memberJoinPost(MemberVO vo) {
 		vo.setPwd(passwordEncoder.encode(vo.getPwd()));
 		
-		System.out.println(vo.toString());
-		vo.toString();
 		memberService.setMemberJoinOk(vo);
+		memberService.setInsertMemberCoupon(vo,"가입기념",5); //가입기념 쿠폰 발급
 		return "member/memberLogin";
+	}
+	
+	@Scheduled(cron = "0 0 0 * * *")
+	public void memberBirthdayCoupon() {
+		List<MemberVO> vos = memberService.getBirthdayMemberList();
+		memberService.setInsertMemberBirthdayCoupon(vos,"생일쿠폰",10);
 	}
 	
 	@RequestMapping(value="/memberIdFind",method=RequestMethod.GET)

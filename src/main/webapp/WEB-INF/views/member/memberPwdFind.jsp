@@ -108,7 +108,6 @@
 	
 	const emailIdRegex=new RegExp(/^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/);
 	let emailIdC=false;
-	let emailCertCheck=false;
 	
 	function emailIdRegExpCheck(){
 		let emailId=$("#emailId").val().replace(/\s/gi,"");
@@ -126,6 +125,9 @@
 	}
 	
 	let code = "";
+	let emailCertCheck = false; // 이메일 인증 완료 여부를 저장하는 변수
+	let timer; // 타이머를 저장하는 변수
+	const timeLimit = 10; // 시간 제한 (3분을 초 단위로 표시)
 	function mailSendAJAX(){
 		let emailId=$("#emailId").val().replace(/\s/gi,"");
 		
@@ -162,7 +164,36 @@
 				alert("전송오류!");
 			}
 		});
+		clearInterval(timer);
+		startTimer();
 			
+	}
+	
+	function startTimer() {
+	    let timeLeft = timeLimit;
+	    timer = setInterval(function() {
+	        if (timeLeft <= 0) {
+	            // 타이머 종료, 인증 시간 초과
+	            clearInterval(timer);
+	            handleTimeout();
+	        } else {
+	            // 남은 시간 표시
+	            let minutes = Math.floor(timeLeft / 60);
+	            let seconds = timeLeft % 60;
+	            $("#timerDisplay").html(minutes+"분 "+seconds+"초 남았습니다.");
+	            timeLeft--;
+	        }
+	    }, 1000); // 1초마다 타이머 갱신
+	}
+
+	function handleTimeout() {
+	    // 타이머가 종료되었을 때 처리할 작업
+	    $("#certNumDiv2").css("display","none");
+		$("#hidP3").css("visibility","hidden");
+		$("#emailId").removeAttr("readonly");
+	    $("#emailCheckBtn").removeAttr("disabled");
+	    $("#timerDisplay").html("시간 초과 - 다시 인증해주세요.");
+	    emailCertCheck = false;
 	}
 	
 	function certNumCheck(){
@@ -174,10 +205,12 @@
 		}
 		
 		if(inputCode==code){
+			clearInterval(timer); // 타이머 초기화
 			$("#certNumDiv2").css("display","none");
 			$("#hidP3").css("visibility","hidden");
 			$("#emailId").attr("readonly",true);
 			$("#emailCheckBtn").attr("disabled", true);
+			$("#timerDisplay").html("");
 			emailCertCheck = true;
 			
 		} else{
@@ -354,6 +387,10 @@
 		border-width:1px;
 		margin:10px 0px;
 	}
+	.flex{
+		display:flex;
+		justify-content:space-between;
+	}
 </style>
 </head>
 <body>
@@ -375,7 +412,10 @@
 			<input type="hidden" id="telNum" name="telNum">
 		</div>
 		<div>
-			<label>아이디(이메일)</label>
+			<div class="flex">
+				<label>아이디(이메일)</label>
+				<div id="timerDisplay"></div>			
+			</div>
 			<div id="emailSendDiv">
 				<input type="text" id="emailId" name="emailId" oninput="emailIdRegExpCheck()" placeholder="이메일을 입력해주세요" class="emailId">
 				<button type="button" id="emailCheckBtn" onclick="mailSendAJAX()">인증번호 발송</button>

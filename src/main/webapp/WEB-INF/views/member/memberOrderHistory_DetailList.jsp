@@ -324,40 +324,24 @@
 								</td>
 								<td>${fn:substring(order.orderDate,2,11)}</td>
 								<td>${order.idx}(${order.orderHistory_Idx})</td>
-								<td>₩<fmt:formatNumber value="${order.totalPrice}" pattern="#,###"/>(${order.goods_Stock}개)</td>
+								<c:set var="totalPrice" value="${order.goods_Price * order.goods_Stock}" />
+								<td>₩<fmt:formatNumber value="${totalPrice}" pattern="#,###"/>(${order.goods_Stock}개)</td>
 								<td>
-									<c:if test="${order.returns_status eq '구매확정'}">
-										<div>
-											${order.returns_status}
-										</div>
-									</c:if>
-									<c:if test="${order.returns_status ne '구매확정'}">
-										<div>
-											${order.status}
-										</div>
-									</c:if>
-									<c:if test="${order.status eq '배송중' and order.returns_status ne '구매확정'}">
+									<div>
+										${order.status}
+									</div>
+									<c:if test="${order.status eq '배송중'}">
 										<div>
 											<a href="https://trace.cjlogistics.com/web/detail.jsp?slipno=${order.shipping_Num}">배송조회</a>
 										</div>
 									</c:if>
 								</td>
-								<c:if test="${order.returns_status ne '구매확정' and order.status eq '배송중'}">
-									<td>
+								<td>
+									<c:if test="${order.status eq '배송중'}">
 										<button onclick="goodsConfirm(${order.idx})" id="blackBtn">구매확정</button>
 										<button onclick="popUp(${order.idx},${order.goods_Idx})" id="whiteBtn">교환 및 환불 요청</button>
-									</td>
-								</c:if>
-								<c:if test="${order.status eq '결제완료' and order.returns_status ne '구매확정'}">
-									<td>
-
-									</td>
-								</c:if>
-								<c:if test="${order.returns_status eq '구매확정'}">
-									<td>
-
-									</td>
-								</c:if>
+									</c:if>
+								</td>
 							</tr>
 						</c:forEach>
 					</tbody>

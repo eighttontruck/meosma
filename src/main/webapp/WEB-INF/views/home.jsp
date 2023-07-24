@@ -94,34 +94,6 @@
 	}
 </style>
 <body>
-	<%-- <div class="header">
-		<div class="">
-			<a href="#">응모</a>
-			<a href="#">매장 정보</a>
-			<a href="#">에디토리얼</a>
-		</div>
-		<div class="text-center">
-			<a href="#">브랜드 로고</a>
-		</div>
-		<div class="text-right">
-			<a href="#">검색</a>
-			<a href="#">관심목록</a>
-			<a href="#">장바구니</a>
-			<c:if test="${empty sLevel}">
-				<a href="${ctp}/member/memberLogin">로그인</a>		
-			</c:if>
-			<c:if test="${!empty sLevel}">
-				<a href="${ctp}/member/memberLogOut">로그아웃</a>
-			</c:if>
-		</div>
-	</div>
-	<div id="navbar">
-		<div><button>남자</button></div>
-		<div><button>여자</button></div>
-		<div><button>세일</button></div>
-		<div><button>브랜드</button></div>
-		<div><button>생활</button></div>
-	</div> --%>
 	<jsp:include page="/WEB-INF/views/include/header.jsp" />
 	<div class="productList">
 		<c:forEach var="vo" items="${vos}" varStatus="st">

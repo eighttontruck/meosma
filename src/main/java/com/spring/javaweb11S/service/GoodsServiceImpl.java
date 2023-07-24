@@ -19,6 +19,8 @@ import com.spring.javaweb11S.dao.GoodsDAO;
 import com.spring.javaweb11S.vo.BrandVO;
 import com.spring.javaweb11S.vo.CategoryVO;
 import com.spring.javaweb11S.vo.CouponVO;
+import com.spring.javaweb11S.vo.ExchangeVO;
+import com.spring.javaweb11S.vo.Exchange_DetailVO;
 import com.spring.javaweb11S.vo.GoodsVO;
 import com.spring.javaweb11S.vo.Goods_StockVO;
 import com.spring.javaweb11S.vo.MainCategoryVO;
@@ -27,6 +29,7 @@ import com.spring.javaweb11S.vo.Member_ShippingAddressVO;
 import com.spring.javaweb11S.vo.OrderHistoryVO;
 import com.spring.javaweb11S.vo.OrderHistory_DetailVO;
 import com.spring.javaweb11S.vo.OrderVO;
+import com.spring.javaweb11S.vo.RefundVO;
 import com.spring.javaweb11S.vo.SecondCategoryVO;
 import com.spring.javaweb11S.vo.SubCategoryVO;
 
@@ -159,8 +162,8 @@ public class GoodsServiceImpl implements GoodsService {
 	}
 
 	@Override
-	public void setInsertCart(List<OrderVO> vos, String member_Idx) {
-		goodsDAO.setInsertCart(vos, member_Idx);
+	public void setInsertCart(OrderVO vo, String member_Idx) {
+		goodsDAO.setInsertCart(vo, member_Idx);
 		
 	}
 
@@ -199,6 +202,46 @@ public class GoodsServiceImpl implements GoodsService {
 	@Override
 	public OrderHistory_DetailVO getIdxOrderHistory_Detail(int idx) {
 		return goodsDAO.getIdxOrderHistory_Detail(idx);
+	}
+
+	@Override
+	public void setRefundGoods(RefundVO refundVO, int order_Stock) {
+		goodsDAO.setRefundGoods(refundVO, order_Stock);
+		
+	}
+
+	@Override
+	public void setExchangeGoods(ExchangeVO exchangeVO, List<Exchange_DetailVO> vos) {
+		goodsDAO.setExchangeGoods(exchangeVO, vos);
+		
+	}
+
+	@Override
+	public void setExchange_DetailGoods(Exchange_DetailVO exchange_DetailVO, List<Exchange_DetailVO> vos) {
+		goodsDAO.setExchange_DetailGoods(exchange_DetailVO, vos);
+		
+	}
+
+	@Override
+	public void setUpdateOrderHistory_Detail(int orderHistory_Detail_Idx) {
+		goodsDAO.setUpdateOrderHistory_Detail(orderHistory_Detail_Idx);
+		
+	}
+
+	@Override
+	public void setUpdateOrderHistory_Detail2(int orderHistory_Detail_Idx, int i) {
+		goodsDAO.setUpdateOrderHistory_Detail2(orderHistory_Detail_Idx, i);
+		
+	}
+
+	@Override
+	public int getCartDupliCheck(OrderVO vo, String member_Idx) {
+		return goodsDAO.getCartDupliCheck(vo, member_Idx);
+	}
+
+	@Override
+	public void setUpdateCart(OrderVO vo, String member_Idx) {
+		goodsDAO.setUpdateCart(vo, member_Idx);
 	}
 
 

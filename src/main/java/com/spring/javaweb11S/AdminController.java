@@ -20,6 +20,8 @@ import com.spring.javaweb11S.pagination.PageVO;
 import com.spring.javaweb11S.service.AdminService;
 import com.spring.javaweb11S.vo.BrandVO;
 import com.spring.javaweb11S.vo.CategoryVO;
+import com.spring.javaweb11S.vo.ExchangeVO;
+import com.spring.javaweb11S.vo.Exchange_DetailVO;
 import com.spring.javaweb11S.vo.GoodsVO;
 import com.spring.javaweb11S.vo.Goods_StockVO;
 import com.spring.javaweb11S.vo.MainCategoryVO;
@@ -218,10 +220,49 @@ public class AdminController {
 		return "redirect:/admin/brandList";
 	}
 	
+	@RequestMapping(value="/exchangeList", method=RequestMethod.GET)
+	public String adminExchangeListGet(Model model,
+			@RequestParam(name = "sortFilter", defaultValue="",required=false) String sortFilter,
+			@RequestParam(name = "searchString", defaultValue="",required=false) String searchString,
+			@RequestParam(name = "searchKeyword", defaultValue="",required=false) String searchKeyword,
+			@RequestParam(name = "pag", defaultValue="1",required=false) int pag,
+			@RequestParam(name = "pagSize", defaultValue="15",required=false) int pagSize
+			) {
+		PageVO pageVO = pageProcess.totRecCnt(pag, pagSize, "exchange", sortFilter, searchKeyword, searchString, "","");
+		System.out.println(pageVO.getTotRecCnt());
+		List<ExchangeVO> vos = adminService.getExchangeList(pageVO);
+		model.addAttribute("pageVO",pageVO);
+		model.addAttribute("vos",vos);
+		return "admin/adminExchangeList";
+	}
+	
+	@RequestMapping(value="/refundList", method=RequestMethod.GET)
+	public String adminRefundListGet(Model model,
+			@RequestParam(name = "sortFilter", defaultValue="",required=false) String sortFilter,
+			@RequestParam(name = "searchString", defaultValue="",required=false) String searchString,
+			@RequestParam(name = "searchKeyword", defaultValue="",required=false) String searchKeyword,
+			@RequestParam(name = "pag", defaultValue="1",required=false) int pag,
+			@RequestParam(name = "pagSize", defaultValue="15",required=false) int pagSize
+			) {
+		
+		
+		PageVO pageVO = pageProcess.totRecCnt(pag, pagSize, "refund", sortFilter, searchKeyword, searchString, "","");
+		return "admin/adminRefundList";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/updateExchangeDeliveryAJAX", method=RequestMethod.POST)
+	public String adminUpdateExchangeDeliveryAJAXPost(int idx) {
+
+		adminService.setUpdateExchangeDelivery(idx);
+		
+		return "굿";
+	}
+	
 	@ResponseBody
 	@RequestMapping(value="/brandDeleteAJAX", method=RequestMethod.POST)
 	public String adminBrandrDeletePost(int brand_Idx) {
-
+		
 		adminService.setBrandDelete(brand_Idx);
 		
 		return "굿";
@@ -239,11 +280,26 @@ public class AdminController {
 	
 	
 	@ResponseBody
+	@RequestMapping(value="/exchangeShippingNumRegisterAJAX", method=RequestMethod.POST)
+	public String adminExchangeShippingNumRegisterAJAXPost(int idx, int shippingNum) {
+		adminService.setExchangeShippingNumRegister(idx,shippingNum);
+		
+		return "굿";
+	}
+	
+	@ResponseBody
 	@RequestMapping(value="/orderShippingNumRegister", method=RequestMethod.POST)
 	public String orderShippingNumRegisterPost(int orderHistoryIdx, int shippingNum) {
 		adminService.setorderShippingNumRegister(orderHistoryIdx,shippingNum);
 		
 		return "굿";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/exchange_DetailListAJAX", method=RequestMethod.POST)
+	public List<Exchange_DetailVO> adminExchange_DetailListAJAXPost(int idx) {
+		List<Exchange_DetailVO> vos = adminService.getExchange_DetailList(idx);
+		return vos;
 	}
 	
 	@ResponseBody

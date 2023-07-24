@@ -18,6 +18,7 @@ SELECT ohd.idx, ohd.orderhistory_idx, oh.orderdate, ohd.goods_idx, ohd.option_id
 	WHERE oh.member_idx = 4
 	ORDER BY ohd.idx DESC;
 
+desc member;
 CREATE TABLE Coupon (
   idx INT not null AUTO_INCREMENT PRIMARY KEY,
   member_Idx INT NOT NULL,

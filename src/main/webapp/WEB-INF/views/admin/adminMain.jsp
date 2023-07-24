@@ -49,7 +49,8 @@
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" href="${ctp}/admin/orderHistoryList">주문 내역</a>
                                     <a class="nav-link" href="${ctp}/admin/orderHistoryList">댓글 리스트</a>
-                                    <a class="nav-link" href="${ctp}/admin/orderHistoryList">문의 리스트</a>
+                                    <a class="nav-link" href="${ctp}/admin/exchangeList">교환 신청 내역</a>
+                                    <a class="nav-link" href="${ctp}/admin/refundList">환불 신청 내역</a>
                                 </nav>
                             </div>
                             

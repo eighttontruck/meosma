@@ -20,4 +20,8 @@ public class OrderHistory_DetailVO {
 	String status;
 	int shipping_Num;
 	int goods_Price;
+	
+	String recipient_Name;
+	String recipient_telNum;
+	String recipient_Address;
 }

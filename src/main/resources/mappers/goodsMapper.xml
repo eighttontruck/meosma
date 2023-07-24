@@ -96,13 +96,17 @@
 	</select>
 	
 	<select id="getIdxOrderHistory_Detail" resultType="com.spring.javaweb11S.vo.OrderHistory_DetailVO">
-		SELECT ohd.idx, ohd.orderhistory_idx, oh.shipping_num, oh.orderdate, oh.status, ohd.returns_status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, ohd.totalPrice, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand, g.price AS goods_Price
+		SELECT ohd.idx, ohd.orderhistory_idx, oh.shipping_num, oh.orderdate, ohd.status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand, g.price AS goods_Price, oh.recipient_Name, oh.recipient_telNum, oh.recipient_Address
 		FROM orderhistory_detail ohd
 		JOIN orderhistory oh ON ohd.orderhistory_idx = oh.idx
 		JOIN goods g ON g.idx = ohd.goods_idx
 		JOIN goods_option go ON go.option_idx = ohd.option_idx
 		JOIN brand b ON b.idx = g.brand_idx
 		WHERE ohd.idx = #{idx};
+	</select>
+	
+	<select id="getCartDupliCheck" resultType="int">
+		SELECT count(*) FROM cart WHERE goods_Idx = #{vo.goods_Idx} AND option_Idx = #{vo.option_Idx} AND member_Idx = #{member_Idx}; 
 	</select>
 	
 	<insert id="setGoodsRegister">
@@ -119,26 +123,46 @@
 	</insert>
 	
 	<insert id="setOrderHistory">
-		INSERT INTO orderHistory(idx, member_idx, orderdate, finalprice, status, recipient_name, recipient_telnum, recipient_address) VALUES(default, #{vo.member_Idx}, default, #{vo.finalPrice}, default, #{vo.recipient_Name}, #{vo.recipient_TelNum}, #{vo.recipient_Address});
+		INSERT INTO orderHistory(idx, member_idx, orderdate, finalprice, recipient_name, recipient_telnum, recipient_address) VALUES(default, #{vo.member_Idx}, default, #{vo.finalPrice}, #{vo.recipient_Name}, #{vo.recipient_TelNum}, #{vo.recipient_Address});
 	</insert>
 	
 	<insert id="setOrderHistory_Detail">
 		INSERT INTO orderHistory_detail
 		VALUES
 		<foreach collection="vos" item="item" separator=",">
-			(default,(SELECT idx FROM orderHistory ORDER BY idx DESC LIMIT 0, 1) ,#{item.goods_Idx}, #{item.option_Idx}, #{item.goods_Stock}, #{item.totalPrice}, default)
+			(default,(SELECT idx FROM orderHistory ORDER BY idx DESC LIMIT 0, 1) ,#{item.goods_Idx}, #{item.option_Idx}, #{item.goods_Stock}, default)
 		</foreach>
 		;
 	</insert>
 	
 	<insert id="setInsertCart">
-		INSERT INTO cart
+		INSERT INTO cart VALUES(default, #{member_Idx}, #{vo.goods_Idx}, #{vo.option_Idx}, #{vo.order_Stock});
+	</insert>
+	
+	<insert id="setRefundGoods">
+		INSERT INTO refund
+		VALUES(default, #{refundVO.idx}, #{order_Stock}, #{refundVO.reason}, #{refundVO.refundPrice}, default, default);
+	</insert>
+	
+	<insert id="setExchangeGoods">
+		INSERT INTO exchange(idx, orderhistory_detail_idx, applicationDate, reason, recipient_Name, recipient_TelNum, recipient_Address, status)
+		VALUES(default, #{exchangeVO.idx}, default, #{exchangeVO.reason}, #{exchangeVO.recipient_Name}, #{exchangeVO.recipient_TelNum}, #{exchangeVO.recipient_Address}, default)
+	</insert>
+	
+	<insert id="setExchange_DetailGoods">
+		INSERT INTO exchange_detail
 		VALUES
 		<foreach collection="vos" item="item" separator=",">
-			(default, #{member_Idx}, #{item.goods_Idx}, #{item.option_Idx}, #{item.order_Stock})
+			(default,(SELECT idx FROM exchange ORDER BY idx DESC LIMIT 0, 1) ,#{exchange_DetailVO.goods_Idx} ,#{item.option_Idx}, #{item.stock})
 		</foreach>
 		;
 	</insert>
+	
+	<update id="setUpdateCart">
+		UPDATE cart
+		SET stock = stock + #{vo.order_Stock}
+		WHERE goods_Idx = #{vo.goods_Idx} AND option_Idx = #{vo.option_Idx} AND member_Idx = #{member_Idx};
+	</update>
 	
 	<update id="setMinusPoint">
 		UPDATE member
@@ -156,6 +180,18 @@
 		UPDATE coupon
 		SET status = true, usedDate = NOW()
 		WHERE idx = #{coupon_Idx};
+	</update>
+	
+	<update id="setUpdateOrderHistory_Detail">
+		UPDATE orderHistory_detail
+		SET status = '환불신청' 
+		WHERE idx = #{orderHistory_Detail_Idx};
+	</update>
+	
+	<update id="setUpdateOrderHistory_Detail2">
+		UPDATE orderHistory_detail
+		SET goods_Stock = goods_Stock - #{i}
+		WHERE idx = #{orderHistory_Detail_Idx};
 	</update>
 	
 	<delete id="setDeleteCart" parameterType="int[]">

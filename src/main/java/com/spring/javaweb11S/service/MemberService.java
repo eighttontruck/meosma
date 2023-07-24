@@ -29,5 +29,15 @@ public interface MemberService {
 
 	public void setMemberGoodsConfirmAJAX(int orderHistory_Detail_Idx);
 
+	public int getTodayMemberVisitCheck(MemberVO vo);
+
+	public void setMemberVisitPoint(MemberVO vo);
+
+	public void setInsertMemberCoupon(MemberVO vo, String coupon_Name, int percentage);
+
+	public List<MemberVO> getBirthdayMemberList();
+
+	public void setInsertMemberBirthdayCoupon(List<MemberVO> vos, String string, int i);
+
 
 }

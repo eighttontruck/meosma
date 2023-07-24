@@ -3,12 +3,13 @@ package com.spring.javaweb11S.service;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javaweb11S.pagination.PageVO;
 import com.spring.javaweb11S.vo.BrandVO;
 import com.spring.javaweb11S.vo.CategoryVO;
+import com.spring.javaweb11S.vo.ExchangeVO;
+import com.spring.javaweb11S.vo.Exchange_DetailVO;
 import com.spring.javaweb11S.vo.GoodsVO;
 import com.spring.javaweb11S.vo.Goods_StockVO;
 import com.spring.javaweb11S.vo.MainCategoryVO;
@@ -60,5 +61,13 @@ public interface AdminService {
 	public void setBrandUpdate(BrandVO brandVO);
 
 	public void setBrandDelete(int brand_Idx);
+
+	public List<ExchangeVO> getExchangeList(PageVO pageVO);
+
+	public void setUpdateExchangeDelivery(int idx);
+
+	public void setExchangeShippingNumRegister(int idx, int shippingNum);
+
+	public List<Exchange_DetailVO> getExchange_DetailList(int idx);
 
 }

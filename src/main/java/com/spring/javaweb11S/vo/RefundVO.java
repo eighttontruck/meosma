@@ -1,0 +1,14 @@
+package com.spring.javaweb11S.vo;
+
+import lombok.Data;
+
+@Data
+public class RefundVO {
+	private int idx;
+	private int orderHistory_Detail_Idx;
+	private int stock;
+	private String reason;
+	private int refundPrice;
+	private String applicationDate;
+	private String status;
+}

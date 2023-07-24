@@ -1,7 +1,9 @@
 package com.spring.javaweb11S;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -19,6 +21,8 @@ import com.spring.javaweb11S.service.GoodsService;
 import com.spring.javaweb11S.vo.BrandVO;
 import com.spring.javaweb11S.vo.CategoryVO;
 import com.spring.javaweb11S.vo.CouponVO;
+import com.spring.javaweb11S.vo.ExchangeVO;
+import com.spring.javaweb11S.vo.Exchange_DetailVO;
 import com.spring.javaweb11S.vo.GoodsVO;
 import com.spring.javaweb11S.vo.Goods_StockVO;
 import com.spring.javaweb11S.vo.MemberVO;
@@ -26,6 +30,7 @@ import com.spring.javaweb11S.vo.Member_ShippingAddressVO;
 import com.spring.javaweb11S.vo.OrderHistoryVO;
 import com.spring.javaweb11S.vo.OrderHistory_DetailVO;
 import com.spring.javaweb11S.vo.OrderVO;
+import com.spring.javaweb11S.vo.RefundVO;
 import com.spring.javaweb11S.vo.SecondCategoryVO;
 import com.spring.javaweb11S.vo.SubCategoryVO;
 
@@ -69,7 +74,42 @@ public class GoodsController {
 		OrderHistory_DetailVO vo = goodsService.getIdxOrderHistory_Detail(idx);
 		model.addAttribute("vo",vo);
 		model.addAttribute("stockVos",stockVos);
+		model.addAttribute("goods_Idx",goods_Idx);
 		return "goods/inquiryPopUp";
+	}
+	
+	@Transactional
+	@RequestMapping(value="/inquiryPopUp", method=RequestMethod.POST)
+	public String inquiryPopUpPost(Model model, RefundVO refundVO, ExchangeVO exchangeVO, Exchange_DetailVO exchange_DetailVO,
+			@RequestParam(name="category", defaultValue="", required=false) String category,
+			@RequestParam(name="goods_Stock", defaultValue="", required=false) int goods_Stock,
+			@RequestParam(name="option_Idx", defaultValue="", required=false) int[] option_Idx,
+			@RequestParam(name="order_Stock", defaultValue="", required=false) int[] order_Stock
+			) {
+		if(category.equals("exchange")) {
+			List<Exchange_DetailVO> vos = new ArrayList<>();
+			Exchange_DetailVO vo;
+			
+			for(int i=0; i<option_Idx.length; i++) {
+				vo = new Exchange_DetailVO();
+				vo.setOption_Idx(option_Idx[i]);
+				vo.setStock(order_Stock[i]);
+				vos.add(vo);
+			}
+			goodsService.setExchangeGoods(exchangeVO, vos);
+			goodsService.setExchange_DetailGoods(exchange_DetailVO, vos);
+		
+		} else if(category.equals("refund")) {
+			goodsService.setRefundGoods(refundVO,order_Stock[0]);
+			if(goods_Stock==order_Stock[0]) {
+				goodsService.setUpdateOrderHistory_Detail(refundVO.getIdx());
+			} else {
+				System.out.println(order_Stock[0]);
+				goodsService.setUpdateOrderHistory_Detail2(refundVO.getIdx(), order_Stock[0]);
+			}
+		}
+		
+		return "home";
 	}
 	
 	@RequestMapping(value="/goodsPayment", method=RequestMethod.POST)
@@ -197,8 +237,13 @@ public class GoodsController {
 			vo.setGoods_Idx(goods_Idx[i]);
 			vo.setOption_Idx(option_Idx[i]);
 			vos.add(vo);
+			int res = goodsService.getCartDupliCheck(vo,member_Idx);
+			if(res==0) {
+				goodsService.setInsertCart(vo,member_Idx);
+			} else {
+				goodsService.setUpdateCart(vo,member_Idx);
+			}
 		}
-		goodsService.setInsertCart(vos,member_Idx);
 		return "가즈아~";
 	}
 	

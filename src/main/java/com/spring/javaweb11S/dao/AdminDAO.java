@@ -8,6 +8,8 @@ import org.apache.ibatis.annotations.Param;
 import com.spring.javaweb11S.pagination.PageVO;
 import com.spring.javaweb11S.vo.BrandVO;
 import com.spring.javaweb11S.vo.CategoryVO;
+import com.spring.javaweb11S.vo.ExchangeVO;
+import com.spring.javaweb11S.vo.Exchange_DetailVO;
 import com.spring.javaweb11S.vo.GoodsVO;
 import com.spring.javaweb11S.vo.Goods_StockVO;
 import com.spring.javaweb11S.vo.MainCategoryVO;
@@ -63,6 +65,16 @@ public interface AdminDAO {
 	public void setBrandUpdate(@Param("brandVO") BrandVO brandVO);
 
 	public void setBrandDelete(@Param("brand_Idx") int brand_Idx);
+
+	public List<ExchangeVO> getExchangeList(@Param("pageVO") PageVO pageVO);
+
+	public int exchangeTotRecCnt(@Param("filter") String filter, @Param("searchKeyword") String searchKeyword, @Param("searchString") String searchString);
+
+	public void setUpdateExchangeDelivery(@Param("idx") int idx);
+
+	public void setExchangeShippingNumRegister(@Param("idx") int idx, @Param("shippingNum") int shippingNum);
+
+	public List<Exchange_DetailVO> getExchange_DetailList(@Param("idx") int idx);
 
 
 }

@@ -69,4 +69,29 @@ public class MemberServiceImpl implements MemberService{
 		memberDAO.setMemberGoodsConfirmAJAX(orderHistory_Detail_Idx);
 		
 	}
+
+	@Override
+	public int getTodayMemberVisitCheck(MemberVO vo) {
+		return memberDAO.getTodayMemberVisitCheck(vo);
+	}
+
+	@Override
+	public void setMemberVisitPoint(MemberVO vo) {
+		memberDAO.setMemberVisitPoint(vo);
+	}
+
+	@Override
+	public void setInsertMemberCoupon(MemberVO vo, String coupon_Name, int percentage) {
+		memberDAO.setInsertMemberCoupon(vo, coupon_Name, percentage);
+	}
+
+	@Override
+	public List<MemberVO> getBirthdayMemberList() {
+		return memberDAO.getBirthdayMemberList();
+	}
+
+	@Override
+	public void setInsertMemberBirthdayCoupon(List<MemberVO> vos, String coupon_Name, int percentage) {
+		memberDAO.setInsertMemberBirthdayCoupon(vos, coupon_Name, percentage);
+	}
 }

@@ -35,5 +35,16 @@ public interface MemberDAO {
 
 	public void setMemberGoodsConfirmAJAX(@Param("orderHistory_Detail_Idx") int orderHistory_Detail_Idx);
 
+	public int getTodayMemberVisitCheck(@Param("vo") MemberVO vo);
+
+	public void setMemberVisitPoint(@Param("vo") MemberVO vo);
+
+	public void setInsertMemberCoupon(@Param("vo") MemberVO vo, @Param("coupon_Name") String coupon_Name, @Param("percentage") int percentage);
+
+	public List<MemberVO> getBirthdayMemberList();
+
+	public void setInsertMemberBirthdayCoupon(@Param("vos") List<MemberVO> vos, @Param("coupon_Name") String coupon_Name, @Param("percentage") int percentage);
+
+
 
 }

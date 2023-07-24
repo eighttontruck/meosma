@@ -253,7 +253,6 @@ function getOrderHistory_DetailList(idx){
 							<th>주문번호</th>
 							<th>주문일자</th>
 							<th>주문금액(수량)</th>
-							<th>주문상태</th>
 							<th>수령인 이름</th>
 							<th>수령인 전화번호</th>
 							<th>수령인 주소</th>
@@ -265,7 +264,6 @@ function getOrderHistory_DetailList(idx){
 								<td><button type="button" data-toggle="modal" data-target="#detailModal" onclick="getOrderHistory_DetailList(${order.idx})">${order.idx}</button></td>
 								<td>${fn:substring(order.orderDate,2,11)}</td>
 								<td>₩<fmt:formatNumber value="${order.finalPrice}" pattern="#,###"/></td>
-								<td>${order.status}</td>
 								<td>${order.recipient_Name}</td>
 								<td>${order.recipient_TelNum}</td>
 								<td>${order.recipient_Address}</td>

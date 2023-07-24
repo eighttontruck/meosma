@@ -11,6 +11,119 @@ create table goods(
 	foreign key(secondcatagory_idx) REFERENCES secondcategory(secondCategory_Idx)
 );
 
+select * from member where birthday = now();
+
+ SELECT * FROM member WHERE DATE(birthday) = CURDATE();
+
+SELECT ohd.idx, ohd.orderhistory_idx, oh.orderdate, ohd.returns_status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, ohd.totalPrice, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand
+		FROM orderhistory_detail ohd
+		JOIN orderhistory oh ON ohd.orderhistory_idx = oh.idx
+		JOIN goods g ON g.idx = ohd.goods_idx
+		JOIN goods_option go ON go.option_idx = ohd.option_idx
+		JOIN brand b ON b.idx = g.brand_idx
+		WHERE ohd.idx = 5;
+
+SELECT g.thumbnail AS goods_ThumbNail, g.name AS goods_Name, b.name AS goods_Brand, go.goods_option AS goods_Option, ed.stock, go2.goods_option, sum(ed.stock) AS dd
+		FROM exchange_detail ed
+		JOIN goods_option go ON go.option_idx = ed.option_idx
+		JOIN goods g ON g.idx = ed.goods_idx
+		JOIN brand b ON b.idx = g.brand_idx
+		JOIN exchange e ON e.idx = ed.exchange_idx
+		JOIN orderHistory_detail ohd ON ohd.idx = e.orderhistory_detail_idx
+		JOIN goods_option go2 ON go2.option_idx = ohd.option_idx
+		WHERE ed.exchange_idx = 3
+		GROUP BY 
+    g.thumbnail, 
+    g.name, 
+    b.name, 
+    go.goods_option, 
+    ohd.option_idx, 
+    go2.goods_option;
+
+SELECT 
+    g.thumbnail AS goods_ThumbNail, 
+    g.name AS goods_Name, 
+    b.name AS goods_Brand, 
+    go.goods_option AS goods_Option, 
+    SUM(ed.stock) AS total_Stock, -- stock 값을 모두 더한 값
+    ohd.option_idx, 
+    go2.goods_option
+FROM exchange_detail ed
+JOIN goods_option go ON go.option_idx = ed.option_idx
+JOIN goods g ON g.idx = ed.goods_idx
+JOIN brand b ON b.idx = g.brand_idx
+JOIN exchange e ON e.idx = ed.exchange_idx
+JOIN orderHistory_detail ohd ON ohd.idx = e.orderhistory_detail_idx
+JOIN goods_option go2 ON go2.option_idx = ohd.option_idx
+WHERE ed.exchange_idx = 3
+GROUP BY 
+    g.thumbnail,
+    g.name, 
+    b.name, 
+    go.goods_option, 
+    ohd.option_idx, 
+    go2.goods_option;
+
+CREATE TABLE Coupon (
+  idx INT not null AUTO_INCREMENT PRIMARY KEY,
+  member_Idx INT NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  dcPercentage INT NOT NULL,
+  issuedDate DATETIME DEFAULT now(),
+  usageDate DATETIME DEFAULT (DATE_ADD(now(), INTERVAL 1 YEAR)),
+  status BOOLEAN DEFAULT FALSE,
+  usedDate DATETIME,
+  FOREIGN KEY (member_idx) REFERENCES Member(idx)
+);
+select * from coupon;
+desc coupon;
+SELECT 
+    g.thumbnail AS goods_ThumbNail, 
+    g.name AS goods_Name, 
+    b.name AS goods_Brand, 
+    go.goods_option AS goods_Option,
+    ed.stock,
+    (
+        SELECT SUM(ed2.stock) 
+        FROM exchange_detail ed2
+        JOIN exchange e2 ON e2.idx = ed2.exchange_idx
+        JOIN orderHistory_detail ohd2 ON ohd2.idx = e2.orderhistory_detail_idx
+        WHERE ohd2.option_idx = ohd.option_idx
+    ) AS total_Stock,
+    go2.goods_option AS order_Option
+FROM exchange_detail ed
+JOIN goods_option go ON go.option_idx = ed.option_idx
+JOIN goods g ON g.idx = ed.goods_idx
+JOIN brand b ON b.idx = g.brand_idx
+JOIN exchange e ON e.idx = ed.exchange_idx
+JOIN orderHistory_detail ohd ON ohd.idx = e.orderhistory_detail_idx
+JOIN goods_option go2 ON go2.option_idx = ohd.option_idx
+WHERE ed.exchange_idx = 3;
+   
+drop table orderHistory_detail;
+drop table orderHistory;
+drop table refund;
+drop table exchange;
+drop table exchange_detail;
+
+select * from orderHistory_detail;
+
+
+select * from orderhistory
+
+
+
+select * from exchange;
+
+
+select * from exchange_detail;
+select * from refund;
+select g.thumbnail, g.name, b.name, go.goods_option, ed.stock
+from exchange_detail ed
+join goods_option go on go.option_idx = ed.option_idx
+join goods g on g.idx = ed.goods_idx
+JOIN brand b ON b.idx = g.brand_idx;
+
 SELECT ohd.idx, ohd.orderhistory_idx, oh.shipping_num, oh.orderdate, oh.status, ohd.returns_status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, ohd.totalPrice, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand, g.price AS goods_Price
 		FROM orderhistory oh
 		JOIN orderhistory_detail ohd ON ohd.orderhistory_idx = oh.idx
@@ -52,6 +165,8 @@ SELECT cart.idx AS idx, goods.thumbnail AS order_ThumbNail, brand.name AS order_
 		JOIN brand ON brand.idx = goods.brand_idx
 		WHERE cart.idx = 23;
 		
+		
+select * from refund;
 select * from cart;
 select * from orderhistory;
 select * from orderhistory_detail;
@@ -97,7 +212,6 @@ create table orderhistory(
 	member_idx int not null,
 	orderdate datetime default now(),
 	finalprice int not null,
-	status varchar(50) not null default '결제완료',
 	shipping_num int,
 	Recipient_name varchar(255) not null,
 	Recipient_telNum varchar(255) not null,
@@ -112,12 +226,56 @@ create table orderhistory_detail(
 	goods_idx int not null,
 	option_idx int not null,
 	goods_stock int not null,
-	totalPrice int not null,
-	returns_status varchar(50) not null default '요청 없음',
+	status varchar(50) not null default '결제완료',
 	primary key(idx),
 	foreign key(orderhistory_idx) references orderhistory(idx),
 	foreign key(goods_idx) references goods(idx),
 	foreign key(option_idx) references goods_option(option_idx)
+);
+
+create table refund(
+	idx int not null auto_increment,
+	orderhistory_detail_idx int not null,
+	stock int not null,
+	reason varchar(255) not null,
+	refundPrice int not null,
+	applicationDate datetime default now(),
+	status varchar(255) default '신청접수',	
+	primary key(idx),
+	foreign key(orderhistory_detail_idx) references orderhistory_detail(idx)
+);
+drop table exchange;
+create table exchange(
+	idx int not null auto_increment,
+	orderhistory_detail_idx int not null,
+	applicationDate datetime default now(),
+	reason varchar(255) not null,
+	shipping_num int,
+	Recipient_name varchar(255) not null,
+	Recipient_telNum varchar(255) not null,
+	Recipient_Address varchar(255) not null,
+	status varchar(255) default '신청접수',
+	primary key(idx),
+	foreign key(orderhistory_detail_idx) references orderhistory_detail(idx)
+);
+SELECT ohd.idx, ohd.orderhistory_idx, oh.shipping_num, oh.orderdate, oh.status, ohd.returns_status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, ohd.totalPrice, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand, g.price AS goods_Price, oh.recipient_Name, oh.recipient_telNum, oh.recipient_Address
+		FROM orderhistory_detail ohd
+		JOIN orderhistory oh ON ohd.orderhistory_idx = oh.idx
+		JOIN goods g ON g.idx = ohd.goods_idx
+		JOIN goods_option go ON go.option_idx = ohd.option_idx
+		JOIN brand b ON b.idx = g.brand_idx
+		WHERE ohd.idx = 27;
+
+
+select * from orderhistory_detail;
+create table exchange_detail(
+	idx int not null auto_increment,
+	exchange_Idx int not null,
+	goods_Idx int not null,
+	option_Idx int not null,
+	stock int not null,
+	primary key(idx),
+	foreign key(exchange_Idx) references exchange(idx)
 );
 
 create table brand(

@@ -42,6 +42,20 @@
 	    </if>
 	</select>
 	
+	<select id="exchangeTotRecCnt" resultType="int">
+		<if test="filter == '' and searchString == ''">
+			SELECT COUNT(*) FROM exchange;
+		</if>
+		<if test="filter != '' and searchString == ''">
+			SELECT COUNT(*) FROM exchange WHERE status = #{filter};
+		</if>
+		<if test="filter == '' and searchString != ''">
+			SELECT COUNT(*) FROM exchange WHERE orderhistory_detail_idx LIKE CONCAT('%',#{searchString},'%');
+		</if>
+		<if test="filter != '' and searchString != ''">
+			SELECT COUNT(*) FROM exchange WHERE status = #{filter} AND orderhistory_detail_idx LIKE CONCAT('%',#{searchString},'%');
+		</if>
+	</select>
 	
 	<select id="goodsTotRecCnt" resultType="int">
 		<if test="mainCategory == '' and subCategory == '' and secondCategory == '' and searchString == '' and startFilter == '' and endFilter == '' ">
@@ -610,7 +624,7 @@
 	</select>
 		
 	<select id="getOrderHistory_DetailListAJAX" resultType="com.spring.javaweb11S.vo.OrderHistory_DetailVO">
-		SELECT ohd.idx, ohd.orderhistory_idx, oh.orderdate, ohd.returns_status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, ohd.totalPrice, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand
+		SELECT ohd.idx, ohd.orderhistory_idx, oh.orderdate, ohd.status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, ohd.totalPrice, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand
 		FROM orderhistory oh
 		JOIN orderhistory_detail ohd ON ohd.orderhistory_idx = oh.idx
 		JOIN goods g ON g.idx = ohd.goods_idx
@@ -618,7 +632,33 @@
 		JOIN brand b ON b.idx = g.brand_idx
 		WHERE oh.idx = #{idx};
 	</select>		
-
+	
+	<select id="getExchange_DetailList" resultType="com.spring.javaweb11S.vo.Exchange_DetailVO">
+<!-- 		SELECT g.thumbnail AS goods_ThumbNail, g.name AS goods_Name, b.name AS goods_Brand, go.goods_option AS goods_Option, ed.stock
+		FROM exchange_detail ed
+		JOIN goods_option go ON go.option_idx = ed.option_idx
+		JOIN goods g ON g.idx = ed.goods_idx
+		JOIN brand b ON b.idx = g.brand_idx
+		WHERE ed.exchange_idx = #{idx}; -->
+		SELECT g.thumbnail AS goods_ThumbNail, g.name AS goods_Name, b.name AS goods_Brand, go.goods_option AS goods_Option, ed.stock,
+    	(
+	        SELECT SUM(ed2.stock) 
+	        FROM exchange_detail ed2
+	        JOIN exchange e2 ON e2.idx = ed2.exchange_idx
+	        JOIN orderHistory_detail ohd2 ON ohd2.idx = e2.orderhistory_detail_idx
+	        WHERE ohd2.option_idx = ohd.option_idx
+    	) AS total_Stock,
+    	go2.goods_option AS order_Option
+		FROM exchange_detail ed
+		JOIN goods_option go ON go.option_idx = ed.option_idx
+		JOIN goods g ON g.idx = ed.goods_idx
+		JOIN brand b ON b.idx = g.brand_idx
+		JOIN exchange e ON e.idx = ed.exchange_idx
+		JOIN orderHistory_detail ohd ON ohd.idx = e.orderhistory_detail_idx
+		JOIN goods_option go2 ON go2.option_idx = ohd.option_idx
+		WHERE ed.exchange_idx = #{idx};
+	</select>
+	
 	<select id="getMemberList" resultType="com.spring.javaweb11S.vo.MemberVO">
 		SELECT m.*, COUNT(o.idx) AS order_count
 		FROM member m
@@ -628,6 +668,21 @@
 	
 	<select id="getBrandVO" resultType="com.spring.javaweb11S.vo.BrandVO">
 		SELECT * FROM brand WHERE idx = #{brand_Idx};
+	</select>
+
+	<select id="getExchangeList" resultType="com.spring.javaweb11S.vo.ExchangeVO">
+		<if test="pageVO.filter == '' and pageVO.searchString == ''">
+			SELECT * FROM exchange ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+		</if>
+		<if test="pageVO.filter != '' and pageVO.searchString == ''">
+			SELECT * FROM exchange WHERE status = #{pageVO.filter} ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+		</if>
+		<if test="pageVO.filter == '' and pageVO.searchString != ''">
+			SELECT * FROM exchange WHERE orderhistory_detail_idx LIKE CONCAT('%',#{pageVO.searchString},'%') ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+		</if>
+		<if test="pageVO.filter != '' and pageVO.searchString != ''">
+			SELECT * FROM exchange WHERE status = #{pageVO.filter} AND orderhistory_detail_idx LIKE CONCAT('%',#{pageVO.searchString},'%') ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+		</if>
 	</select>
 
 	<insert id="setBrandRegister">
@@ -647,10 +702,26 @@
 		;
 	</insert>
 	
+	<update id="setUpdateExchangeDelivery">
+		UPDATE exchange
+		SET status = '수령완료'
+		WHERE idx = #{idx};
+	</update>
+	
 	<update id="setorderShippingNumRegister">
 		UPDATE orderhistory
-		SET shipping_num = #{shippingNum}, status = '배송중'
+		SET shipping_num = #{shippingNum}
 		WHERE idx = #{orderHistoryIdx};
+		
+		UPDATE orderhistory_detail
+		SET status = '배송중'
+		WHERE orderhistory_idx = #{orderHistoryIdx};
+	</update>
+	
+	<update id="setExchangeShippingNumRegister">
+		UPDATE exchange
+		SET shipping_num = #{shippingNum}, status = '배송중'
+		WHERE idx = #{idx};
 	</update>
 	
 	<update id="setBrandUpdate">

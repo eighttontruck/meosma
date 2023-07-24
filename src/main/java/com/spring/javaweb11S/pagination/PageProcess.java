@@ -25,7 +25,7 @@ public class PageProcess {
 		if(section.equals("brand"))	totRecCnt = adminDAO.brandTotRecCnt(filter, searchKeyword, searchString);
 		else if(section.equals("member")) totRecCnt = memberDAO.totRecCnt(searchString);
 		else if(section.equals("orderHistory")) totRecCnt = adminDAO.orderHistoryTotRecCnt(filter, searchKeyword, searchString, startFilter, endFilter);
-
+		else if(section.equals("exchange")) totRecCnt = adminDAO.exchangeTotRecCnt(filter, searchKeyword, searchString);
 		System.out.println(totRecCnt);
 		
 		int totPage = (totRecCnt % pageSize)==0 ? totRecCnt /pageSize : (totRecCnt / pageSize) + 1;
