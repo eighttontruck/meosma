@@ -70,4 +70,22 @@ public interface AdminService {
 
 	public List<Exchange_DetailVO> getExchange_DetailList(int idx);
 
+	public void insertMainCategory(String mainCategoryInput);
+
+	public void insertSubCategory(int mainCategorySelect, String subCategoryInput);
+
+	public void insertSecondCategory(int subCategorySelect, String secondCategoryInput);
+
+	public void imgCheck(String content, int goods_Idx);
+
+	public void imgCheckUpdate(String images);
+
+	public void imgDelete(String images);
+
+	public void setUpdateGoods(GoodsVO vo);
+
+	public void setUpdateGoods_Stock(Map<String, Integer> vos, int goods_Idx);
+
+	public void setDeleteGoods(int goods_Idx);
+
 }

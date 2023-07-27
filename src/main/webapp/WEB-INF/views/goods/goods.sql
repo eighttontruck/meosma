@@ -10,7 +10,48 @@ create table goods(
 	foreign key(brand_idx) REFERENCES brand(idx),
 	foreign key(secondcatagory_idx) REFERENCES secondcategory(secondCategory_Idx)
 );
+select * from goodss
 
+select * from 
+
+delete from goods;
+delete from goods_stock;
+delete from cart;
+delete from orderhistory_detail;
+delete from orderhistory;
+delete from refund WHERE orderhistory_detail_idx = (SELECT idx FROM orderhistory_detail WHERE goods_idx = 24);
+delete from goods_image;
+delete from exchange;
+desc goods;
+
+select * from refund;
+select * from goods_image;
+
+SELECT orderhistory_idx FROM orderhistory_detail WHERE goods_idx = 24;
+
+select * from orderhistory_detail;
+show tables;
+
+create table goods_image(
+	idx int not null auto_increment,
+	goods_idx int not null,
+	fName varchar(255),
+	fSName varchar(255),
+	primary key(idx),
+	foreign key(goods_idx) REFERENCES goods(idx)
+);
+
+select * from goods_image;
+
+select * from goods_stock;
+
+SELECT * 
+FROM subCategory sc
+JOIN maincategory m = m.category_idx = sc.category_idx
+WHERE sc.category_idx = 1;
+
+select * from subcategory;
+select * from maincategory;
 select * from member where birthday = now();
 
  SELECT * FROM member WHERE DATE(birthday) = CURDATE();
@@ -219,6 +260,18 @@ create table orderhistory(
 	primary key(idx),
 	foreign key(member_idx) references member(idx)
 );
+select * from member;
+INSERT INTO orderHistory(idx, member_idx, orderdate, finalprice, category) VALUES(default, 11, default, 2000, '환불');
+
+SELECT oh.idx as orderhistory_idx, COUNT(od.idx) as orderhistory_detail_count
+FROM orderhistory oh
+LEFT JOIN orderhistory_detail od ON oh.idx = od.orderhistory_idx
+GROUP BY oh.idx;
+
+SELECT COUNT(od.idx) as orderhistory_detail_count
+FROM orderhistory oh
+LEFT JOIN orderhistory_detail od ON oh.idx = od.orderhistory_idx
+WHERE oh.idx = 84;
 
 create table orderhistory_detail(
 	idx int not null auto_increment,
@@ -291,7 +344,7 @@ CREATE TABLE maincategory (
     Category_Name VARCHAR(255) NOT NULL,
     PRIMARY KEY (Category_Idx)
 );
-
+select * from maincategory;
 CREATE TABLE subcategory (
     subCategory_Idx INT NOT NULL AUTO_INCREMENT,
     subCategory_Name VARCHAR(255) NOT NULL,
@@ -299,7 +352,22 @@ CREATE TABLE subcategory (
     PRIMARY KEY (subCategory_Idx),
     FOREIGN KEY(category_idx) REFERENCES maincategory(Category_Idx)
 );
+SELECT sc.subcategory_idx, sc.subcategory_name, m.category_Name AS maincategory_name
+FROM subCategory sc
+JOIN maincategory m ON m.category_idx = sc.category_idx
+WHERE sc.category_idx = 1;
 
+SELECT scc.secondcategory_idx, scc.secondcategory_name, sc.subCategory_Name, m.category_Name AS maincategory_name 
+FROM secondcategory scc
+JOIN subCategory sc ON sc.subcategory_idx = scc.subcategory_idx
+JOIN mainCategory m ON m.category_idx = sc.category_idx
+WHERE scc.subcategory_idx = 2;
+
+
+select * from subcategory;
+select * from secondcategory;
+
+select * from secondCategory;
 CREATE TABLE secondcategory (
     secondCategory_Idx INT NOT NULL AUTO_INCREMENT,
     secondCategory_Name VARCHAR(255) NOT NULL,

@@ -99,13 +99,13 @@
 		<c:forEach var="vo" items="${vos}" varStatus="st">
 			<div class="productDiv">
 				<div>
-					<a href="${ctp}/goods/goodsViews?idx=${vo.idx}&secCate_Idx=${vo.secondCatagory_Idx}">
+					<a href="${ctp}/goods/goodsViews?idx=${vo.idx}&secCate_Idx=${vo.secondCategory_Idx}">
 						<img src="${ctp}/images/${vo.thumbNail}">
 					</a>
 				</div>
 				<div>
 					<a href="${ctp}/goods/goodsViews?brand_Idx=${vo.brand_Idx}"><span>${vo.brand_Name}</span></a><br>
-					<a href="${ctp}/goods/goodsViews?idx=${vo.idx}&secCate_Idx=${vo.secondCatagory_Idx}"><span>${vo.name}</span></a>
+					<a href="${ctp}/goods/goodsViews?idx=${vo.idx}&secCate_Idx=${vo.secondCategory_Idx}"><span>${vo.name}</span></a>
 					<p>₩<fmt:formatNumber value="${vo.price}" pattern="#,###"/></p>
 				</div>
 			</div>

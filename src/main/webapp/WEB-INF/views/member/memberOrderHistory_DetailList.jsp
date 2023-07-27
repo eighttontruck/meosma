@@ -18,8 +18,8 @@
 	    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	}
 	
-	function popUp(idx, goods_Idx){
-		window.open("${ctp}/goods/inquiryPopUp?idx="+idx+"&goods_Idx="+goods_Idx,"test","width=600, height=800,left=650px, top=200px");
+	function popUp(idx, goods_Idx, orderHistory_Idx){
+		window.open("${ctp}/goods/inquiryPopUp?idx="+idx+"&goods_Idx="+goods_Idx+"&orderHistory_Idx="+orderHistory_Idx,"test","width=600, height=800,left=650px, top=200px");
 	}
 	
 	function goodsConfirm(orderHistory_Detail_Idx){
@@ -91,15 +91,26 @@
 		width:100%;
 	}
 	#sidebar{
-		width:300px;
-		padding:50px;
-	}
-	#sidebar div{
-		text-align:center;
+		margin-top:50px;
+		margin-left:50px;
 	}
 	#mainDiv{
 		padding:50px;
 		width:100%;
+	}
+	.sidebar2{
+		display:flex;
+		flex-direction:column;
+		padding-bottom:15px;
+		width:150px;
+	}
+	.sidebar2 > a{
+		display: flex; 
+		margin-top: 2px;
+		font-size: 16px; 
+		line-height: 40px;
+		color:rgb(110,110,110);
+
 	}
 	#listTable{
 		margin-top:20px;
@@ -172,14 +183,14 @@
 		font-size:10px;
 		font-height:10px;
 	}
-	#blackBtn{
+	.blackBtn{
 		width:100px;
 		height:30px;
 		border:none;
 		background-color:black;
 		color:white;
 	}
-	#whiteBtn{
+	.whiteBtn{
 		width:130px;
 		height:30px;
 		border:1px solid black;
@@ -253,35 +264,19 @@
 		      </div>
 		    </div>
 		  </div>
-		 <form name="frmData" id="frmData" method="post">
-			<input type="text" name="goods_Idx" id="name" value="홍길동" />
-		 </form>
 		<div id="memberInfo2">
 			<div id="sidebar">
-				<div>
+				<div class="sidebar2">
 					<h3>나의 쇼핑 활동</h3>
-					<a href="${ctp}/member/orderHistory_Detail">주문 내역 조회</a><br>
-					<a>구매후기</a><br>
-					<a>래플 응모내역</a>
-					<a>상품문의</a>
-					<a>1:1문의</a>
-					<a>최근 본 상품</a>
-					<a>좋아요</a>
-					<a>나의 맞춤 정보</a>
-					<a>회원 혜택</a>
-					<a>래플 응모내역</a>
-					<a>래플 응모내역</a>
-				</div>
-				<div>
-					<h3>커뮤니티</h3>
-					<a>게시물/스크랩/댓글</a><br>
-					<a>포인트 & 쿠폰</a><br>
-					<a>라플(응모내역)</a>
-				</div>
-				<div>
-					<a>고객센터</a><br>
-					<a>자주 묻는 질문</a><br>
-					<a>로그아웃</a>
+					<a href="${ctp}/member/orderHistory_Detail">주문 내역 조회</a>
+					<a href="#">구매후기</a>
+					<a href="#">래플 응모내역</a>
+					<a href="#">상품문의</a>
+					<a href="#">1:1문의</a>
+					<a href="#">최근 본 상품</a>
+					<a href="#">좋아요</a>
+					<a href="#">나의 맞춤 정보</a>
+					<a href="#">회원 혜택</a>
 				</div>
 			</div>
 			<div id="mainDiv">
@@ -325,21 +320,33 @@
 								<td>${fn:substring(order.orderDate,2,11)}</td>
 								<td>${order.idx}(${order.orderHistory_Idx})</td>
 								<c:set var="totalPrice" value="${order.goods_Price * order.goods_Stock}" />
-								<td>₩<fmt:formatNumber value="${totalPrice}" pattern="#,###"/>(${order.goods_Stock}개)</td>
 								<td>
-									<div>
-										${order.status}
-									</div>
-									<c:if test="${order.status eq '배송중'}">
+									₩<fmt:formatNumber value="${totalPrice}" pattern="#,###"/>(${order.goods_Stock}개)
+									<c:if test="${order.complainStatus ne null}">
 										<div>
-											<a href="https://trace.cjlogistics.com/web/detail.jsp?slipno=${order.shipping_Num}">배송조회</a>
+											(${order.complainStatus})
 										</div>
 									</c:if>
 								</td>
 								<td>
+									<div>
+										${order.status}
+									</div>
+									
 									<c:if test="${order.status eq '배송중'}">
-										<button onclick="goodsConfirm(${order.idx})" id="blackBtn">구매확정</button>
-										<button onclick="popUp(${order.idx},${order.goods_Idx})" id="whiteBtn">교환 및 환불 요청</button>
+										<div>
+											<a href="https://trace.cjlogistics.com/web/detail.jsp?slipno=${order.shipping_Num}" target='_blank'>배송조회</a>
+										</div>
+									</c:if>
+									
+								</td>
+								<td>
+									<c:if test="${order.status eq '배송중'}">
+										<button onclick="goodsConfirm(${order.idx})" class="blackBtn">구매확정</button>
+										<button onclick="popUp(${order.idx},${order.goods_Idx},${order.orderHistory_Idx})" class="whiteBtn">교환 및 환불 요청</button>
+									</c:if>
+									<c:if test="${order.status eq '구매확정'}">
+										<button class="blackBtn">후기 작성</button>
 									</c:if>
 								</td>
 							</tr>

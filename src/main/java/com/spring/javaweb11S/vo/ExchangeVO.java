@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class ExchangeVO {
 	private int idx;
+	private int member_Idx;
 	private int orderHistory_Detail_Idx;
 	private String applicationDate;
 	private String reason;
@@ -13,4 +14,6 @@ public class ExchangeVO {
 	private String recipient_TelNum;
 	private String recipient_Address;
 	private String status;
+	
+	private int price;
 }

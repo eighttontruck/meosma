@@ -201,6 +201,7 @@
 		float:left;
 		padding:0 5px;
 		text-align:center;
+		outline:none;
 	}
 	.upgoods_cnt{
 		background-image: url("${ctp}/images/upbtn.png");
@@ -245,7 +246,7 @@
 	#goodsImage{
 		width:600px;
 	}
-	#goodsImage > img{
+	#goodsImage img{
 		width:600px;
 	}
 	#goodsDetail{
@@ -315,7 +316,34 @@
 	<jsp:include page="/WEB-INF/views/include/header.jsp" />
 	<div class="container">
 		<div id="goodsImage">
-			<img alt="" src="${ctp}/images/${goodsVo.thumbNail}" class="goodsimages">
+			<div id="demo" class="carousel slide" data-ride="carousel">
+			  <!-- Indicators -->
+			  <ul class="carousel-indicators">
+			    <li data-target="#demo" data-slide-to="0" class="active"></li>
+			    <c:forEach var="image" items="${imageVos}" varStatus="st">
+			    	<li data-target="#demo" data-slide-to="${st.count}"></li>
+			    </c:forEach>
+			  </ul>
+			  <!-- The slideshow -->
+			  <div class="carousel-inner">
+			    <div class="carousel-item active">
+			      <img src="${ctp}/images/${goodsVo.thumbNail}" alt="Los Angeles">
+			    </div>
+			    <c:forEach var="image" items="${imageVos}" varStatus="st">
+				    <div class="carousel-item">
+				      <img src="${ctp}/data/ckeditor/${image.FName}" alt="Chicago">
+				    </div>
+			    </c:forEach>
+			  </div>
+			  <!-- Left and right controls -->
+			  <a class="carousel-control-prev" href="#demo" data-slide="prev">
+			    <span class="carousel-control-prev-icon"></span>
+			  </a>
+			  <a class="carousel-control-next" href="#demo" data-slide="next">
+			    <span class="carousel-control-next-icon"></span>
+			  </a>
+			</div>
+			<%-- <img alt="" src="${ctp}/images/${goodsVo.thumbNail}" class="goodsimages"> --%>
 		</div>
 		<div id="goodsDetail">
 			<div>
@@ -349,7 +377,7 @@
 					<form name="myform" method="POST" action=${ctp}/goods/goodsPayment>
 						<table id="selectedOption"></table>
 						<input type="hidden" id="sIdx" name="sIdx" value="${sIdx}">
-						<input type="hidden" name="totalPrice" id="totalPriceInput">
+						<input type="hidden" name="finalPrice" id="totalPriceInput">
 						<input type="hidden" name="buyStatus" value="direct">
 					</form>
 					<hr>
@@ -485,6 +513,7 @@
 		<br>
 		<br>
 		<br>
+		
 		<div id="reviewDiv">
 			<div>
 				<div></div>

@@ -16,6 +16,7 @@
         <link href="${ctp}/resources/css/styles.css" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
         <jsp:include page="/WEB-INF/views/include/bs4.jsp"/>
+        <script src="${ctp}/ckeditor/ckeditor.js"></script>
         <script>
         $(document).ready(function() {
     		
@@ -132,6 +133,14 @@
 			    background-color: rgb(77,77,77);
 			    color: #fff;
 			}
+			.mainBtn{
+				width:100%;
+				height:50px;
+				background-color:black;
+				color:white;
+				border:none;
+				margin-bottom:40px;
+			}
         </style>
     </head>
     <body class="sb-nav-fixed">
@@ -200,22 +209,26 @@
             </div>
             <div id="layoutSidenav_content">
                 <main>
+                	<form method="post" name="myform" enctype="multipart/form-data">
                     <div class="container-fluid px-4">
                         <h1 class="mt-4">상품 수정</h1>
                         <div class="row">
-                            <div class="col-xl-6">
+                            <div class="col-xl-12">
                                 <div class="card mb-4">
                                     <div class="card-body">
 										<div class="col">
 											<div class="labelText">상품사진</div>
 											<div><img src="${ctp}/images/${goodsVo.thumbNail}"></div>
-											<div><input type="file" name="file" id="file" class="form-control-file"></div>
+											<div>
+												<input type="file" name="file" id="file" class="form-control-file">
+												<input type="hidden" name="idx" value="${goodsVo.idx}">
+											</div>
 										</div>
 										<div class="col">
 											<div class="labelText">브랜드 선택</div>
 											<div>
 												<select name="brand_Idx" class="inputText">
-													<option disabled hidden selected value="" name="brand_idx">브랜드 선택</option>
+													<option disabled hidden selected value="">브랜드 선택</option>
 													<c:forEach var="brand" items="${brandVos}" varStatus="st">
 														<option <c:if test="${goodsVo.brand_Idx eq brand.idx}">selected</c:if> value="${brand.idx}">${brand.name}</option>
 													</c:forEach>
@@ -235,11 +248,11 @@
 											<div class="labelText">대분류 선택</div>
 											<div>
 												<select id="mainCategory" name="mainCategory" class="inputText">
-												<option disabled hidden selected value="">대분류 선택</option>
-												<c:forEach var="vo" items="${mainCategory_vos}" varStatus="st">
-													<option <c:if test="${categoryVo.category_Name eq vo.category_Name}">selected</c:if> value="${vo.category_Idx}">${vo.category_Name}</option>
-												</c:forEach>
-											</select>
+													<option disabled hidden selected value="">대분류 선택</option>
+													<c:forEach var="vo" items="${mainCategory_vos}" varStatus="st">
+														<option <c:if test="${categoryVo.category_Name eq vo.category_Name}">selected</c:if> value="${vo.category_Idx}">${vo.category_Name}</option>
+													</c:forEach>
+												</select>
 											</div>
 										</div>
 										<div class="col">
@@ -248,11 +261,13 @@
 										</div>
 										<div class="col">
 											<div class="labelText">소분류 선택</div>
-											<div><select id="secondCategory" name="secondCatagory_Idx" class="inputText"></select></div>
+											<div><select id="secondCategory" name="secondCategory_Idx" class="inputText"></select></div>
 										</div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row">
                             <div class="col-xl-6">
                                 <div class="card mb-4">
                                     <div class="card-body">
@@ -271,9 +286,28 @@
                                     </div>
                                 </div>
                             </div>
-                            <button class="btn-sm btn-success">수정</button>
+                               <div class="col-xl-6">
+	                    		<div class="card mb-4">
+	                       		<div class="card-body">
+	                       			<div class="labelText">사진 등록</div>
+	                           		<textarea rows="6" name="images" id="CKEDITOR" class="form-control">${goodsVo.images}</textarea>
+		                            <script>
+		                           		CKEDITOR.replace("images",{
+											filebrowserUploadUrl : "${ctp}/imageUpload",
+											uploadUrl : "${ctp}/imageUpload"
+		                           		});
+		                            </script>
+	                       		</div>
+	                  			</div>
+	                   		</div>
                         </div>
-                    </div>
+                        <div class="row">
+	           		        <div class="col">
+	           		            <button class="mainBtn" style="width:100%; height:50px;background-color:black;color:white;border:none;margin-bottom:40px;">수정</button>
+	           		        </div>
+	           		      </div>
+                       </div>
+                   </form>
                 </main>   
             </div>
         </div>

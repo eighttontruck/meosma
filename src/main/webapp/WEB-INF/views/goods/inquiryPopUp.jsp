@@ -12,11 +12,11 @@
 	<jsp:include page="/WEB-INF/views/include/bs4.jsp"/>
 	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 	<script src="${ctp}/js/woo.js"></script>
+	<script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>
 </head>
 <script>
 	
 	function exchange2(){
-		alert("Dd");
 		$("#exchangeDiv").css("display","flex");
 		$("#exchangeFee").css("display","flex");
 		$("#refundDiv").css("display","none");
@@ -66,7 +66,6 @@
 	let option_IdxArray = new Array();
 	$(function(){
 		$("#optionSelect").change(function(){
-			alert("dd");
 			let optionSelect=$(this).val();
 			let option_Idx = optionSelect.substring(0,optionSelect.indexOf(":"));
 			let goods_Stock = optionSelect.substring(optionSelect.indexOf(":")+1,optionSelect.indexOf("_"));
@@ -80,7 +79,7 @@
 			    }).get();
 				let maxStock=${vo.goods_Stock};
 				let returnTotalStock=0;
-				alert(valuesArray);
+				//alert(valuesArray);
 				for(let i=0; i<valuesArray.length; i++){
 					returnTotalStock += parseInt(valuesArray[i]);
 					if(maxStock<=returnTotalStock){
@@ -93,7 +92,7 @@
 				//str += '<tbody id="goods_Option'+option_Idx+'">'
 					str += '<div class="row mb-2" id="goods_Option'+option_Idx+'">'
 						str += '<div class="col-sm-3 size">'+option_Name+'<input type="checkbox" name="idxChecked" value="${goodsVo.idx}" checked style="display:none;"/></div>'
-						str += '<input type="hidden" name="option_Idx" value="'+option_Idx+'">'
+						str += '<input type="hidden" name="exchangeOption_Idx" value="'+option_Idx+'">'
 						str += '<div class="col-sm-3" style="padding:0 34px;"><span id="goods_qty">';
 							str += '<input type="text" id="cntInput'+option_Idx+'" name="order_Stock" value="1" class="goodsCnt" readonly>'
 							str += '<span class="stockCntBtn"><button type="button" onclick="stockCntUp('+option_Idx+','+goods_Stock+','+${vo.goods_Price}+')" class="upgoods_cnt" id="upgoods_cnt2"></button>'
@@ -146,7 +145,50 @@
 	function fCheck(){
 		let address = $("#sample6_postcode").val()+"/"+$("#sample6_address").val()+"/"+$("#sample6_detailAddress").val();
 		$("#recipient_Address").val(address);
-		myform.submit();		
+		
+		let exchangeRadio = $("#exchange");
+		if(exchange.checked){
+			var IMP = window.IMP; 
+			IMP.init("imp18020804");
+			IMP.request_pay({
+			    /* pg : 'inicis', */ /* version 1.1.0부터 지원. 변경된 방침에서는 pg : 'html5_inicis' 로 고쳐준다. */
+			    pg : 'html5_inicis.INIpayTest',
+			    pay_method : 'card',
+			    merchant_uid : 'merchant_' + new Date().getTime(),
+			    name : '${vo.goods_Name}',
+			    amount : 6000, //판매 가격
+			    buyer_email : '${memberVo.emailId}',
+			    buyer_name : '${memberVo.name}',
+			    buyer_tel : '${memberVo.telNum}',
+			    buyer_addr : $("#sample6_address").val()+" "+$("#sample6_detailAddress").val(),
+			    buyer_postcode : $("#sample6_postcode").val()
+			}, function(rsp) {
+				  var paySw = 'no';
+			    if ( rsp.success ) {
+			        paySw = 'ok';
+			    } else {
+			        var msg = '결제에 실패하였습니다.';
+			        msg += '에러내용 : ' + rsp.error_msg;
+			    }
+			    alert(msg);
+			    if(paySw == 'no') {
+				    alert("결제를 취소하셨습니다.");
+			    }
+			    else {
+			    	myform.submit();
+			    }
+			});
+		} else{
+			myform.submit();
+		}
+		
+		//myform.submit();		
+	}
+	
+	function fCheck2(){
+		let address = $("#sample6_postcode").val()+"/"+$("#sample6_address").val()+"/"+$("#sample6_detailAddress").val();
+		$("#recipient_Address").val(address);
+		myform.submit();
 	}
 	
 	function delOption(option_Idx){
@@ -336,6 +378,7 @@
 		float:left;
 		padding:0 5px;
 		text-align:center;
+		outline:none;
 	}
 	.upgoods_cnt{
 		background-image: url("${ctp}/images/upbtn.png");
@@ -383,9 +426,11 @@
 		<hr>
 		<form method="post" name="myform">
 		<input type="hidden" name="idx" value="${vo.idx}">
+		<input type="hidden" name="orderHistory_Idx" value="${vo.idx}">
 		<input type="hidden" name="refundPrice" id="refundPriceInput" value="0">
 		<input type="hidden" name="goods_Idx" value="${goods_Idx}">
-		<input type="hidden" name="goods_Stock" value="${vo.goods_Stock}">
+		<input type="hidden" name="refundOption_Idx" value="${vo.option_Idx}">
+		<input type="hidden" name="order_Option" value="${vo.goods_Option}">
 		<div class="marginAuto" id="midDiv">
 			<div class="row">
 				<div class="col-sm-3">문의유형</div>
@@ -456,7 +501,7 @@
 			<div class="row" >
 				<div class="marginAuto2">
 					<button id="whiteBtn">취소</button>
-					<button id="blackBtn" type="button" onclick="fCheck()">신청</button>
+					<button id="blackBtn" type="button" onclick="fCheck2()">신청</button>
 				</div>
 			</div>
 		</div>

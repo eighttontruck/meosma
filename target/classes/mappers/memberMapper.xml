@@ -22,7 +22,7 @@
 	</select>
 	
 	<select id="getMemberOrderHistory_Detail" resultType="com.spring.javaweb11S.vo.OrderHistory_DetailVO">
-		SELECT ohd.idx, ohd.orderhistory_idx, oh.shipping_num, oh.orderdate, ohd.status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand, g.price AS goods_Price
+		SELECT ohd.idx, ohd.orderhistory_idx, ohd.complainStatus, oh.shipping_num, oh.orderdate, ohd.status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand, g.price AS goods_Price
 		FROM orderhistory oh
 		JOIN orderhistory_detail ohd ON ohd.orderhistory_idx = oh.idx
 		JOIN goods g ON g.idx = ohd.goods_idx
@@ -70,6 +70,6 @@
 	</update>
 	
 	<update id="setMemberGoodsConfirmAJAX">
-		UPDATE orderhistory_detail SET returns_status = '구매확정' WHERE idx = #{orderHistory_Detail_Idx}; 
+		UPDATE orderhistory_detail SET status = '구매확정' WHERE idx = #{orderHistory_Detail_Idx}; 
 	</update>
 </mapper>

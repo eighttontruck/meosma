@@ -1,5 +1,8 @@
 package com.spring.javaweb11S.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -59,16 +62,19 @@ public class AdminServiceImpl implements AdminService {
 	public String fileUpload(MultipartFile fName, GoodsVO vo) {
 		String fileName="";
 		
+		System.out.println("파일저장 들어옴");
 		UUID uid = UUID.randomUUID();
 		String oFileName = fName.getOriginalFilename();
 		String saveFileName = vo.getBrand_Idx()+"_"+vo.getName()+"_"+uid+"_"+oFileName;
 		System.out.println("파일명:"+oFileName);
 		
-		try {
-			writeFile(fName,saveFileName);
-			fileName = saveFileName;
-		} catch(IOException e) {
-			e.printStackTrace();
+		if(oFileName!="") {
+			try {
+				writeFile(fName,saveFileName);
+				fileName = saveFileName;
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		return fileName;
@@ -116,8 +122,8 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 	@Override
-	public CategoryVO getGoodsCategory(int secondCatagory_Idx) {
-		return adminDAO.getGoodsCategory(secondCatagory_Idx);
+	public CategoryVO getGoodsCategory(int secondCategory_Idx) {
+		return adminDAO.getGoodsCategory(secondCategory_Idx);
 	}
 
 	@Override
@@ -189,5 +195,177 @@ public class AdminServiceImpl implements AdminService {
 		return adminDAO.getExchange_DetailList(idx);
 	}
 
+	@Override
+	public void insertMainCategory(String mainCategoryInput) {
+		adminDAO.insertMainCategory(mainCategoryInput);
+		
+	}
 
+	@Override
+	public void insertSubCategory(int mainCategorySelect, String subCategoryInput) {
+		adminDAO.insertSubCategory(mainCategorySelect, subCategoryInput);
+		
+	}
+
+	@Override
+	public void insertSecondCategory(int subCategorySelect, String secondCategoryInput) {
+		adminDAO.insertSecondCategory(subCategorySelect, secondCategoryInput);
+		
+	}
+
+	@Override
+	public void imgCheck(String content, int goods_Idx) {
+		//             0         1         2         3         4
+		//             01234567890123456789012345678901234567890
+		// <img alt="" src="/javawebS/data/ckeditor/230616141341_sanfran.jpg" style="height:300px; width:400px" /></p><p><img alt="" src="/javawebS/data/ckeditor/230616141353_paris.jpg" style="height:300px; width:400px" /></p>
+		// <img alt="" src="/javawebS/data/board/230616141341_sanfran.jpg" style="height:300px; width:400px" /></p><p><img alt="" src="/javawebS/data/ckeditor/230616141353_paris.jpg" style="height:300px; width:400px" /></p>
+		
+		// content안에 그림파일이 존재한다면 그림을 /data/board/폴더로 복사처리한다. 없으면 돌려보낸다.
+		if(content.indexOf("src=\"/") == -1) return;
+		
+		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/");
+		
+		int position = 31; //프로젝트명때문에 2를 더해야된다.
+
+		String nextImg = content.substring(content.indexOf("src=\"/") + position);
+		boolean sw = true;
+		
+		int cnt=0;
+		while(sw) {
+			String imgFile = nextImg.substring(0, nextImg.indexOf("\""));
+			if(goods_Idx == 0) {
+				adminDAO.setInsertGoodsImage(imgFile, goods_Idx);
+			} else {
+				if(cnt==0) {
+					adminDAO.setDeleteGoodsImage(goods_Idx);
+					cnt++;
+				}
+				adminDAO.setInsertGoodsImage(imgFile, goods_Idx);
+			}
+			
+			String origFilePath = realPath + "ckeditor/" + imgFile;
+			String copyFilePath = realPath + "goods/" + imgFile;
+			
+			fileCopyCheck(origFilePath, copyFilePath);	// ckeditor폴더의 그림파일을 board폴더위치로 복사처리한다.
+			
+			if(nextImg.indexOf("src=\"/") == -1) {
+				sw = false;
+			}
+			else {
+				nextImg = nextImg.substring(nextImg.indexOf("src=\"/") + position);
+			}
+		}
+	}
+	
+	// 파일을 복사처리...
+	private void fileCopyCheck(String origFilePath, String copyFilePath) {
+		try {
+			FileInputStream  fis = new FileInputStream(new File(origFilePath));
+			FileOutputStream fos = new FileOutputStream(new File(copyFilePath));
+			
+			byte[] bytes = new byte[2048];
+			int cnt = 0;
+			while((cnt = fis.read(bytes)) != -1) {
+				fos.write(bytes, 0, cnt);
+			}
+			fos.flush();
+			fos.close();
+			fis.close();		
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void imgCheckUpdate(String images) {
+		//             0         1         2         3         4
+		//             01234567890123456789012345678901234567890
+		// <img alt="" src="/javawebS/data/board/230616141341_sanfran.jpg" style="height:300px; width:400px" /></p><p><img alt="" src="/javawebS/data/ckeditor/230616141353_paris.jpg" style="height:300px; width:400px" /></p>
+		// <img alt="" src="/javawebS/data/ckeditor/230616141341_sanfran.jpg" style="height:300px; width:400px" /></p><p><img alt="" src="/javawebS/data/ckeditor/230616141353_paris.jpg" style="height:300px; width:400px" /></p>
+		
+		// content안에 그림파일이 존재한다면 그림을 /data/board/폴더로 복사처리한다. 없으면 돌려보낸다.
+		if(images.indexOf("src=\"/") == -1) return;
+		
+		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/");
+		
+		int position = 28;
+		String nextImg = images.substring(images.indexOf("src=\"/") + position);
+		boolean sw = true;
+		
+		while(sw) {
+			String imgFile = nextImg.substring(0, nextImg.indexOf("\""));
+			
+			String origFilePath = realPath + "goods/" + imgFile;
+			String copyFilePath = realPath + "ckeditor/" + imgFile;
+			
+			fileCopyCheck(origFilePath, copyFilePath);	// ckeditor폴더의 그림파일을 board폴더위치로 복사처리한다.
+			
+			if(nextImg.indexOf("src=\"/") == -1) {
+				sw = false;
+			}
+			else {
+				nextImg = nextImg.substring(nextImg.indexOf("src=\"/") + position);
+			}
+		}
+		
+	}
+	
+	@Override
+	public void imgDelete(String content) {
+		//             0         1         2         3         4
+		//             01234567890123456789012345678901234567890
+		// <img alt="" src="/javawebS/data/board/230616141341_sanfran.jpg" style="height:300px; width:400px" /></p><p><img alt="" src="/javawebS/data/ckeditor/230616141353_paris.jpg" style="height:300px; width:400px" /></p>
+		
+		// content안에 그림파일이 존재한다면 그림을 /data/board/폴더로 복사처리한다. 없으면 돌려보낸다.
+		if(content.indexOf("src=\"/") == -1) return;
+		
+		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+		String realPath = request.getSession().getServletContext().getRealPath("/resources/data/");
+		
+		int position = 28;
+		String nextImg = content.substring(content.indexOf("src=\"/") + position);
+		boolean sw = true;
+		
+		while(sw) {
+			String imgFile = nextImg.substring(0, nextImg.indexOf("\""));	// 그림파일명만 꺼내오기
+			
+			String origFilePath = realPath + "goods/" + imgFile;
+			
+			fileDelete(origFilePath);	// 'board'폴더의 그림을 삭제처리한다.
+			
+			if(nextImg.indexOf("src=\"/") == -1) {
+				sw = false;
+			}
+			else {
+				nextImg = nextImg.substring(nextImg.indexOf("src=\"/") + position);
+			}
+		}
+	}
+	
+	// 실제로 서버의 파일을 삭제처리한다.
+	private void fileDelete(String origFilePath) {
+		File delFile = new File(origFilePath);
+		if(delFile.exists()) delFile.delete();
+	}
+
+	@Override
+	public void setUpdateGoods(GoodsVO vo) {
+		adminDAO.setUpdateGoods(vo);
+		
+	}
+
+	@Override
+	public void setUpdateGoods_Stock(Map<String, Integer> vos, int goods_Idx) {
+		adminDAO.setUpdateGoods_Stock(vos, goods_Idx);
+	}
+
+	@Override
+	public void setDeleteGoods(int goods_Idx) {
+		adminDAO.setDeleteGoods(goods_Idx);
+		
+	}
 }

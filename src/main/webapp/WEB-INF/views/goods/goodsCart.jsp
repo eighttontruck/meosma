@@ -118,6 +118,36 @@
 	function payMentCheck(){
 		myform.submit();
 	}
+	
+	function updateCartStock(cart_Idx, maxStock, str){
+		let curStock=$("#cntInput"+cart_Idx).val();
+		
+		if(maxStock==curStock&&str=='plus'){
+			alert("최대 수량은 "+maxStock+"개 입니다.");
+			return false;
+		}
+		
+		if(curStock==1&&str=='minus'){
+			alert("최소 수량은 1개 입니다.");
+			return false;
+		}
+		
+		$.ajax({
+			type : "post",
+			url : "${ctp}/goods/updateCartStockAJAX",
+			data : {
+				cart_Idx : cart_Idx,
+				str : str
+			},
+			success : function(data){
+				alert("수량이 변경되었습니다.");
+				location.reload();
+			},
+			error : function() {
+				alert("전송오류!");
+			}
+		});
+	}
 </script>
 <style>
 	#listTable{
@@ -176,6 +206,33 @@
 		width:60%;
 		margin-top:1rem;
 	}
+	.goodsCnt{
+		width:50px;
+		height:34px;
+		border-style:solid;
+		border-width:1px;
+		border-color:lightgray;
+		float:left;
+		padding:0 5px;
+		text-align:center;
+		outline:none;
+	}
+	.upgoods_cnt{
+		background-image: url("${ctp}/images/upbtn.png");
+		width:23px;
+		height:17px;
+		border:none;
+		margin: 0 0 0 -1px;
+		display:block;
+	}
+	.downgoods_cnt{
+		background-image: url("${ctp}/images/downbtn.png");
+		width:23px;
+		height:17px;
+		border:none;
+		margin: 0 0 0 -1px;
+		display:block;
+	}
 </style>
 <body>
 	<jsp:include page="/WEB-INF/views/include/header.jsp" />
@@ -215,27 +272,36 @@
 									</div>
 								</div>
 							</td>
-							<td>${vo.order_Stock}</td>
+							<td style="width:80px;">
+								<%-- ${vo.order_Stock} --%>
+								<span id="goods_qty">
+									<input type="text" id="cntInput${vo.idx}" name="order_Stock" value="${vo.stock}" class="goodsCnt" readonly>
+									<span class="stockCntBtn">
+										<button type="button" class="upgoods_cnt" onclick="updateCartStock(${vo.idx}, 'plus')" id="upgoods_cnt2"></button>
+										<button type="button" class="downgoods_cnt" onclick="updateCartStock(${vo.idx}, 'minus')"></button>
+									</span>
+								</span>
+							</td>
 							<td>₩<fmt:formatNumber value="${vo.order_Price}" pattern="#,###"/></td>
 							<td>
-								<c:set var="accumulatedPoints" value="${vo.order_Price * vo.order_Stock * 0.05}" />
+								<c:set var="accumulatedPoints" value="${vo.order_Price * vo.stock * 0.05}" />
 								₩<fmt:formatNumber value="${accumulatedPoints}" pattern="#,###"/>
 							</td>
 							<td>
-								<c:set var="totalPrice" value="${vo.order_Price * vo.order_Stock}" />
+								<c:set var="totalPrice" value="${vo.order_Price * vo.stock}" />
 								₩<fmt:formatNumber value="${totalPrice}" pattern="#,###"/>
 								<input type="hidden" value="${totalPrice}" id="totalPrice${vo.idx}">
 							</td>
 						</tr>
 						<input type="hidden" name="goods_Idx" value="${vo.goods_Idx}">
 						<input type="hidden" name="option_Idx" value="${vo.option_Idx}">
-						<input type="hidden" name="order_Stock" value="${vo.order_Stock}">
+						<input type="hidden" name="order_Stock" value="${vo.stock}">
 						<input type="hidden" name="order_Option" value="${vo.order_Option}">
 						<input type="hidden" name="sIdx" value="${sIdx}">
 					</c:forEach>
 				</tbody>
 			</table>
-			<input type="hidden" name="totalPrice" id="totalPriceInput">
+			<input type="hidden" name="finalPrice" id="totalPriceInput">
 			<input type="hidden" name="buyStatus" value="cart">
 		</form>
 		<c:set var="minIdx" value="${vos[0].idx}"/>						<!-- 구매한 첫번째 상품의 idx -->

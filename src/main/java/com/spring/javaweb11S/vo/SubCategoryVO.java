@@ -7,4 +7,7 @@ public class SubCategoryVO {
 	int subCategory_Idx;
 	String subCategory_Name;
 	int category_Idx;
+	
+	int mainCategory_Idx;
+	String mainCategory_Name;
 }

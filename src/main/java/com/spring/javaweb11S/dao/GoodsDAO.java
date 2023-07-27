@@ -14,11 +14,13 @@ import com.spring.javaweb11S.vo.OrderHistory_DetailVO;
 import com.spring.javaweb11S.vo.OrderVO;
 import com.spring.javaweb11S.vo.RefundVO;
 import com.spring.javaweb11S.vo.BrandVO;
+import com.spring.javaweb11S.vo.CartVO;
 import com.spring.javaweb11S.vo.CategoryVO;
 import com.spring.javaweb11S.vo.CouponVO;
 import com.spring.javaweb11S.vo.ExchangeVO;
 import com.spring.javaweb11S.vo.Exchange_DetailVO;
 import com.spring.javaweb11S.vo.GoodsVO;
+import com.spring.javaweb11S.vo.Goods_ImageVO;
 import com.spring.javaweb11S.vo.Goods_StockVO;
 import com.spring.javaweb11S.vo.SecondCategoryVO;
 import com.spring.javaweb11S.vo.SubCategoryVO;
@@ -43,7 +45,7 @@ public interface GoodsDAO {
 
 	public void setGoodsRegister(@Param("vo") GoodsVO vo);
 
-	public CategoryVO getGoodsCategory(@Param("secondCatagory_Idx") int secondCatagory_Idx);
+	public CategoryVO getGoodsCategory(@Param("secondCategory_Idx") int secondCategory_Idx);
 
 	public MemberVO getOrderMemberInfo(@Param("sIdx") int sIdx);
 
@@ -61,13 +63,13 @@ public interface GoodsDAO {
 
 	public void setOrderHistory(@Param("vo") OrderHistoryVO vo);
 
-	public void setOrderHistory_Detail(@Param("vos") List<OrderHistory_DetailVO> vos);
+	public void setOrderHistory_Detail(@Param("vos") List<OrderVO> vos);
 
 	public int totRecCnt();
 
 	public void setInsertCart(@Param("vo") OrderVO vo, @Param("member_Idx") String member_Idx);
 
-	public List<OrderVO> getCartList(@Param("sIdx") int sIdx);
+	public List<CartVO> getCartList(@Param("sIdx") int sIdx);
 
 	public void setDeleteCart(@Param("cartArray") int[] cartArray);
 
@@ -87,13 +89,35 @@ public interface GoodsDAO {
 
 	public void setExchange_DetailGoods(@Param("exchange_DetailVO") Exchange_DetailVO exchange_DetailVO, @Param("vos") List<Exchange_DetailVO> vos);
 
-	public void setUpdateOrderHistory_Detail(@Param("orderHistory_Detail_Idx") int orderHistory_Detail_Idx);
+	public void setUpdateOrderHistory_Detail(@Param("orderHistory_Detail_Idx") int orderHistory_Detail_Idx, @Param("totalStock") int totalStock);
 
 	public void setUpdateOrderHistory_Detail2(@Param("orderHistory_Detail_Idx") int orderHistory_Detail_Idx, @Param("i") int i);
 
 	public int getCartDupliCheck(@Param("vo") OrderVO vo, @Param("member_Idx") String member_Idx);
 
 	public void setUpdateCart(@Param("vo") OrderVO vo, @Param("member_Idx") String member_Idx);
+
+	public void setUpdateGoodsStock(@Param("vos") List<OrderVO> vos);
+
+	public void setUpdateCartStock(@Param("cart_Idx") int cart_Idx, @Param("str") String str);
+
+	public List<Goods_ImageVO> getGoodsImages(@Param("goods_Idx") int goods_Idx);
+
+	public void setInsertExchangeOrderHistory(@Param("exchangeVO") ExchangeVO exchangeVO);
+
+	public void setInsertExchangeOrderHistory_Detail(@Param("vos") List<OrderVO> vos);
+
+	public int getOrderHistory_DetailCnt(@Param("sOhIdx") int sOhIdx);
+
+	public void setDeleteOrderHistory(@Param("sOhIdx") int sOhIdx);
+
+	public void setDeleteOrderHistory_Detail(@Param("orderHistory_Detail_Idx") int orderHistory_Detail_Idx);
+
+	public void setUpdateOrderHistory(@Param("sOhIdx") int sOhIdx, @Param("totalStock") int totalStock, @Param("sOhdIdx") int sOhdIdx, @Param("updatePrice") int updatePrice);
+
+	public void setInsertRefundOrderHistory(@Param("refundVO") RefundVO refundVO);
+
+	public void setInsertRefundOrderHistory_Detail(@Param("vo") OrderVO vo);
 
 
 }

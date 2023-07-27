@@ -14,11 +14,13 @@ import com.spring.javaweb11S.vo.OrderHistory_DetailVO;
 import com.spring.javaweb11S.vo.OrderVO;
 import com.spring.javaweb11S.vo.RefundVO;
 import com.spring.javaweb11S.vo.BrandVO;
+import com.spring.javaweb11S.vo.CartVO;
 import com.spring.javaweb11S.vo.CategoryVO;
 import com.spring.javaweb11S.vo.CouponVO;
 import com.spring.javaweb11S.vo.ExchangeVO;
 import com.spring.javaweb11S.vo.Exchange_DetailVO;
 import com.spring.javaweb11S.vo.GoodsVO;
+import com.spring.javaweb11S.vo.Goods_ImageVO;
 import com.spring.javaweb11S.vo.Goods_StockVO;
 import com.spring.javaweb11S.vo.SecondCategoryVO;
 import com.spring.javaweb11S.vo.SubCategoryVO;
@@ -45,7 +47,7 @@ public interface GoodsService {
 
 	public String fileUpload(MultipartFile fName, GoodsVO vo);
 
-	public CategoryVO getGoodsCategory(int secondCatagory_Idx);
+	public CategoryVO getGoodsCategory(int secondCategory_Idx);
 
 	public MemberVO getOrderMemberInfo(int sIdx);
 
@@ -61,11 +63,11 @@ public interface GoodsService {
 
 	public void setOrderHistory(OrderHistoryVO vo);
 
-	public void setOrderHistory_Detail(List<OrderHistory_DetailVO> vos);
+	public void setOrderHistory_Detail(List<OrderVO> vos);
 
 	public void setInsertCart(OrderVO vo, String member_Idx);
 
-	public List<OrderVO> getCartList(int sIdx);
+	public List<CartVO> getCartList(int sIdx);
 
 	public void setDeleteCart(int[] cartArray);
 
@@ -85,13 +87,35 @@ public interface GoodsService {
 
 	public void setExchange_DetailGoods(Exchange_DetailVO exchange_DetailVO, List<Exchange_DetailVO> vos);
 
-	public void setUpdateOrderHistory_Detail(int orderHistory_Detail_Idx);
+	public void setUpdateOrderHistory_Detail(int orderHistory_Detail_Idx, int totalStock);
 
 	public void setUpdateOrderHistory_Detail2(int orderHistory_Detail_Idx, int i);
 
 	public int getCartDupliCheck(OrderVO vo, String member_Idx);
 
 	public void setUpdateCart(OrderVO vo, String member_Idx);
+
+	public void setUpdateGoodsStock(List<OrderVO> vos);
+
+	public void setUpdateCartStock(int cart_Idx, String str);
+
+	public List<Goods_ImageVO> getGoodsImages(int goods_Idx);
+
+	public void setInsertExchangeOrderHistory(ExchangeVO exchangeVO);
+
+	public void setInsertExchangeOrderHistory_Detail(List<OrderVO> vos);
+
+	public int getOrderHistory_DetailCnt(int sOhIdx);
+
+	public void setDeleteOrderHistory_Detail(int orderHistory_Detail_Idx);
+
+	public void setDeleteOrderHistory(int sOhIdx);
+
+	public void setUpdateOrderHistory(int sOhIdx, int sOhdIdx, int totalStock, int updatePrice);
+
+	public void setInsertRefundOrderHistory(RefundVO refundVO);
+
+	public void setInsertRefundOrderHistory_Detail(OrderVO vo);
 
 
 

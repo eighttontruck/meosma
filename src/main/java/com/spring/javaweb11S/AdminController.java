@@ -64,8 +64,12 @@ public class AdminController {
 		List<MainCategoryVO> mainCategory_vos= adminService.getMainCateArrayList();
 		List<Goods_StockVO> stockVos = adminService.getGoodsStock(goods_Idx);
 		GoodsVO goodsVo = adminService.getGoodsDetail(goods_Idx);
-		CategoryVO categoryVo = adminService.getGoodsCategory(goodsVo.getSecondCatagory_Idx());
+		CategoryVO categoryVo = adminService.getGoodsCategory(goodsVo.getSecondCategory_Idx());
 		List<BrandVO> brandVos= adminService.getBrandList();
+		
+		if(goodsVo.getImages().indexOf("src=\"/") != -1) {
+			adminService.imgCheckUpdate(goodsVo.getImages());
+		}
 		
 		model.addAttribute("brandVos",brandVos);
 		model.addAttribute("mainCategory_vos",mainCategory_vos);
@@ -73,6 +77,54 @@ public class AdminController {
 		model.addAttribute("goodsVo",goodsVo);
 		model.addAttribute("categoryVo",categoryVo);
 		return "admin/adminGoodsUpdate";
+	}
+	
+	@Transactional
+	@RequestMapping(value="/goodsUpdate", method=RequestMethod.POST)
+	public String goodsUpdatePost(GoodsVO vo, MultipartFile file,
+			@RequestParam(name = "goodsSize", defaultValue="",required=false) String[] goodsSize,
+			@RequestParam(name = "goodsStock", defaultValue="",required=false) int[] goodsStock
+			) {
+		String fileName = adminService.fileUpload(file,vo);
+		System.out.println("Dd");
+//		썸네임 사진도 수정하면 삭제처리해야되는
+		System.out.println("바뀐 썸네일"+fileName);
+		if(fileName!="") {
+			System.out.println("왜 안바뀜?");
+			vo.setThumbNail(fileName);
+		}
+		
+		System.out.println("가져오냐?"+vo.getIdx());
+		GoodsVO origVO = adminService.getGoodsDetail(vo.getIdx());
+		System.out.println("걍vo"+vo.getImages());
+		System.out.println("오리지널vo"+origVO.getIdx());
+		
+		Map<String, Integer> vos=new HashMap<>();
+		for(int i=0; i<goodsSize.length; i++) {
+			vos.put(goodsSize[i], goodsStock[i]);
+			System.out.println(goodsSize[i]+" "+goodsStock[i]);
+		}
+
+		
+		if(!origVO.getImages().equals(vo.getImages())) {
+			// 실제로 수정하기 버튼을 클릭하게되면, 기존의 board폴더에 저장된, 현재 content의 그림파일 모두를 삭제 시킨다.
+			if(origVO.getImages().indexOf("src=\"/") != -1) adminService.imgDelete(origVO.getImages());
+			
+			// board폴더에는 이미 그림파일이 삭제되어 있으므로(ckeditor폴더로 복사해놓았음), vo.getContent()에 있는 그림파일경로 'board'를 'ckeditor'경로로 변경해줘야한다.
+			vo.setImages(vo.getImages().replace("/data/goods/", "/data/ckeditor/"));
+			
+			// 앞의 작업이 끝나면 파일을 처음 업로드한것과 같은 작업을 처리시켜준다.
+			// content에 이미지가 저장되어 있다면, 저장된 이미지만 골라서 /resources/data/board/폴더에 저장시켜준다.
+			adminService.imgCheck(vo.getImages(), origVO.getIdx());
+			
+			// 이미지들의 모든 복사작업을 마치면, ckeditor폴더경로를 board폴더 경로로 변경한다.(/resources/data/ckeditor/ ===>> /resources/data/board/)
+			vo.setImages(vo.getImages().replace("/data/ckeditor/", "/data/goods/"));
+		}
+		
+		System.out.println("카테고리값:"+vo.getSecondCategory_Idx());
+		adminService.setUpdateGoods(vo);
+		adminService.setUpdateGoods_Stock(vos,vo.getIdx());
+		return "redirect:/admin/goodsList";
 	}
 	
 	@RequestMapping(value="/goodsRegister", method=RequestMethod.GET)
@@ -90,11 +142,14 @@ public class AdminController {
 			@RequestParam(name = "goodsSize", defaultValue="",required=false) String[] goodsSize,
 			@RequestParam(name = "goodsStock", defaultValue="",required=false) int[] goodsStock
 			) {
-		System.out.println(file);
+		System.out.println("원본"+file);
 		String fileName = adminService.fileUpload(file,vo);
+		System.out.println("저장후"+fileName);
 		
-		if(fileName==null) {
-			System.out.println("파일업로드 오류");
+		if(fileName!="") {
+			System.out.println("들어옴");
+		} else {
+			System.out.println("안들어옴");
 		}
 		vo.setThumbNail(fileName);
 		Map<String, Integer> vos=new HashMap<>();
@@ -102,12 +157,29 @@ public class AdminController {
 			vos.put(goodsSize[i], goodsStock[i]);
 			System.out.println(goodsSize[i]+" "+goodsStock[i]);
 		}
-		System.out.println(vo.toString());
-		vo.toString();
+
 		adminService.setGoodsRegister(vo);
 		adminService.setGoodsStockRegister(vos);
-		return "redirect:/admin/goodsRegister";
 		
+		adminService.imgCheck(vo.getImages(), 0);
+		vo.setImages(vo.getImages().replace("/data/ckeditor/", "/data/goods/"));
+		
+		return "redirect:/admin/goodsList";
+		
+	}
+	
+	@Transactional
+	@ResponseBody
+	@RequestMapping(value="/goodsDeleteAJAX", method=RequestMethod.POST)
+	public String adminGoodsDeleteAJAXPost(int goods_Idx) {
+		
+		GoodsVO vo = adminService.getGoodsDetail(goods_Idx);
+		
+		adminService.imgDelete(vo.getImages());
+		
+		adminService.setDeleteGoods(goods_Idx);
+		
+		return "굿";
 	}
 	
 	@RequestMapping(value="/goodsList", method=RequestMethod.GET)
@@ -201,6 +273,40 @@ public class AdminController {
 		return "admin/adminMemberList";
 	}
 	
+	@RequestMapping(value="/categoryList", method=RequestMethod.GET)
+	public String adminCategoryListGet(Model model,
+			@RequestParam(name = "mainCategory", defaultValue="-99",required=false) int mainCategory,
+			@RequestParam(name = "subCategory", defaultValue="-99",required=false) int subCategory,
+			@RequestParam(name = "secondCategory", defaultValue="-99",required=false) int secondCategory,
+			@RequestParam(name = "searchString", defaultValue="",required=false) String searchString,
+			@RequestParam(name = "searchKeyword", defaultValue="",required=false) String searchKeyword,
+			@RequestParam(name = "pag", defaultValue="1",required=false) int pag,
+			@RequestParam(name = "pagSize", defaultValue="15",required=false) int pagSize
+			) {
+		System.out.println(subCategory);
+		if(mainCategory!=-99&&subCategory==-99) {
+			List<SubCategoryVO> subCategory_vos= adminService.getSubCateArrayList(mainCategory);
+			model.addAttribute("subCategory_vos",subCategory_vos);
+			model.addAttribute("mainCategory",mainCategory);
+		}
+		if(subCategory!=-99) {
+			List<SecondCategoryVO> secondCategory_vos= adminService.getSecondCateArrayList(subCategory);
+			model.addAttribute("secondCategory_vos",secondCategory_vos);
+			model.addAttribute("mainCategory",mainCategory);
+			model.addAttribute("subCategory",subCategory);
+		}
+		List<MainCategoryVO> mainCategory_vos= adminService.getMainCateArrayList();
+		model.addAttribute("mainCategory_vos",mainCategory_vos);
+		return "admin/adminCategoryList";
+	}
+	
+	@RequestMapping(value="/categoryRegister", method=RequestMethod.GET)
+	public String adminCategoryRegisterGet(Model model) {
+		List<MainCategoryVO> mainCategory_vos= adminService.getMainCateArrayList();
+		model.addAttribute("mainCategory_vos",mainCategory_vos);
+		return "admin/adminCategoryRegister";
+	}
+	
 	@RequestMapping(value="/brandUpdate", method=RequestMethod.GET)
 	public String adminBrandrUpdateGet(Model model,
 			@RequestParam(name = "brand_Idx", defaultValue="",required=false) int brand_Idx
@@ -251,9 +357,30 @@ public class AdminController {
 	}
 	
 	@ResponseBody
+	@RequestMapping(value="/insertMainCategory", method=RequestMethod.POST)
+	public String adminInsertMainCategoryAJAXPost(String mainCategoryInput) {
+		adminService.insertMainCategory(mainCategoryInput);
+		return "굿";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/insertSubCategory", method=RequestMethod.POST)
+	public String adminInsertSubCategoryAJAXPost(int mainCategorySelect, String subCategoryInput) {
+		adminService.insertSubCategory(mainCategorySelect, subCategoryInput);
+		return "굿";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/insertSecondCategory", method=RequestMethod.POST)
+	public String adminInsertSecondCategoryAJAXPost(int subCategorySelect, String secondCategoryInput) {
+		adminService.insertSecondCategory(subCategorySelect, secondCategoryInput);
+		return "굿";
+	}
+	
+	@ResponseBody
 	@RequestMapping(value="/updateExchangeDeliveryAJAX", method=RequestMethod.POST)
 	public String adminUpdateExchangeDeliveryAJAXPost(int idx) {
-
+		
 		adminService.setUpdateExchangeDelivery(idx);
 		
 		return "굿";

@@ -15,4 +15,6 @@ public class OrderVO {
 	int goodsStockPrice;
 	int goods_Idx;
 	int option_Idx;
+	
+	int idxChecked;
 }

@@ -66,20 +66,20 @@
 			FROM maincategory
 			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
 			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
-			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
 			WHERE maincategory.Category_Idx = #{mainCategory};
 	    </if>
 	    <if test="mainCategory != '' and subCategory != '' and secondCategory == '' and searchString == '' and startFilter == '' and endFilter == '' ">
 	       	SELECT COUNT(*)
 			FROM subcategory
 			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
-			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
 			WHERE subcategory.subCategory_Idx = #{subCategory};
 	    </if>
 	    <if test="mainCategory != '' and subCategory != '' and secondCategory != '' and searchString == '' and startFilter == '' and endFilter == '' ">
 	       	SELECT COUNT(*)
 			FROM secondCategory
-			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcategory_idx
 			WHERE secondCategory.secondCategory_Idx = #{secondCategory};
 	    </if>
 	    
@@ -100,7 +100,7 @@
 			FROM maincategory
 			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
 			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
-			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE maincategory.Category_Idx = #{mainCategory} AND
 			<choose>
@@ -114,7 +114,7 @@
 	       	SELECT COUNT(*)
 			FROM subcategory
 			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
-			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE subcategory.subCategory_Idx = #{subCategory} AND
 			<choose>
@@ -127,7 +127,7 @@
 	    <if test="mainCategory != '' and subCategory != '' and secondCategory != '' and searchString != '' and startFilter == '' and endFilter == '' ">
 	       	SELECT COUNT(*)
 			FROM secondCategory
-			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE secondCategory.secondCategory_Idx = #{secondCategory} AND
 			<choose>
@@ -150,7 +150,7 @@
 			FROM maincategory
 			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
 			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
-			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
 			WHERE maincategory.Category_Idx = #{mainCategory} AND
 			price BETWEEN #{startFilter} AND #{endFilter};
 	    </if>
@@ -158,14 +158,14 @@
 	       	SELECT COUNT(*)
 			FROM subcategory
 			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
-			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
 			WHERE subcategory.subCategory_Idx = #{subCategory} AND
 			price BETWEEN #{startFilter} AND #{endFilter};
 	    </if>
 	    <if test="mainCategory != '' and subCategory != '' and secondCategory != '' and searchString == '' and startFilter != '' and endFilter != '' ">
 	       	SELECT COUNT(*)
 			FROM secondCategory
-			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcategory_idx
 			WHERE secondCategory.secondCategory_Idx = #{secondCategory} AND
 			price BETWEEN #{startFilter} AND #{endFilter};
 	    </if>
@@ -187,7 +187,7 @@
 			FROM maincategory
 			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
 			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
-			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE maincategory.Category_Idx = #{mainCategory} AND
 			<choose>
@@ -202,7 +202,7 @@
 	       	SELECT COUNT(*)
 			FROM subcategory
 			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
-			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE subcategory.subCategory_Idx = #{subCategory} AND
 			<choose>
@@ -216,7 +216,7 @@
 	    <if test="mainCategory != '' and subCategory != '' and secondCategory != '' and searchString != '' and startFilter != '' and endFilter != '' ">
 	       	SELECT COUNT(*)
 			FROM secondCategory
-			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE secondCategory.secondCategory_Idx = #{secondCategory} AND
 			<choose>
@@ -312,11 +312,18 @@
 	</select>
 	
 	<select id="getSubCateArrayList" resultType="com.spring.javaweb11S.vo.SubCategoryVO">
-		SELECT * FROM subCategory WHERE category_idx = #{mainCategory};
+		SELECT sc.subcategory_idx, sc.subcategory_name, m.category_Name AS mainCategory_Name
+		FROM subCategory sc
+		JOIN maincategory m ON m.category_idx = sc.category_idx
+		WHERE sc.category_idx = #{mainCategory};
 	</select>
 	
 	<select id="getSecondCateArrayList" resultType="com.spring.javaweb11S.vo.SecondCategoryVO">
-		SELECT * FROM secondcategory WHERE subcategory_idx = #{subCategory};
+		SELECT scc.secondcategory_idx, scc.secondcategory_name, sc.subCategory_Name AS subCategory_Name, m.category_Name AS mainCategory_Name 
+		FROM secondcategory scc
+		JOIN subCategory sc ON sc.subcategory_idx = scc.subcategory_idx
+		JOIN mainCategory m ON m.category_idx = sc.category_idx
+		WHERE scc.subcategory_idx = #{subCategory};
 	</select>
 	
 	<select id="getGoodsStock" resultType="com.spring.javaweb11S.vo.Goods_StockVO">
@@ -328,34 +335,34 @@
 	
 	<select id="getGoodsTableList" resultType="com.spring.javaweb11S.vo.GoodsVO">
 		<if test="pageVO.mainCategory == '' and pageVO.subCategory == '' and pageVO.secondCategory == '' and pageVO.searchString == '' and pageVO.startFilter == '' and pageVO.endFilter == '' ">
-	        SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name 
+	        SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name 
 	        FROM goods
 	        JOIN brand ON goods.brand_idx = brand.idx
 	        ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	    </if>
 	    <if test="pageVO.mainCategory != '' and pageVO.subCategory == '' and pageVO.secondCategory == '' and pageVO.searchString == '' and pageVO.startFilter == '' and pageVO.endFilter == '' ">
-	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 			FROM maincategory
 			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
 			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
-			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE maincategory.Category_Idx = #{pageVO.mainCategory}
 			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	    </if>
 	    <if test="pageVO.mainCategory != '' and pageVO.subCategory != '' and pageVO.secondCategory == '' and pageVO.searchString == '' and pageVO.startFilter == '' and pageVO.endFilter == '' ">
-	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 			FROM subcategory
 			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
-			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE subcategory.subCategory_Idx = #{pageVO.subCategory}
 			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	    </if>
 	    <if test="pageVO.mainCategory != '' and pageVO.subCategory != '' and pageVO.secondCategory != '' and pageVO.searchString == '' and pageVO.startFilter == '' and pageVO.endFilter == '' ">
-	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 			FROM secondCategory
-			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE secondCategory.secondCategory_Idx = #{pageVO.secondCategory}
 			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
@@ -363,7 +370,7 @@
 	    
 	    
 	    <if test="pageVO.mainCategory == '' and pageVO.subCategory == '' and pageVO.secondCategory == '' and pageVO.searchString != '' and pageVO.startFilter == '' and pageVO.endFilter == '' ">
-	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 			FROM goods
 			JOIN brand ON goods.brand_idx = brand.idx WHERE 
 			<choose>
@@ -375,11 +382,11 @@
 			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	    </if>
 	    <if test="pageVO.mainCategory != '' and pageVO.subCategory == '' and pageVO.secondCategory == '' and pageVO.searchString != '' and pageVO.startFilter == '' and pageVO.endFilter == '' ">
-	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 			FROM maincategory
 			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
 			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
-			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE maincategory.Category_Idx = #{pageVO.mainCategory} AND
 			<choose>
@@ -391,10 +398,10 @@
 			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	    </if>
 	    <if test="pageVO.mainCategory != '' and pageVO.subCategory != '' and pageVO.secondCategory == '' and pageVO.searchString != '' and pageVO.startFilter == '' and pageVO.endFilter == '' ">
-	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 			FROM subcategory
 			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
-			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE subcategory.subCategory_Idx = #{pageVO.subCategory} AND
 			<choose>
@@ -406,9 +413,9 @@
 			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	    </if>
 	    <if test="pageVO.mainCategory != '' and pageVO.subCategory != '' and pageVO.secondCategory != '' and pageVO.searchString != '' and pageVO.startFilter == '' and pageVO.endFilter == '' ">
-	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 			FROM secondCategory
-			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE secondCategory.secondCategory_Idx = #{pageVO.secondCategory} AND
 			<choose>
@@ -423,37 +430,37 @@
 	    
 	    
 	    <if test="pageVO.mainCategory == '' and pageVO.subCategory == '' and pageVO.secondCategory == '' and pageVO.searchString == '' and pageVO.startFilter != '' and pageVO.endFilter != '' ">
-	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 			FROM goods
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE price BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
 			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	    </if>
 	    <if test="pageVO.mainCategory != '' and pageVO.subCategory == '' and pageVO.secondCategory == '' and pageVO.searchString == '' and pageVO.startFilter != '' and pageVO.endFilter != '' ">
-	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 			FROM maincategory
 			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
 			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
-			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE maincategory.Category_Idx = #{pageVO.mainCategory} AND
 			price BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
 			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	    </if>
 	    <if test="pageVO.mainCategory != '' and pageVO.subCategory != '' and pageVO.secondCategory == '' and pageVO.searchString == '' and pageVO.startFilter != '' and pageVO.endFilter != '' ">
-	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 			FROM subcategory
 			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
-			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE subcategory.subCategory_Idx = #{pageVO.subCategory} AND
 			price BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
 			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	    </if>
 	    <if test="pageVO.mainCategory != '' and pageVO.subCategory != '' and pageVO.secondCategory != '' and pageVO.searchString == '' and pageVO.startFilter != '' and pageVO.endFilter != '' ">
-	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 			FROM secondCategory
-			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE secondCategory.secondCategory_Idx = #{pageVO.secondCategory} AND
 			price BETWEEN #{pageVO.startFilter} AND #{pageVO.endFilter}
@@ -462,7 +469,7 @@
 	    
 	    
 	    <if test="pageVO.mainCategory == '' and pageVO.subCategory == '' and pageVO.secondCategory == '' and pageVO.searchString != '' and pageVO.startFilter != '' and pageVO.endFilter != '' ">
-	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 			FROM goods
 			JOIN brand ON goods.brand_idx = brand.idx WHERE 
 			<choose>
@@ -475,11 +482,11 @@
 			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	    </if>
 	    <if test="pageVO.mainCategory != '' and pageVO.subCategory == '' and pageVO.secondCategory == '' and pageVO.searchString != '' and pageVO.startFilter != '' and pageVO.endFilter != '' ">
-	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 			FROM maincategory
 			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
 			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
-			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE maincategory.Category_Idx = #{pageVO.mainCategory} AND
 			<choose>
@@ -492,10 +499,10 @@
 			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	    </if>
 	    <if test="pageVO.mainCategory != '' and pageVO.subCategory != '' and pageVO.secondCategory == '' and pageVO.searchString != '' and pageVO.startFilter != '' and pageVO.endFilter != '' ">
-	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 			FROM subcategory
 			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
-			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE subcategory.subCategory_Idx = #{pageVO.subCategory} AND
 			<choose>
@@ -508,9 +515,9 @@
 			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	    </if>
 	    <if test="pageVO.mainCategory != '' and pageVO.subCategory != '' and pageVO.secondCategory != '' and pageVO.searchString != '' and pageVO.startFilter != '' and pageVO.endFilter != '' ">
-	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+	       	SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 			FROM secondCategory
-			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcatagory_idx
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcategory_idx
 			JOIN brand ON goods.brand_idx = brand.idx
 			WHERE secondCategory.secondCategory_Idx = #{pageVO.secondCategory} AND
 			<choose>
@@ -525,7 +532,7 @@
 	</select>
 	
 	<select id="getGoodsDetail" resultType="com.spring.javaweb11S.vo.GoodsVO">
-		SELECT goods.idx, goods.brand_idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+		SELECT goods.idx, goods.brand_idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, goods.images, brand.name as brand_Name
 		FROM goods
 		JOIN brand ON goods.brand_idx = brand.idx
 		WHERE goods.idx = #{goods_Idx};
@@ -536,7 +543,7 @@
 		FROM secondcategory scc
 		JOIN subcategory sc ON sc.subcategory_idx = scc.subcategory_idx
 		JOIN maincategory mc ON mc.category_idx = sc.category_idx
-		where scc.secondCategory_Idx = #{secondCatagory_Idx};
+		where scc.secondCategory_Idx = #{secondCategory_Idx};
 	</select>
 	
 	<select id="getgoodsOrderHistoryList" resultType="com.spring.javaweb11S.vo.OrderHistoryVO">
@@ -624,7 +631,7 @@
 	</select>
 		
 	<select id="getOrderHistory_DetailListAJAX" resultType="com.spring.javaweb11S.vo.OrderHistory_DetailVO">
-		SELECT ohd.idx, ohd.orderhistory_idx, oh.orderdate, ohd.status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, ohd.totalPrice, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand
+		SELECT ohd.idx, ohd.orderhistory_idx, oh.orderdate, ohd.status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand
 		FROM orderhistory oh
 		JOIN orderhistory_detail ohd ON ohd.orderhistory_idx = oh.idx
 		JOIN goods g ON g.idx = ohd.goods_idx
@@ -685,12 +692,21 @@
 		</if>
 	</select>
 
+	<insert id="setInsertGoodsImage">
+		<if test="goods_Idx == 0">
+			INSERT INTO goods_image(idx, goods_idx, fName) VALUES(default, (SELECT idx FROM goods ORDER BY idx DESC LIMIT 0, 1), #{imgFile});
+		</if>
+		<if test="goods_Idx != 0">
+			INSERT INTO goods_image(idx, goods_idx, fName) VALUES(default, #{goods_Idx}, #{imgFile});
+		</if>
+	</insert>
+
 	<insert id="setBrandRegister">
 		INSERT INTO brand VALUES(default,#{vo.name}, #{vo.content}, default);
 	</insert>
 	
 	<insert id="setGoodsRegister">
-		INSERT INTO goods VALUES(default,#{vo.brand_Idx},#{vo.name},#{vo.price},#{vo.thumbNail},default,#{vo.secondCatagory_Idx});
+		INSERT INTO goods VALUES(default,#{vo.brand_Idx},#{vo.name},#{vo.price},#{vo.thumbNail},#{vo.images},default,#{vo.secondCategory_Idx},default);
 	</insert>
 	
 	<insert id="setGoodsStockRegister" parameterType="java.util.Map">
@@ -701,6 +717,32 @@
 		</foreach>
 		;
 	</insert>
+	
+	<insert id="insertMainCategory">
+		INSERT INTO maincategory VALUES(default, #{mainCategoryInput});
+	</insert>
+	
+	<insert id="insertSubCategory">
+		INSERT INTO subcategory VALUES(default, #{subCategoryInput}, #{mainCategorySelect});
+	</insert>
+		
+	<insert id="insertSecondCategory">
+		INSERT INTO secondcategory VALUES(default, #{secondCategoryInput}, #{subCategorySelect});
+	</insert>
+	
+	<update id="setUpdateGoods">
+		UPDATE goods
+		SET brand_idx = #{vo.brand_Idx}, images = #{vo.images}, name = #{vo.name}, price = #{vo.price}, secondCategory_Idx = #{vo.secondCategory_Idx}, thumbnail = #{vo.thumbNail}
+		WHERE idx = #{vo.idx};
+	</update>
+	
+	<update id="setUpdateGoods_Stock">
+		<foreach item="value" collection="vos" index="key" separator=";">
+			UPDATE goods_stock
+			SET stock = #{value}
+			WHERE goods_idx = #{goods_Idx} AND option_idx = (SELECT option_idx FROM goods_option WHERE goods_option = #{key})
+		</foreach>
+	</update>
 	
 	<update id="setUpdateExchangeDelivery">
 		UPDATE exchange
@@ -730,7 +772,21 @@
 		WHERE idx = #{brandVO.idx};
 	</update>
 	
+	<delete id="setDeleteGoodsImage">
+		DELETE FROM goods_image WHERE goods_idx = #{goods_Idx};
+	</delete>
+	
 	<delete id="setBrandDelete">
 		DELETE FROM brand WHERE idx = #{brand_Idx};
+	</delete>
+	
+	<delete id="setDeleteGoods">
+		DELETE FROM goods_image WHERE goods_idx = #{goods_Idx};
+		DELETE FROM goods_stock WHERE goods_idx = #{goods_Idx};
+		DELETE FROM cart WHERE goods_idx = #{goods_Idx};
+		DELETE FROM refund WHERE orderhistory_detail_idx = (SELECT idx FROM orderhistory_detail WHERE goods_idx = #{goods_Idx} LIMIT 1);
+		DELETE FROM exchange WHERE orderhistory_detail_idx = (SELECT idx FROM orderhistory_detail WHERE goods_idx = #{goods_Idx} LIMIT 1);
+		DELETE FROM orderHistory_detail WHERE goods_idx = #{goods_Idx};
+		DELETE FROM goods WHERE idx = #{goods_Idx};
 	</delete>
 </mapper>

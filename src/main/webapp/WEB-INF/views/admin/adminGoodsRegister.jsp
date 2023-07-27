@@ -269,7 +269,7 @@
 									<div class="labelText">브랜드 선택</div>
 									<div>
 										<select name="brand_Idx" class="inputText">
-											<option disabled hidden selected value="" name="brand_idx">브랜드 선택</option>
+											<option disabled hidden selected value="">브랜드 선택</option>
 											<c:forEach var="vo" items="${brand_vos}" varStatus="st">
 												<option value="${vo.idx}">${vo.name}</option>
 											</c:forEach>
@@ -301,7 +301,7 @@
 								</div>
 								<div class="col">
 									<div class="labelText">소분류 선택</div>
-									<div><select id="secondCategory" name="secondCatagory_Idx" class="inputText"></select></div>
+									<div><select id="secondCategory" name="secondCategory_Idx" class="inputText"></select></div>
 								</div>
                              </div>
                         </div>
@@ -334,10 +334,11 @@
                     		<div class="card mb-4">
                        		<div class="card-body">
                        			<div class="labelText">사진 등록</div>
-                           		<textarea rows="6" name="content" id="CKEDITOR" class="form-control"></textarea>
+                           		<textarea rows="6" name="images" id="CKEDITOR" class="form-control"></textarea>
 	                            <script>
-	                           		CKEDITOR.replace("content",{
-										filebrowserUploadUrl:"${ctp}/images"                        		
+	                           		CKEDITOR.replace("images",{
+										filebrowserUploadUrl : "${ctp}/imageUpload",
+										uploadUrl : "${ctp}/imageUpload"
 	                           		});
 	                            </script>
                        		</div>

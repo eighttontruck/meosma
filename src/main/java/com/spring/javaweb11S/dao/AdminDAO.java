@@ -40,7 +40,7 @@ public interface AdminDAO {
 
 	public GoodsVO getGoodsDetail(@Param("goods_Idx") int goods_Idx);
 
-	public CategoryVO getGoodsCategory(@Param("secondCatagory_Idx") int secondCatagory_Idx);
+	public CategoryVO getGoodsCategory(@Param("secondCategory_Idx") int secondCategory_Idx);
 
 	public List<OrderHistoryVO> getgoodsOrderHistoryList(@Param("delivery_Status") String delivery_Status, @Param("searchKeyword") String searchKeyword, @Param("searchString") String searchString, @Param("startDate") String startDate, @Param("endDate") String endDate);
 
@@ -75,6 +75,22 @@ public interface AdminDAO {
 	public void setExchangeShippingNumRegister(@Param("idx") int idx, @Param("shippingNum") int shippingNum);
 
 	public List<Exchange_DetailVO> getExchange_DetailList(@Param("idx") int idx);
+
+	public void insertMainCategory(@Param("mainCategoryInput") String mainCategoryInput);
+
+	public void insertSubCategory(@Param("mainCategorySelect") int mainCategorySelect, @Param("subCategoryInput") String subCategoryInput);
+
+	public void insertSecondCategory(@Param("subCategorySelect") int subCategorySelect, @Param("secondCategoryInput") String secondCategoryInput);
+
+	public void setInsertGoodsImage(@Param("imgFile") String imgFile, @Param("goods_Idx") int goods_Idx);
+
+	public void setDeleteGoodsImage(@Param("goods_Idx") int goods_Idx);
+
+	public void setUpdateGoods(@Param("vo") GoodsVO vo);
+
+	public void setUpdateGoods_Stock(@Param("vos") Map<String, Integer> vos, @Param("goods_Idx") int goods_Idx);
+
+	public void setDeleteGoods(@Param("goods_Idx") int goods_Idx);
 
 
 }

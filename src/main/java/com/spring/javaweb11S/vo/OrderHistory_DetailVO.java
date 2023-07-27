@@ -10,6 +10,7 @@ public class OrderHistory_DetailVO {
 	int option_Idx;
 	int goods_Stock;
 	int totalPrice;
+	String complainStatus;
 	
 	String goods_ThumbNail;
 	String goods_Name;

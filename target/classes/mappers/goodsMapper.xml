@@ -2,13 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.spring.javaweb11S.dao.GoodsDAO">
 	<select id="getGoodsList" resultType="com.spring.javaweb11S.vo.GoodsVO">
-		SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+		SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 		FROM goods
 		JOIN brand ON goods.brand_idx = brand.idx;
 	</select>
 	
 	<select id="getGoodsDetail" resultType="com.spring.javaweb11S.vo.GoodsVO">
-		SELECT goods.idx, goods.brand_idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+		SELECT goods.idx, goods.brand_idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 		FROM goods
 		JOIN brand ON goods.brand_idx = brand.idx
 		WHERE goods.idx = #{goods_Idx};
@@ -26,11 +26,18 @@
 	</select>
 	
 	<select id="getSubCateArrayList" resultType="com.spring.javaweb11S.vo.SubCategoryVO">
-		SELECT * FROM subCategory WHERE category_idx = #{mainCategory};
+		SELECT sc.subcategory_idx, sc.subcategory_name, m.category_Name AS mainCategory_Name
+		FROM subCategory sc
+		JOIN maincategory m ON m.category_idx = sc.category_idx
+		WHERE sc.category_idx = #{mainCategory};
 	</select>
 	
 	<select id="getSecondCateArrayList" resultType="com.spring.javaweb11S.vo.SecondCategoryVO">
-		SELECT * FROM secondcategory WHERE subcategory_idx = #{subCategory};
+		SELECT scc.secondcategory_idx, scc.secondcategory_name, sc.subCategory_Name AS subCategory_Name, m.category_Name AS mainCategory_Name 
+		FROM secondcategory scc
+		JOIN subCategory sc ON sc.subcategory_idx = scc.subcategory_idx
+		JOIN mainCategory m ON m.category_idx = sc.category_idx
+		WHERE scc.subcategory_idx = #{subCategory};
 	</select>
 	
 	<select id="getGoodsCategory" resultType="com.spring.javaweb11S.vo.CategoryVO">
@@ -38,7 +45,7 @@
 		FROM secondcategory scc
 		JOIN subcategory sc ON sc.subcategory_idx = scc.subcategory_idx
 		JOIN maincategory mc ON mc.category_idx = sc.category_idx
-		where scc.secondCategory_Idx = #{secondCatagory_Idx};
+		where scc.secondCategory_Idx = #{secondCategory_Idx};
 	</select>
 	
 	<select id="getOrderMemberInfo" resultType="com.spring.javaweb11S.vo.MemberVO">
@@ -61,7 +68,7 @@
 	</select>
 	
 	<select id="getGoodsTableList" resultType="com.spring.javaweb11S.vo.GoodsVO">
-		SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcatagory_idx, brand.name as brand_Name
+		SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 		FROM goods
 		JOIN brand ON goods.brand_idx = brand.idx;
 	</select>
@@ -77,8 +84,8 @@
 		SELECT * FROM member_shippingaddress WHERE member_idx = #{sIdx};
 	</select>
 	
-	<select id="getCartList" resultType="com.spring.javaweb11S.vo.OrderVO">
-		SELECT cart.idx AS idx, goods.thumbnail AS order_ThumbNail, brand.name AS order_Brand, goods.name AS order_Name, goods_option.goods_option AS order_Option, goods.price AS order_Price,  cart.stock AS order_Stock, cart.goods_idx, cart.option_idx
+	<select id="getCartList" resultType="com.spring.javaweb11S.vo.CartVO">
+		SELECT cart.idx AS idx, goods.thumbnail AS order_ThumbNail, brand.name AS order_Brand, goods.name AS order_Name, goods_option.goods_option AS order_Option, goods.price AS order_Price,  cart.stock, cart.goods_idx, cart.option_idx
 		FROM cart
 		JOIN goods ON goods.idx = cart.goods_idx
 		JOIN goods_option ON goods_option.option_idx = cart.option_idx
@@ -109,18 +116,16 @@
 		SELECT count(*) FROM cart WHERE goods_Idx = #{vo.goods_Idx} AND option_Idx = #{vo.option_Idx} AND member_Idx = #{member_Idx}; 
 	</select>
 	
-	<insert id="setGoodsRegister">
-		INSERT INTO goods VALUES(default,#{vo.brand_Idx},#{vo.name},#{vo.price},#{vo.thumbNail},default,#{vo.secondCatagory_Idx});
-	</insert>
+	<select id="getGoodsImages" resultType="com.spring.javaweb11S.vo.Goods_ImageVO">
+		SELECT * FROM goods_image WHERE goods_idx = #{goods_Idx};
+	</select>
 	
-	<insert id="setGoodsStockRegister" parameterType="java.util.Map">
-		INSERT INTO goods_stock (goods_idx, option_idx, stock)
-		VALUES 
-		<foreach item="value" collection="vos" index="key" separator=",">
-			((SELECT idx FROM goods ORDER BY idx DESC LIMIT 0, 1), (SELECT option_idx FROM goods_option WHERE goods_option = #{key}), #{value})
-		</foreach>
-		;
-	</insert>
+	<select id="getOrderHistory_DetailCnt" resultType="int">
+		SELECT COUNT(od.idx) as orderhistory_detail_count
+		FROM orderhistory oh
+		LEFT JOIN orderhistory_detail od ON oh.idx = od.orderhistory_idx
+		WHERE oh.idx = #{sOhIdx};
+	</select>
 	
 	<insert id="setOrderHistory">
 		INSERT INTO orderHistory(idx, member_idx, orderdate, finalprice, recipient_name, recipient_telnum, recipient_address) VALUES(default, #{vo.member_Idx}, default, #{vo.finalPrice}, #{vo.recipient_Name}, #{vo.recipient_TelNum}, #{vo.recipient_Address});
@@ -130,7 +135,16 @@
 		INSERT INTO orderHistory_detail
 		VALUES
 		<foreach collection="vos" item="item" separator=",">
-			(default,(SELECT idx FROM orderHistory ORDER BY idx DESC LIMIT 0, 1) ,#{item.goods_Idx}, #{item.option_Idx}, #{item.goods_Stock}, default)
+			(default,(SELECT idx FROM orderHistory ORDER BY idx DESC LIMIT 0, 1) ,#{item.goods_Idx}, #{item.option_Idx}, #{item.order_Stock}, default, default)
+		</foreach>
+		;
+	</insert>
+	
+	<insert id="setInsertExchangeOrderHistory_Detail">
+		INSERT INTO orderHistory_detail
+		VALUES
+		<foreach collection="vos" item="item" separator=",">
+			(default,(SELECT idx FROM orderHistory ORDER BY idx DESC LIMIT 0, 1) ,#{item.goods_Idx}, #{item.option_Idx}, #{item.order_Stock}, default, '교환상품')
 		</foreach>
 		;
 	</insert>
@@ -156,6 +170,18 @@
 			(default,(SELECT idx FROM exchange ORDER BY idx DESC LIMIT 0, 1) ,#{exchange_DetailVO.goods_Idx} ,#{item.option_Idx}, #{item.stock})
 		</foreach>
 		;
+	</insert>
+	
+	<insert id="setInsertExchangeOrderHistory">
+		INSERT INTO orderHistory(idx, member_idx, orderdate, finalprice, recipient_name, recipient_telnum, recipient_address, category) VALUES(default, #{exchangeVO.member_Idx}, default, 6000, #{exchangeVO.recipient_Name}, #{exchangeVO.recipient_TelNum}, #{exchangeVO.recipient_Address}, '교환');
+	</insert>
+	
+	<insert id="setInsertRefundOrderHistory">
+		INSERT INTO orderHistory(idx, member_idx, orderdate, finalprice, category) VALUES(default, #{refundVO.member_Idx}, default, #{refundVO.refund_Price}, '환불');
+	</insert>
+	
+	<insert id="setInsertRefundOrderHistory_Detail">
+		INSERT INTO orderHistory_detail VALUES(default,(SELECT idx FROM orderHistory ORDER BY idx DESC LIMIT 0, 1) ,#{vo.goods_Idx}, #{vo.option_Idx}, #{vo.order_Stock}, default, '환불상품');
 	</insert>
 	
 	<update id="setUpdateCart">
@@ -184,15 +210,47 @@
 	
 	<update id="setUpdateOrderHistory_Detail">
 		UPDATE orderHistory_detail
-		SET status = '환불신청' 
+		SET goods_Stock = goods_Stock - #{totalStock}
 		WHERE idx = #{orderHistory_Detail_Idx};
+	</update>
+
+	
+	<update id="setUpdateGoodsStock">
+		<foreach item="item" collection="vos" separator=";">
+	    	UPDATE goods_stock
+	    	SET stock = stock - #{item.order_Stock}
+	    	WHERE goods_idx = #{item.goods_Idx} AND option_idx = #{item.option_Idx}
+	  	</foreach>
 	</update>
 	
-	<update id="setUpdateOrderHistory_Detail2">
-		UPDATE orderHistory_detail
-		SET goods_Stock = goods_Stock - #{i}
-		WHERE idx = #{orderHistory_Detail_Idx};
+	<update id="setUpdateCartStock">
+		<if test="str == plus">
+			UPDATE cart
+			SET stock = stock + 1
+			WHERE idx = #{cart_Idx};
+		</if>
+		<if test="str == minus">
+			UPDATE cart
+			SET stock = stock - 1
+			WHERE idx = #{cart_Idx};
+		</if>
 	</update>
+	
+	<update id="setUpdateOrderHistory">
+		UPDATE orderhistory SET finalprice = #{updatePrice} WHERE idx = #{sOhIdx};
+	</update>
+	
+	<update id="">
+		UPDATE orderhistory_detail SET stock = stock - #{totalStock} WHERE idx = #{sOhdIdx};
+	</update>
+	
+	<delete id="setDeleteOrderHistory">
+		DELETE FROM orderhistory WHERE idx = #{sOhIdx};
+	</delete>
+	
+	<delete id="setDeleteOrderHistory_Detail">
+		DELETE FROM orderhistory_detail WHERE idx = #{orderHistory_Detail_Idx};
+	</delete>
 	
 	<delete id="setDeleteCart" parameterType="int[]">
 		<foreach item="item" collection="cartArray" separator=";">

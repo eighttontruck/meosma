@@ -60,6 +60,7 @@ public class MemberController {
 			HttpSession session) {
 		MemberVO vo = memberService.getMemberEmailIdCheck(emailId);
 		
+		
 		if(vo!=null&&vo.getMemberDel().equals("NO")&&passwordEncoder.matches(pwd, vo.getPwd())) {
 			String strLevel="";
 			if(vo.getLevel()==0) strLevel="관리자";
@@ -201,7 +202,8 @@ public class MemberController {
 	public String memberGoodsConfirmAJAXPost(int orderHistory_Detail_Idx) {
 		
 		memberService.setMemberGoodsConfirmAJAX(orderHistory_Detail_Idx);
-		
+		//세션 넣어서 레벨을 매퍼까지 끌고 가서 거기서 계산하자 if문으로
+		//goodsService.setPlusPoint(sIdx, savePoint);
 		return "";
 	}
 	

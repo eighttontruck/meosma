@@ -113,9 +113,9 @@
         </style>
         <script>
 	        $(document).ready(function() {
-				$("#mainCategory").val(${pageVO.mainCategory});
+				$("#mainCategory").val(${mainCategory});
 				let mainCategory = $("#mainCategory").val();
-				if(mainCategory != null){
+				if(mainCategory != 0){
 					$.ajax({
 		    			type : "post",
 		    			url : "${ctp}/goods/subCategoryList",
@@ -133,9 +133,9 @@
 		    				}
 		    				$("#subCategory").html(str);
 		    				
-		    				$("#subCategory").val(${pageVO.subCategory});
+		    				$("#subCategory").val(${subCategory});
 		    				let subCategory=$("#subCategory").val();
-		    				if(subCategory != null){
+		    				/* if(subCategory != null){
 			    				$.ajax({
 			    					type : "post",
 			    					url : "${ctp}/goods/secondCategoryList",
@@ -146,9 +146,9 @@
 			    						for (let i = 0; i < res.length; i++) {
 			    						    if (res[i] == null) break;
 			    						    str += '<option ';
-			    						    /* if (secondCategory_Name == String(res[i].secondCategory_Name)) {
+			    						    if (secondCategory_Name == String(res[i].secondCategory_Name)) {
 			    						    	str += 'selected';
-			    						    } */
+			    						    }
 			    						    str += ' value="' + res[i].secondCategory_Idx + '">' + res[i].secondCategory_Name + '</option>';
 			    						}
 			    						$("#secondCategory").html(str);
@@ -158,7 +158,7 @@
 			    						alert("전송오류!");
 			    					}
 			    				});
-		    				}
+		    				} */
 		    			},
 		    			error:function() {
 		    				alert("전송오류!");
@@ -196,7 +196,7 @@
 	    			});
 	    		});
 	    		
-	    		$("#subCategory").change(function(){
+	    		/* $("#subCategory").change(function(){
 	    			let subCategory=$(this).val();
 	    			if(subCategory == ""){
 	    				alert("소분류를 선택하세요.");
@@ -220,7 +220,7 @@
 	    					alert("전송오류!");
 	    				}
 	    			});
-	    		});
+	    		}); */
 	        });
 	        
 			function getGoodsStockAJAX(goods_Idx){
@@ -257,55 +257,29 @@
 	        	
 	        }
 	        
-	        function deleteGoodsAJAX(goods_Idx){
-	        	let confirmed = confirm("정말 삭제하시겠습니까?");
-	        	if(confirmed){
-	        		$.ajax({
-		    			type : "post",
-		    			url : "${ctp}/admin/goodsDeleteAJAX",
-		    			data : {
-		    				goods_Idx : goods_Idx
-		    			},
-		    			success : function(data){
-		  					alert("삭제 성공");
-		  					location.reload();
-		    			},
-		    			error : function() {
-		    				alert("전송오류!");
-		    			}
-		    		});
-	        	}
-	        }
-	        
 	        function mainCategoryFilter(){
 	        	let mainCategory = $("#mainCategory").val();
-	        	let startPrice = $("#startPrice").val();
-				let endPrice = $("#endPrice").val();
 				let searchKeyword = $("#searchKeyword").val();
 				let searchString = $("#searchString").val();
 				alert(mainCategory);
-	      		location.href="${ctp}/admin/goodsList?mainCategory="+mainCategory+"&startPrice="+startPrice+"&endPrice="+endPrice+"&searchKeyword="+searchKeyword+"&searchString="+searchString;
+	      		location.href="${ctp}/admin/categoryList?mainCategory="+mainCategory+"&searchKeyword="+searchKeyword+"&searchString="+searchString;
 	        }
 	        
 	        function subCategoryFilter(){
 	        	let mainCategory = $("#mainCategory").val();
 	        	let subCategory = $("#subCategory").val();
-	        	let startPrice = $("#startPrice").val();
-				let endPrice = $("#endPrice").val();
 				let searchKeyword = $("#searchKeyword").val();
 				let searchString = $("#searchString").val();
-	        	location.href="${ctp}/admin/goodsList?mainCategory="+mainCategory+"&subCategory="+subCategory+"&startPrice="+startPrice+"&endPrice="+endPrice+"&searchKeyword="+searchKeyword+"&searchString="+searchString;
+	        	location.href="${ctp}/admin/categoryList?mainCategory="+mainCategory+"&subCategory="+subCategory+"&searchKeyword="+searchKeyword+"&searchString="+searchString;
 	        }
 	        
 	        function secondCategoryFilter(){
 	        	let mainCategory = $("#mainCategory").val();
 	        	let subCategory = $("#subCategory").val();
 	        	let secondCategory = $("#secondCategory").val();
-	        	let startPrice = $("#startPrice").val();
-				let endPrice = $("#endPrice").val();
 				let searchKeyword = $("#searchKeyword").val();
 				let searchString = $("#searchString").val();
-	        	location.href="${ctp}/admin/goodsList?mainCategory="+mainCategory+"&subCategory="+subCategory+"&secondCategory="+secondCategory+"&startPrice="+startPrice+"&endPrice="+endPrice+"&searchKeyword="+searchKeyword+"&searchString="+searchString;
+	        	location.href="${ctp}/admin/categoryList?mainCategory="+mainCategory+"&subCategory="+subCategory+"&secondCategory="+secondCategory+"&searchKeyword="+searchKeyword+"&searchString="+searchString;
 	        }
         </script>
     </head>
@@ -383,20 +357,13 @@
                             		<form method="get" name="myform"  class="flex">	
 	                            		<div>
 			                            	<select id="mainCategory" name="mainCategory" class="searchSelect" onchange="mainCategoryFilter()">
-												<option disabled hidden selected value="">대분류 선택</option>
+												<option value="0">대분류 전체보기</option>
 												<c:forEach var="vo" items="${mainCategory_vos}" varStatus="st">
 													<option value="${vo.category_Idx}">${vo.category_Name}</option>
 												</c:forEach>
 											</select>
 											<select id="subCategory" name="subCategory" class="searchSelect" onchange="subCategoryFilter()"></select>
-											<select id="secondCategory" name="secondCategory" class="searchSelect" onchange="secondCategoryFilter()"></select>
 			                            </div>
-			                            <div>
-			                            	가격 필터
-			                            	<input type="text" class="searchInput" id="startPrice" name="startPrice" value="${pageVO.startFilter}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
-			                            	~
-			                            	<input type="text" class="searchInput" id="endPrice" name="endPrice" value="${pageVO.endFilter}" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');">
-		                            	</div>
 		                            	<div>
 			                            	<select class="searchSelect" name="searchKeyword" id="searchKeyword">
 			                            		<option <c:if test="${pageVO.searchKeyword eq 'idx'}">selected</c:if> value="idx">상품번호</option>
@@ -404,11 +371,6 @@
 			                            		<option <c:if test="${pageVO.searchKeyword eq 'name'}">selected</c:if> value="name">상품명</option>
 			                            	</select>
 			                            	<input type="text" class="searchInput" value="${pageVO.searchString}" id="searchString" name="searchString">
-			                            	<!-- <input type="hidden" value="" name="mainCategory">
-			                            	<input type="hidden" value="" name="subCategory">
-			                            	<input type="hidden" value="" name="secondCategory"> -->
-			                            	<%-- <input type="hidden" value="${pageVO.startPrice}" name="startPrice" id="startPrice">
-			                            	<input type="hidden" value="${pageVO.endPrice}" name="endPrice" id="endPrice"> --%>
 			                            	<button type="button" class="searchBtn" onclick="searchBtn()">검색</button>
 		                            	</div>
 	                            	</form>
@@ -417,31 +379,45 @@
                                 <table id="listTable">
 									<thead>
 										<tr>
-											<th>상품번호</th>
-											<th>사진</th>
-											<th>브랜드</th>
-											<th>상품명</th>
-											<th>가격</th>
-											<th>좋아요</th>
-											<th>카테고리</th>
-											<th>재고 수량</th>
+											<th>번호</th>
+											<th>분류이름</th>
+											<th>상위 분류</th>
 											<th>비고</th>
 										</tr>
 									</thead>
 									<tbody>
-										<c:forEach var="goods" items="${goodsVos}" varStatus="st">
+										<c:if test="${subCategory_vos eq null and secondCategory_vos eq null}">
+											<c:forEach var="vo" items="${mainCategory_vos}" varStatus="st">
+												<tr>
+													<td>${vo.category_Idx}</td>
+													<td>${vo.category_Name}</td>
+													<td></td>
+													<td>
+														<button type="button" id="updateBtn" onclick="location.href='${ctp}/admin/brandUpdate?brand_Idx=${brand.idx}'">수정</button>
+														<button type="button" id="deleteBtn" onclick="deleteCheck(${brand.idx})">삭제</button>
+													</td>
+												</tr>
+											</c:forEach>
+										</c:if>
+										<c:forEach var="vo" items="${subCategory_vos}" varStatus="st">
 											<tr>
-												<td class="align-middle">${goods.idx}</td>
-												<td class="align-middle"><img alt="" src="${ctp}/images/${goods.thumbNail}"></td>
-												<td class="align-middle">${goods.brand_Name}</td>
-												<td class="align-middle">${goods.name}</td>
-												<td class="align-middle">₩<fmt:formatNumber value="${goods.price}" pattern="#,###"/></td>
-												<td class="align-middle">${goods.goods_Like}</td>
-												<td class="align-middle">${goods.secondCategory_Idx}</td>
-												<td class="align-middle"><button type="button" id="modalBtn" onclick="getGoodsStockAJAX(${goods.idx})" data-toggle="modal" data-target="#myModal">재고 현황</button></td>
-												<td class="align-middle">
-													<button type="button" id="updateBtn" onclick="location.href='${ctp}/admin/goodsUpdate?goods_Idx=${goods.idx}'">수정</button>
-													<button type="button" id="deleteBtn" onclick="deleteGoodsAJAX(${goods.idx})">삭제</button>
+												<td>${vo.subCategory_Idx}</td>
+												<td>${vo.subCategory_Name}</td>
+												<td>${vo.mainCategory_Name}</td>
+												<td>
+													<button type="button" id="updateBtn" onclick="location.href='${ctp}/admin/brandUpdate?brand_Idx=${brand.idx}'">수정</button>
+													<button type="button" id="deleteBtn" onclick="deleteCheck(${brand.idx})">삭제</button>
+												</td>
+											</tr>
+										</c:forEach>
+										<c:forEach var="vo" items="${secondCategory_vos}" varStatus="st">
+											<tr>
+												<td>${vo.secondCategory_Idx}</td>
+												<td>${vo.secondCategory_Name}</td>
+												<td>${vo.mainCategory_Name} > ${vo.subCategory_Name}</td>
+												<td>
+													<button type="button" id="updateBtn" onclick="location.href='${ctp}/admin/brandUpdate?brand_Idx=${brand.idx}'">수정</button>
+													<button type="button" id="deleteBtn" onclick="deleteCheck(${brand.idx})">삭제</button>
 												</td>
 											</tr>
 										</c:forEach>
@@ -459,39 +435,6 @@
 								      <c:if test="${pageVO.pag < pageVO.totPage}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/admin/goodsList?pageSize=${pageVO.pageSize}&pag=${pageVO.totPage}&mainCategory=${pageVO.mainCategory}&subCategory=${pageVO.subCategory}&secondCategory=${pageVO.secondCategory}&searchKeyword=${pageVO.searchKeyword}&searchString=${pageVO.searchString}&startFilter=${pageVO.startFilter}&endFilter=${pageVO.endFilter}">마지막페이지</a></li></c:if>
 								   </ul>
 							   </div>
-							   <div class="modal" id="myModal">
-								  <div class="modal-dialog modal-dialog-centered">
-								    <div class="modal-content">
-								
-								      <!-- Modal Header -->
-								      <div class="modal-header">
-								        <h4 class="modal-title">Modal Heading</h4>
-								        <button type="button" class="close" data-dismiss="modal">&times;</button>
-								      </div>
-								
-								      <!-- Modal body -->
-								      <div class="modal-body">
-								        <table class="table table-striped text-center align-middle">
-								        	<thead>
-								        		<tr>
-								        			<th>옵션</th>
-								        			<th>수량</th>
-								        		</tr>
-								        	</thead>
-								        	<tbody id="goodsStockAJAX">
-								        		
-								        	</tbody>
-								        </table>
-								      </div>
-								
-								      <!-- Modal footer -->
-								      <div class="modal-footer">
-								        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-								      </div>
-								
-								    </div>
-								  </div>
-								</div>
                             </div>
                         </div>
                     </div>

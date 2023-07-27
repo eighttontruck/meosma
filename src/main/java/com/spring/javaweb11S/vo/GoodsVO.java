@@ -10,7 +10,8 @@ public class GoodsVO {
 	int price;
 	String thumbNail;
 	int goods_Like;
-	int secondCatagory_Idx;
+	int secondCategory_Idx;
 	String option;
 	String brand_Name;
+	String images;
 }

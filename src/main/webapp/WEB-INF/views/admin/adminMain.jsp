@@ -36,7 +36,8 @@
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" href="${ctp}/admin/goodsList">상품 리스트</a>
                                     <a class="nav-link" href="${ctp}/admin/goodsRegister">상품 등록</a>
-		                            <a class="nav-link" href="layout-sidenav-light.html">분류 관리</a>
+		                            <a class="nav-link" href="${ctp}/admin/categoryList">분류 관리</a>
+		                            <a class="nav-link" href="${ctp}/admin/categoryRegister">분류 관리</a>
                                 </nav>
                             </div>
                             

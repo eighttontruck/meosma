@@ -14,17 +14,65 @@
 	<jsp:include page="/WEB-INF/views/include/bs4.jsp"/>
 	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 	<script src="${ctp}/js/woo.js"></script>
+	<script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.5.js"></script>
 </head>
 <script>
 	let point = ${memberVo.point};
-	let totalPrice = ${totalPrice};
+	let totalPrice = ${finalPrice};
 	
 	function fCheck(){
 		let address1 = $.trim($("#sample6_postcode").val());
 		let address2 = $.trim($("#sample6_address").val());
 		let address3 = $.trim($("#sample6_detailAddress").val());
-		
+		let address = address2+" "+address3;
 		$("#recipient_Address").val(address1+"/"+address2+"/"+address3);
+		
+		let goods_Name = $("#goodsName").val();
+		
+		if($('.goodsNames').length!=1){
+			goods_Name = goods_Name+" 외 "+parseInt($('.goodsNames').length-1)+"개";
+		}
+		
+		alert(goods_Name);
+		var IMP = window.IMP; 
+		IMP.init("imp18020804");
+		IMP.request_pay({
+		    /* pg : 'inicis', */ /* version 1.1.0부터 지원. 변경된 방침에서는 pg : 'html5_inicis' 로 고쳐준다. */
+		    pg : 'html5_inicis.INIpayTest',
+		    pay_method : 'card',
+		    merchant_uid : 'merchant_' + new Date().getTime(),
+		    name : goods_Name,
+		    amount : 10, //판매 가격
+		    buyer_email : '${memberVo.emailId}',
+		    buyer_name : '${memberVo.name}',
+		    buyer_tel : '${memberVo.telNum}',
+		    buyer_addr : address,
+		    buyer_postcode : address1
+		}, function(rsp) {
+			  var paySw = 'no';
+		    if ( rsp.success ) {
+		        paySw = 'ok';
+		    } else {
+		        var msg = '결제에 실패하였습니다.';
+		        msg += '에러내용 : ' + rsp.error_msg;
+		    }
+		    alert(msg);
+		    if(paySw == 'no') {
+			    alert("결제를 취소하셨습니다.");
+		    }
+		    else {
+		    	myform.submit();
+		    }
+		});
+	}
+	
+	function fCheck2(){
+		let address1 = $.trim($("#sample6_postcode").val());
+		let address2 = $.trim($("#sample6_address").val());
+		let address3 = $.trim($("#sample6_detailAddress").val());
+		let address = address2+" "+address3;
+		$("#recipient_Address").val(address1+"/"+address2+"/"+address3);
+		
 		myform.submit();
 	}
 	
@@ -40,7 +88,7 @@
 		
 		$("#expectPoint").html("₩"+numberWithCommas(point2));
 		$("#savePoint").val(point2);
-		if(${totalPrice}>=100000){
+		if(${finalPrice}>=100000){
 			$("#shipFeeText").html(0);
 		}
 		
@@ -85,7 +133,7 @@
 		$("#usedCouponText").html(name+" 할인율 "+dcP+"% 적용됨");
 		
 		$("#coupon_Idx").val(couponIdx);
-		$("#usedCoupon").val(${totalPrice}/100*dcP);
+		$("#usedCoupon").val(${finalPrice}/100*dcP);
 		
 		ontotal2();
 	}
@@ -97,7 +145,7 @@
 		/* alert(point);
 		alert(coupon); */
 		
-		let finalPrice = ${totalPrice};
+		let finalPrice = ${finalPrice};
 		let discountPrice = Number(point)+Number(coupon);
 		$("#discountPrice").html("₩"+numberWithCommas(discountPrice));
 		$("#finalPriceDiv").html("₩"+numberWithCommas(finalPrice-point-coupon));
@@ -396,6 +444,7 @@
 											<div class="row">${vo.order_Brand}</div>
 											<div class="row">${vo.order_Name}</div>
 											<div class="row">SIZE : ${vo.order_Option}</div>
+											<input type="hidden" value="${vo.order_Name}" class="goodsNames" id="goodsName">
 										</div>
 									</div>
 								</td>
@@ -414,8 +463,9 @@
 							</tr>
 							<input type="hidden" name="cart_Idx" value="${vo.idx}">
 							<input type="hidden" name="goods_Idx" value="${vo.goods_Idx}">
+							<input type="hidden" name="order_Option" value="${vo.order_Option}">
 							<input type="hidden" name="option_Idx" value="${vo.option_Idx}">
-							<input type="hidden" name="goods_Stock" value="${vo.order_Stock}">
+							<input type="hidden" name="order_Stock" value="${vo.order_Stock}">
 							<input type="hidden" name="totalPrice" value="${totalPrice2}">
 						</c:forEach>
 					</tbody>
@@ -492,7 +542,7 @@
 				<div class="bigText"><h1><strong>결제 정보</strong></h1></div>
 				<div class="col">
 					<div class="labelText">상품 합계 금액</div>
-					<div class="ml-4"><strong>₩<fmt:formatNumber value="${totalPrice}" pattern="#,###"/></strong></div>
+					<div class="ml-4"><strong>₩<fmt:formatNumber value="${finalPrice}" pattern="#,###"/></strong></div>
 				</div>
 				<div class="col">
 					<div class="labelText">배송비</div>
@@ -514,7 +564,7 @@
 				</div>
 				<div class="col">
 					<div class="labelText">최종 결제 금액</div>
-					<div><strong class="ml-4" id="finalPriceDiv">${totalPrice}</strong></div>
+					<div><strong class="ml-4" id="finalPriceDiv">${finalPrice}</strong></div>
 				</div>
 			</div>
 			
@@ -525,19 +575,21 @@
 						※ 고객님은 안전거래를 위해 현금으로 결제시 저희 쇼핑몰에서 가입한 구매안전서비스인 KG 이니시스의 구매안전(에스크로)서비스를 이용하실 수 있습니다.
 					</div>
 				</div>
-				<div id="finalPriceDiv2">₩<fmt:formatNumber value="${totalPrice}" pattern="#,###"/></div>
+				<div id="finalPriceDiv2">₩<fmt:formatNumber value="${finalPrice}" pattern="#,###"/></div>
 				<input type="hidden" id="usedCoupon">
-				<input type="text" value="0" name="usedPoint" id="usedPoint" >
-				<input type="hidden" value="${sIdx}" name="member_Idx">
-				<input type="hidden" id="finalPriceInput" name="finalPrice" value="${totalPrice}" readonly>
+				<input type="text" value="0" name="usedPoint" id="usedPoint">
+				<input type="hidden" id="finalPriceInput" name="finalPrice" value="${finalPrice}" readonly>
 				<input type="hidden" value="0" id="coupon_Idx" name="coupon_Idx">
-				<input type="hidden" value="" name="savePoint" id="savePoint" name="coupon_Idx">
 				<input type="hidden" name="buyStatus" value="${buyStatus}">
+				<input type="hidden" name="payMentInfo1" id="payMentInfo1">
+				<input type="hidden" name="payMentInfo2" id="payMentInfo2">
+				<input type="hidden" name="payMentInfo3" id="payMentInfo3">
+				<input type="hidden" name="payMentInfo4" id="payMentInfo4">
 				<div class="col mb-2">
 					<input type="checkbox">&nbsp;(필수) 구매하실 상품의 결제정보를 확인하였으며, 구매진행에 동의합니다. 주문이 폭주하여 실재고보다 많은 주문이 들어올 경우 결제가 취소 될 수 있습니다.
 				</div>
 				<div>
-					<button type="button" id="paymentBtn" onclick="fCheck()">결제하기</button>
+					<button type="button" id="paymentBtn" onclick="fCheck2()">결제하기</button>
 				</div>
 			</div>
 		</form>

@@ -17,11 +17,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javaweb11S.dao.GoodsDAO;
 import com.spring.javaweb11S.vo.BrandVO;
+import com.spring.javaweb11S.vo.CartVO;
 import com.spring.javaweb11S.vo.CategoryVO;
 import com.spring.javaweb11S.vo.CouponVO;
 import com.spring.javaweb11S.vo.ExchangeVO;
 import com.spring.javaweb11S.vo.Exchange_DetailVO;
 import com.spring.javaweb11S.vo.GoodsVO;
+import com.spring.javaweb11S.vo.Goods_ImageVO;
 import com.spring.javaweb11S.vo.Goods_StockVO;
 import com.spring.javaweb11S.vo.MainCategoryVO;
 import com.spring.javaweb11S.vo.MemberVO;
@@ -115,8 +117,8 @@ public class GoodsServiceImpl implements GoodsService {
 	}
 
 	@Override
-	public CategoryVO getGoodsCategory(int secondCatagory_Idx) {
-		return goodsDAO.getGoodsCategory(secondCatagory_Idx);
+	public CategoryVO getGoodsCategory(int secondCategory_Idx) {
+		return goodsDAO.getGoodsCategory(secondCategory_Idx);
 	}
 
 	@Override
@@ -156,7 +158,7 @@ public class GoodsServiceImpl implements GoodsService {
 	}
 
 	@Override
-	public void setOrderHistory_Detail(List<OrderHistory_DetailVO> vos) {
+	public void setOrderHistory_Detail(List<OrderVO> vos) {
 		goodsDAO.setOrderHistory_Detail(vos);
 		
 	}
@@ -168,7 +170,7 @@ public class GoodsServiceImpl implements GoodsService {
 	}
 
 	@Override
-	public List<OrderVO> getCartList(int sIdx) {
+	public List<CartVO> getCartList(int sIdx) {
 		return goodsDAO.getCartList(sIdx);
 	}
 
@@ -223,8 +225,8 @@ public class GoodsServiceImpl implements GoodsService {
 	}
 
 	@Override
-	public void setUpdateOrderHistory_Detail(int orderHistory_Detail_Idx) {
-		goodsDAO.setUpdateOrderHistory_Detail(orderHistory_Detail_Idx);
+	public void setUpdateOrderHistory_Detail(int orderHistory_Detail_Idx, int totalStock) {
+		goodsDAO.setUpdateOrderHistory_Detail(orderHistory_Detail_Idx, totalStock);
 		
 	}
 
@@ -242,6 +244,68 @@ public class GoodsServiceImpl implements GoodsService {
 	@Override
 	public void setUpdateCart(OrderVO vo, String member_Idx) {
 		goodsDAO.setUpdateCart(vo, member_Idx);
+	}
+
+	@Override
+	public void setUpdateGoodsStock(List<OrderVO> vos) {
+		goodsDAO.setUpdateGoodsStock(vos);
+	}
+
+	@Override
+	public void setUpdateCartStock(int cart_Idx, String str) {
+		goodsDAO.setUpdateCartStock(cart_Idx, str);
+		
+	}
+
+	@Override
+	public List<Goods_ImageVO> getGoodsImages(int goods_Idx) {
+		return goodsDAO.getGoodsImages(goods_Idx);
+	}
+
+	@Override
+	public void setInsertExchangeOrderHistory(ExchangeVO exchangeVO) {
+		goodsDAO.setInsertExchangeOrderHistory(exchangeVO);
+		
+	}
+
+	@Override
+	public void setInsertExchangeOrderHistory_Detail(List<OrderVO> vos) {
+		goodsDAO.setInsertExchangeOrderHistory_Detail(vos);
+		
+	}
+
+	@Override
+	public int getOrderHistory_DetailCnt(int sOhIdx) {
+		return goodsDAO.getOrderHistory_DetailCnt(sOhIdx);
+	}
+
+	@Override
+	public void setDeleteOrderHistory_Detail(int orderHistory_Detail_Idx) {
+		goodsDAO.setDeleteOrderHistory_Detail(orderHistory_Detail_Idx);
+		
+	}
+
+	@Override
+	public void setDeleteOrderHistory(int sOhIdx) {
+		goodsDAO.setDeleteOrderHistory(sOhIdx);
+		
+	}
+
+	@Override
+	public void setUpdateOrderHistory(int sOhIdx, int sOhdIdx, int totalStock, int updatePrice) {
+		goodsDAO.setUpdateOrderHistory(sOhIdx,sOhdIdx,totalStock,updatePrice);
+		
+	}
+
+	@Override
+	public void setInsertRefundOrderHistory(RefundVO refundVO) {
+		goodsDAO.setInsertRefundOrderHistory(refundVO);
+		
+	}
+
+	@Override
+	public void setInsertRefundOrderHistory_Detail(OrderVO vo) {
+		goodsDAO.setInsertRefundOrderHistory_Detail(vo);
 	}
 
 
