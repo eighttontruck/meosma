@@ -6,7 +6,7 @@
 		padding:30px 30px;
 		border-top:1px solid #000;
 		box-sizing:border-box;
-		margin-top:500px;
+		margin-top:50px;
 	}
 	.ft_wrap{
 		overflow:auto;

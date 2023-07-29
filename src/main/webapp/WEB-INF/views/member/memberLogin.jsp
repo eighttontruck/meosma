@@ -98,7 +98,7 @@
 </head>
 <body>
 	<jsp:include page="/WEB-INF/views/include/header.jsp" />
-	<div>
+	<div style="margin-bottom:300px;">
 		<form name="myform" method="post">
 			<div>
 				<label>아이디(이메일)</label>

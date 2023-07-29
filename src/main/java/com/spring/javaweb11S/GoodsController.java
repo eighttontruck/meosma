@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.spring.javaweb11S.pagination.PageProcess;
+import com.spring.javaweb11S.pagination.PageVO;
 import com.spring.javaweb11S.service.GoodsService;
 import com.spring.javaweb11S.vo.BrandVO;
 import com.spring.javaweb11S.vo.CartVO;
@@ -25,12 +27,14 @@ import com.spring.javaweb11S.vo.Exchange_DetailVO;
 import com.spring.javaweb11S.vo.GoodsVO;
 import com.spring.javaweb11S.vo.Goods_ImageVO;
 import com.spring.javaweb11S.vo.Goods_StockVO;
+import com.spring.javaweb11S.vo.MainCategoryVO;
 import com.spring.javaweb11S.vo.MemberVO;
 import com.spring.javaweb11S.vo.Member_ShippingAddressVO;
 import com.spring.javaweb11S.vo.OrderHistoryVO;
 import com.spring.javaweb11S.vo.OrderHistory_DetailVO;
 import com.spring.javaweb11S.vo.OrderVO;
 import com.spring.javaweb11S.vo.RefundVO;
+import com.spring.javaweb11S.vo.ReviewVO;
 import com.spring.javaweb11S.vo.SecondCategoryVO;
 import com.spring.javaweb11S.vo.SubCategoryVO;
 
@@ -40,29 +44,68 @@ public class GoodsController {
 	@Autowired
 	GoodsService goodsService;
 	
+	@Autowired
+	PageProcess pageProcess;
+	
 	@RequestMapping(value="/goodsList", method=RequestMethod.GET)
-	public String goodsListGet(Model model) {
-		List<GoodsVO> vos= goodsService.getGoodsList();
+	public String goodsListGet(Model model,
+		@RequestParam(name="brand_Idx", defaultValue="0", required=false) int brand_Idx,
+		@RequestParam(name="mainCategory_Idx", defaultValue="0", required=false) int mainCategory_Idx,
+		@RequestParam(name="subCategory_Idx", defaultValue="0", required=false) int subCategory_Idx,
+		@RequestParam(name="secondCategory_Idx", defaultValue="0", required=false) int secondCategory_Idx,
+		@RequestParam(name="pag", defaultValue="1",required=false) int pag,
+		@RequestParam(name="pagSize", defaultValue="30",required=false) int pagSize
+			) {
+		PageVO pageVO = pageProcess.totRecCnt(pag, pagSize, brand_Idx, mainCategory_Idx, subCategory_Idx, secondCategory_Idx);
+		
+		//List<MainCategoryVO> vos1 = goodsService.getMainCateArrayList();
+		if(brand_Idx!=0&&mainCategory_Idx==0) {
+			List<MainCategoryVO> mainCategory = goodsService.getMainCateArrayList();
+			model.addAttribute("mainCategory",mainCategory);
+		} else if(mainCategory_Idx != 0 && subCategory_Idx==0) {
+			List<SubCategoryVO> subCategory = goodsService.getSubCateArrayList(mainCategory_Idx);
+			model.addAttribute("subCategory",subCategory);
+		} else if(subCategory_Idx!=0) {
+			List<SecondCategoryVO> secondCategory = goodsService.getSecondCateArrayList(subCategory_Idx);
+			model.addAttribute("secondCategory",secondCategory);
+			
+		}
+		BrandVO brandVO = goodsService.getBrandVO(brand_Idx);
+		
+		List<GoodsVO> vos= goodsService.getGoodsList(pageVO);
+		model.addAttribute("mainCategory_Idx",mainCategory_Idx);
+		model.addAttribute("subCategory_Idx",subCategory_Idx);
+		model.addAttribute("secondCategory_Idx",secondCategory_Idx);
 		model.addAttribute("vos",vos);
-		return "home";
+		model.addAttribute("brandVO",brandVO);
+		model.addAttribute("brand_Idx",brand_Idx);
+		model.addAttribute("pageVO",pageVO);
+		return "goods/goodsList";
 	}
 	
 	@RequestMapping(value="/goodsViews",method=RequestMethod.GET)
 	public String goodsViewGet(Model model,
 			@RequestParam(name="idx", defaultValue="", required=false) int Goods_Idx,
-			@RequestParam(name="secCate_Idx", defaultValue="", required=false) int secCate_Idx) {
+			@RequestParam(name="pag", defaultValue="1",required=false) int pag,
+			@RequestParam(name="pageSize", defaultValue="10",required=false) int pageSize
+			) {
+		
+		PageVO pageVO = pageProcess.totRecCnt(pag, pageSize, "goods", Goods_Idx);
 		
 		List<Goods_StockVO> stockVos = goodsService.getGoodsStock(Goods_Idx);
 		List<Goods_ImageVO> imageVos = goodsService.getGoodsImages(Goods_Idx);
+		List<ReviewVO> reviewVos = goodsService.getReviewList(pageVO, Goods_Idx);
 		GoodsVO goodsVo = goodsService.getGoodsDetail(Goods_Idx);
-		CategoryVO categoryVo = goodsService.getGoodsCategory(secCate_Idx);
+		CategoryVO categoryVo = goodsService.getGoodsCategory(goodsVo.getSecondCategory_Idx());
 		BrandVO brandVo = goodsService.getBrandContent(Goods_Idx);
 		
 		model.addAttribute("stockVos",stockVos);
 		model.addAttribute("imageVos",imageVos);
+		model.addAttribute("reviewVos",reviewVos);
 		model.addAttribute("goodsVo",goodsVo);
 		model.addAttribute("categoryVo",categoryVo);
 		model.addAttribute("brandVo",brandVo);
+		model.addAttribute("pageVO",pageVO);
 		return "goods/goodsViews";
 	}
 	
@@ -277,6 +320,13 @@ public class GoodsController {
 		return "goods/goodsCart";
 	}
 	
+	@RequestMapping(value="/brandList", method=RequestMethod.GET)
+	public String goodsBrandListGet(Model model) {
+		List<BrandVO> vos = goodsService.getBrandList();
+		
+		model.addAttribute("vos",vos);
+		return "goods/goodsBrandList";
+	}
 	
 	// 상품 뷰 창에서 옵션 장바구니에 넣기
 	@ResponseBody

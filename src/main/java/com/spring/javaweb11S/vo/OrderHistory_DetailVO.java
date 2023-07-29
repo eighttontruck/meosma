@@ -4,25 +4,25 @@ import lombok.Data;
 
 @Data
 public class OrderHistory_DetailVO {
-	int idx;
-	int orderHistory_Idx;
-	int goods_Idx;
-	int option_Idx;
-	int goods_Stock;
-	int totalPrice;
-	String complainStatus;
+	private int idx;
+	private int orderHistory_Idx;
+	private int goods_Idx;
+	private int option_Idx;
+	private int goods_Stock;
+	private int totalPrice;
+	private String complainStatus;
+	private String review_Status;
 	
-	String goods_ThumbNail;
-	String goods_Name;
-	String goods_Option;
-	String orderDate;
-	String goods_Brand;
-	String returns_status;
-	String status;
-	int shipping_Num;
-	int goods_Price;
+	private String goods_ThumbNail;
+	private String goods_Name;
+	private String goods_Option;
+	private String orderDate;
+	private String goods_Brand;
+	private String status;
+	private int shipping_Num;
+	private int goods_Price;
 	
-	String recipient_Name;
-	String recipient_telNum;
-	String recipient_Address;
+	private String recipient_Name;
+	private String recipient_telNum;
+	private String recipient_Address;
 }

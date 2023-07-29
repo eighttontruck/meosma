@@ -18,18 +18,28 @@
 	</select>
 	
 	<select id="getMemberOrderHistory" resultType="com.spring.javaweb11S.vo.OrderHistoryVO">
-		SELECT * FROM orderhistory WHERE member_Idx = #{sIdx} ORDER BY orderdate DESC;
+		SELECT * 
+		FROM orderhistory 
+		WHERE member_Idx = #{sIdx} 
+		ORDER BY orderdate DESC, idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	</select>
 	
 	<select id="getMemberOrderHistory_Detail" resultType="com.spring.javaweb11S.vo.OrderHistory_DetailVO">
-		SELECT ohd.idx, ohd.orderhistory_idx, ohd.complainStatus, oh.shipping_num, oh.orderdate, ohd.status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand, g.price AS goods_Price
+		SELECT ohd.idx, ohd.orderhistory_idx, ohd.review_Status ,ohd.complainStatus, oh.shipping_num, oh.orderdate, ohd.status, ohd.goods_idx, ohd.option_idx, ohd.goods_stock, g.thumbnail AS goods_thumbnail, g.name AS goods_name, go.goods_option, b.name AS goods_brand, g.price AS goods_Price
 		FROM orderhistory oh
 		JOIN orderhistory_detail ohd ON ohd.orderhistory_idx = oh.idx
 		JOIN goods g ON g.idx = ohd.goods_idx
 		JOIN goods_option go ON go.option_idx = ohd.option_idx
 		JOIN brand b ON b.idx = g.brand_idx
 		WHERE oh.member_idx = #{sIdx}
-		ORDER BY ohd.idx DESC;
+		<choose>
+        	<when test="pageVO.filter == 'pay'">AND status = '결제완료'</when>
+        	<when test="pageVO.filter == 'delivery'">AND status = '배송중'</when>
+        	<when test="pageVO.filter == 'confirm'">AND status = '구매확정'</when>
+        	<when test="pageVO.filter == 'exchange'">AND complainStatus = '교환상품'</when>
+        	<when test="pageVO.filter == 'refund'">AND complainStatus = '환불상품'</when>
+        </choose>
+		ORDER BY ohd.idx DESC, idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
 	</select>
 	
 	<select id="getTodayMemberVisitCheck" resultType="int">
@@ -38,6 +48,36 @@
 	
 	<select id="getBirthdayMemberList" resultType="com.spring.javaweb11S.vo.MemberVO">
 		 SELECT * FROM member WHERE DATE(birthday) = CURDATE();
+	</select>
+	
+	<select id="getMemberOrderHistory_DetailVO" resultType="com.spring.javaweb11S.vo.OrderHistory_DetailVO">
+		SELECT  g.name AS goods_Name, g.idx AS goods_Idx, g.thumbnail AS goods_ThumbNail, go.goods_option AS goods_Option, b.name as goods_Brand
+		FROM orderhistory_detail ohd
+		JOIN goods g ON g.idx = ohd.goods_Idx
+		JOIN brand b ON b.idx = g.brand_Idx
+		JOIN goods_option go ON go.option_idx = ohd.option_Idx
+		WHERE ohd.idx = #{orderHistory_Detail_Idx};
+	</select> 
+	
+	<select id="orderHistory_DetailTotRecCnt" resultType="int">
+		SELECT count(*)
+		FROM orderhistory oh
+		JOIN orderhistory_detail ohd ON ohd.orderhistory_idx = oh.idx
+		WHERE oh.member_idx = #{sIdx}
+		<choose>
+        	<when test="filter == 'pay'">AND status = '결제완료'</when>
+        	<when test="filter == 'delivery'">AND status = '배송중'</when>
+        	<when test="filter == 'confirm'">AND status = '구매확정'</when>
+        	<when test="filter == 'exchange'">AND complainStatus = '교환상품'</when>
+        	<when test="filter == 'refund'">AND complainStatus = '환불상품'</when>
+        </choose>
+        ;
+	</select>
+	
+	<select id="orderHistoryTotRecCnt" resultType="int">
+		SELECT count(*)
+		FROM orderhistory
+		WHERE member_idx = #{sIdx};
 	</select>
 	
 	<insert id="setInsertMemberBirthdayCoupon">
@@ -49,13 +89,21 @@
 	</insert>
 	
 	<insert id="setMemberJoinOk">
-		INSERT INTO member VALUES(default,#{vo.emailId},#{vo.pwd},#{vo.name},#{vo.gender},#{vo.birthday},#{vo.telNum},default,default,default,default,default,default,default);
+		INSERT INTO member VALUES(default,#{vo.emailId},#{vo.pwd},#{vo.name},#{vo.gender},#{vo.birthday},#{vo.telNum},default,default,default,default,default,default,default,#{vo.FName},#{vo.FSname},#{vo.height},#{vo.weight});
 	</insert>
 	
 	<insert id="setInsertMemberCoupon">
 		INSERT INTO coupon(idx, member_idx, name, dcpercentage, issuedDate, usageDate, status, usedDate) 
 		VALUES(default, #{vo.idx}, #{coupon_Name}, #{percentage}, default, default, default);
 	</insert>
+	
+	<insert id="setInsertGoodsReview">
+		INSERT INTO review VALUES(default, #{vo.goods_Idx}, #{vo.member_Idx}, #{vo.orderHistory_Detail_Idx}, #{vo.FSname}, #{vo.FName}, #{vo.content}, 5, default, default);
+	</insert>
+	
+	<update id="setUpdateReviewOrderHistory_Detail">
+		UPDATE orderHistory_detail SET review_status = '작성완료' WHERE idx = #{orderHistory_Detail_Idx};
+	</update>
 	
 	<update id="setMemberVisitPoint">
 		UPDATE member SET point = point + 100 WHERE emailId = #{vo.emailId};

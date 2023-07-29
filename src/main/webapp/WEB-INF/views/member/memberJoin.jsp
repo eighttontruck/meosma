@@ -413,12 +413,23 @@
 	p{
 		margin:0;
 	}
+	input[type=file]::file-selector-button {
+	  width: 150px;
+	  height: 30px;
+	  background: #fff;
+	  border: 1px solid rgb(77,77,77);
+	  border-radius: 10px;
+	  cursor: pointer;
+	  &:hover {
+	    background-color: rgb(77,77,77);
+	    color: #fff;
+	}
 </style>
 </head>
 <body>
 	<jsp:include page="/WEB-INF/views/include/header.jsp" />
 	<div>
-		<form name="myform" method="post">
+		<form name="myform" method="post" enctype="multipart/form-data">
 			<div>
 				<div class="flex">
 					<label>아이디(이메일)</label>
@@ -448,19 +459,31 @@
 				<p class="hiddenText" id="hidP4">비밀번호를 한번 더 입력해주세요.</p>
 			</div>
 			<div>
+				<label>프로필 사진</label>
+				<input type="file" name="file" id="file" class="form-control-file border">
+				<p class="hiddenText" id="hidP9">사진을 선택해주세요.</p>
+			</div>
+			<div>
 				<label>이름</label>
 				<input type="text" id="name" name="name" oninput="nameRegExpCheck()" placeholder="이름을 입력해주세요" class="inputForm">
 				<p class="hiddenText" id="hidP5">이름을 입력해주세요.</p>
 			</div>
 			<div>
-				<label>성별(선택사항)</label>
+				<label>성별</label>
 				<select id="gender" name="gender" class="selectForm" onchange="genderChange()">
 					<option value="" disabled hidden selected>성별을 선택해주세요</option>
 					<option value="남자">남자</option>
 					<option value="여자">여자</option>
-					<option value="선택안함">선택안함</option>
 				</select>
 				<p class="hiddenText" id="hidP6">성별을 선택해주세요.</p>
+			</div>
+			<div>
+				<label>신체 스펙</label>
+				<div class="flex">
+					<input type="text" style="width:197.5px" name="height" placeholder="키를 입력해주세요." class="inputForm">
+					<input type="text" style="width:197.5px" name="weight" placeholder="몸무게를 입력해주세요." class="inputForm">
+				</div>
+				<p class="hiddenText" id="hidP10">신체 스펙을 입력해주세요.</p>
 			</div>
 			<div>
 				<label>생년월일</label>

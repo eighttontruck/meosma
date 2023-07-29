@@ -10,10 +10,91 @@ create table goods(
 	foreign key(brand_idx) REFERENCES brand(idx),
 	foreign key(secondcatagory_idx) REFERENCES secondcategory(secondCategory_Idx)
 );
-select * from goodss
+select * from goods_option;
+drop table review;
+
+SELECT r.*, g.name AS goods_Name, b.name AS brand_Name, go.goods_option AS option_Name, m.name AS member_Name, count(*) AS review_Cnt
+		FROM review r
+		JOIN goods g ON g.idx = r.goods_idx
+		JOIN orderHistory_detail oh ON oh.idx = r.orderHistory_detail_idx
+		JOIN goods_option go ON go.option_idx = oh.option_idx
+		JOIN brand b ON b.idx = g.brand_idx
+		JOIN member m ON m.idx = r.member_idx
+		WHERE r.goods_idx = 33; 
+		
+SELECT r.*, g.name AS goods_Name, b.name AS brand_Name, go.goods_option AS option_Name, m.name AS member_Name, (SELECT count(*) FROM review r2 WHERE r2.goods_idx = 33) AS review_Cnt
+FROM review r
+JOIN goods g ON g.idx = r.goods_idx
+JOIN orderHistory_detail oh ON oh.idx = r.orderHistory_detail_idx
+JOIN goods_option go ON go.option_idx = oh.option_idx
+JOIN brand b ON b.idx = g.brand_idx
+JOIN member m ON m.idx = r.member_idx
+WHERE r.goods_idx = 33;
+		
+SELECT COUNT(*)
+			FROM maincategory
+			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
+			JOIN brand ON brand.idx = goods.brand_idx
+			WHERE maincategory.Category_Idx = 2;
+
+SELECT r.*, g.name, b.name, go.goods_option, m.name
+		FROM review r
+		JOIN goods g ON g.idx = r.goods_idx
+		JOIN orderHistory_detail oh ON oh.idx = r.orderHistory_detail_idx
+		JOIN goods_option go ON go.option_idx = oh.option_idx
+		JOIN brand b ON b.idx = g.brand_idx
+		JOIN member m ON m.idx = r.member_idx
+		WHERE r.goods_idx = 33; 
+
+		
+create table review(
+	idx int not null auto_increment,
+	goods_Idx int not null,
+	member_Idx int not null,
+	orderHistory_Detail_Idx int not null,
+	fsname text,
+	fname text,
+	content text not null,
+	score int not null,
+	wDate datetime default now(),
+	confirm varchar(10) default '미승인',
+	primary key(idx),
+	foreign key(goods_Idx) REFERENCES goods(idx),
+	foreign key(member_Idx) REFERENCES member(idx),
+	foreign key(orderHistory_Detail_Idx) REFERENCES orderHistory_Detail(idx)
+);
+
+SELECT r.*, g.name, b.name, go.goods_option, m.name
+		FROM review r
+		JOIN goods g ON g.idx = r.goods_idx
+		JOIN goods_option go ON go.option_idx = g.option_idx
+		JOIN brand b ON b.idx = g.brand_idx
+		JOIN member m ON m.idx = r.member_idx
+		WHERE r.goods_idx = 33; 
+
+select * from goods_option;
+select * from goods;
+drop table review;
+show tables;
 
 select * from 
 
+SELECT  g.*, b.name as brand_Name
+		FROM orderhistory_detail ohd
+		JOIN goods g ON g.idx = ohd.goods_Idx
+		JOIN brand b ON b.idx = g.brand_Idx
+
+		WHERE ohd.idx = 133;
+
+SELECT  g.name AS order_Name, g.thumbnail AS order_ThumbNail, go.goods_option AS order_Option, b.name as order_Brand
+		FROM orderhistory_detail ohd
+		JOIN goods g ON g.idx = ohd.goods_Idx
+		JOIN brand b ON b.idx = g.brand_Idx
+		JOIN goods_option go ON go.option_idx = ohd.option_Idx
+		WHERE ohd.idx = 133;
+		
 delete from goods;
 delete from goods_stock;
 delete from cart;
@@ -24,7 +105,7 @@ delete from goods_image;
 delete from exchange;
 desc goods;
 
-select * from refund;
+select * from orderhistory_detail;
 select * from goods_image;
 
 SELECT orderhistory_idx FROM orderhistory_detail WHERE goods_idx = 24;

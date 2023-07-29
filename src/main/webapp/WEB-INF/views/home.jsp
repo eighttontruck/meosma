@@ -42,17 +42,6 @@
 		background-color:white;
 		opacity:0.95;
 	}
-	#navbar button{ /* 앞으로 이렇게 작성하자 */
-		width:100px;
-		height:100%;
-		margin: 0 20;
-		background-color:white;
-		border:none;
-	}
-	#navbar button:hover{
-  		border-style: solid;
-		border-width: 0px 0px 2px 0px ;
-	}
 	.productList{
 		/* display:flex;
 		flex-direction:row;
@@ -62,16 +51,16 @@
   		align-items: flex-start;
 		padding:300px 2% 0 4%; 
 		gap:10px; */
-		margin-top:200px;
+		margin-top:20px;
 		display:grid;
-		grid-template-columns:repeat(5,1fr);
-		grid-gap:48px 24px;
-		padding:0 2%;
+		grid-template-columns:repeat(4,1fr);
+		grid-gap:20px 20px;
+		padding:0 20px;
 	}
 	@media screen and (max-width: 1440px) {
 		.productList{
 			display:grid;
-			grid-template-columns:repeat(4,1fr);
+			grid-template-columns:repeat(3,1fr);
 			grid-gap:48px 24px;
 		}
 	}
@@ -81,6 +70,10 @@
 			grid-template-columns:repeat(2,1fr);
 			grid-gap:48px 24px;
 		}
+	}
+	.flex{
+		display:flex;
+		justify-content: center;
 	}
 	img{
 		width:100%;
@@ -92,24 +85,57 @@
 	p{
 		margin:0;
 	}
+	#categoryDiv{
+		margin:0 auto;
+		margin-top:140px;
+		border-bottom:1px solid lightgray;
+		padding-bottom:20px;
+	}
+	.categoryBtn{
+		border:none;
+		background-color:white;
+		border-bottom:1px solid white;
+		margin-left:10px;
+	}
+	.categoryBtn:hover{
+		border-bottom:1px solid black;
+	}
+	.borderBottom{
+		border-bottom:1px solid black;
+	}
+	.mainBanner{
+		margin-top:120px;
+		padding: 20px 20px 0px 20px;
+	}
 </style>
 <body>
 	<jsp:include page="/WEB-INF/views/include/header.jsp" />
+	<div class="mainBanner"><img src="${ctp}/images/mainbanner.jpg"></div>
 	<div class="productList">
-		<c:forEach var="vo" items="${vos}" varStatus="st">
-			<div class="productDiv">
-				<div>
-					<a href="${ctp}/goods/goodsViews?idx=${vo.idx}&secCate_Idx=${vo.secondCategory_Idx}">
-						<img src="${ctp}/images/${vo.thumbNail}">
-					</a>
-				</div>
-				<div>
-					<a href="${ctp}/goods/goodsViews?brand_Idx=${vo.brand_Idx}"><span>${vo.brand_Name}</span></a><br>
-					<a href="${ctp}/goods/goodsViews?idx=${vo.idx}&secCate_Idx=${vo.secondCategory_Idx}"><span>${vo.name}</span></a>
-					<p>₩<fmt:formatNumber value="${vo.price}" pattern="#,###"/></p>
-				</div>
-			</div>
-		</c:forEach>
+		<div><img src="${ctp}/images/banner1.jpg"></div>
+		<div><img src="${ctp}/images/banner2.jpg"></div>
+		<div><img src="${ctp}/images/banner3.jpg"></div>
+		<div><img src="${ctp}/images/banner4.jpg"></div>
+		<div><img src="${ctp}/images/banner5.jpg"></div>
+		<div><img src="${ctp}/images/banner6.jpg"></div>
+		<div><img src="${ctp}/images/banner7.jpg"></div>
+		<div><img src="${ctp}/images/banner8.jpg"></div>
+		<div><img src="${ctp}/images/banner9.jpg"></div>
+		<div><img src="${ctp}/images/banner10.jpg"></div>
+		<div><img src="${ctp}/images/banner11.jpg"></div>
+		<div><img src="${ctp}/images/banner12.jpg"></div>
+		<div><img src="${ctp}/images/banner13.jpg"></div>
+		<div><img src="${ctp}/images/banner14.jpg"></div>
+		<div><img src="${ctp}/images/banner15.jpg"></div>
+		<div><img src="${ctp}/images/banner16.jpg"></div>
+		<div><img src="${ctp}/images/banner17.jpg"></div>
+		<div><img src="${ctp}/images/banner18.jpg"></div>
+		<div><img src="${ctp}/images/banner25.jpg"></div>
+		<div><img src="${ctp}/images/banner26.JPG"></div>
+		<div><img src="${ctp}/images/banner21.jpg"></div>
+		<div><img src="${ctp}/images/banner22.jpg"></div>
+		<div><img src="${ctp}/images/banner23.jpg"></div>
+		<div><img src="${ctp}/images/banner24.jpg"></div>
 	</div>
 	<jsp:include page="/WEB-INF/views/include/footer.jsp" />
 </body>

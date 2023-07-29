@@ -3,9 +3,13 @@ package com.spring.javaweb11S.service;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import com.spring.javaweb11S.pagination.PageVO;
 import com.spring.javaweb11S.vo.MemberVO;
 import com.spring.javaweb11S.vo.OrderHistoryVO;
 import com.spring.javaweb11S.vo.OrderHistory_DetailVO;
+import com.spring.javaweb11S.vo.ReviewVO;
 
 public interface MemberService {
 
@@ -23,9 +27,9 @@ public interface MemberService {
 
 	public MemberVO getMemberIdxCheck(int sIdx);
 
-	public List<OrderHistoryVO> getMemberOrderHistory(int sIdx);
+	public List<OrderHistoryVO> getMemberOrderHistory(PageVO pageVO, int sIdx);
 
-	public List<OrderHistory_DetailVO> getMemberOrderHistory_Detail(int sIdx);
+	public List<OrderHistory_DetailVO> getMemberOrderHistory_Detail(PageVO pageVO, int sIdx);
 
 	public void setMemberGoodsConfirmAJAX(int orderHistory_Detail_Idx);
 
@@ -38,6 +42,16 @@ public interface MemberService {
 	public List<MemberVO> getBirthdayMemberList();
 
 	public void setInsertMemberBirthdayCoupon(List<MemberVO> vos, String string, int i);
+
+	public OrderHistory_DetailVO getMemberOrderHistory_DetailVO(int orderHistory_Detail_Idx);
+
+	public String fileUpload(MultipartFile file, ReviewVO vo);
+
+	public void setInsertGoodsReview(ReviewVO vo);
+
+	public void setUpdateReviewOrderHistory_Detail(int orderHistory_Detail_Idx);
+
+	public String fileUpload(MultipartFile file, MemberVO vo);
 
 
 }

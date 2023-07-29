@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -142,16 +141,9 @@ public class AdminController {
 			@RequestParam(name = "goodsSize", defaultValue="",required=false) String[] goodsSize,
 			@RequestParam(name = "goodsStock", defaultValue="",required=false) int[] goodsStock
 			) {
-		System.out.println("원본"+file);
 		String fileName = adminService.fileUpload(file,vo);
-		System.out.println("저장후"+fileName);
-		
-		if(fileName!="") {
-			System.out.println("들어옴");
-		} else {
-			System.out.println("안들어옴");
-		}
 		vo.setThumbNail(fileName);
+		
 		Map<String, Integer> vos=new HashMap<>();
 		for(int i=0; i<goodsSize.length; i++) {
 			vos.put(goodsSize[i], goodsStock[i]);

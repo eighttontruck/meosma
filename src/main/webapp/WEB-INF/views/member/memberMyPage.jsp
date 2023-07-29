@@ -36,9 +36,9 @@ function getOrderHistory_DetailList(idx){
 				str += '<div class="row">'+data[i].goods_Name+'</div>';
 				str += '<div class="row">SIZE : '+data[i].goods_Option+'</div></div';
 				str += '</div></td>';
-				str += '<td>'+data[i].idx+'</td>';
+				str += '<td>'+data[i].idx+'('+data[i].complainStatus+')'+'</td>';
 				str += '<td>₩'+numberWithCommas(parseInt(data[i].goods_Price) * parseInt(data[i].goods_Stock))+'('+data[i].goods_Stock+'개)</td>';
-				str += '<td><button>반품&교환&환불 신청</button></td>';
+				str += '<td>'+data[i].status+'</td>';
 				str += '</tr>';
 			}
 			$("#orderHistory_DetailtBody").html(str);
@@ -153,6 +153,10 @@ function getOrderHistory_DetailList(idx){
 		margin-top:50px;
 		margin-left:50px;
 	}
+	#btn{
+		border:none;
+		background-color:white;
+	}
 </style>
 <body>
 	<jsp:include page="/WEB-INF/views/include/header.jsp" />
@@ -205,7 +209,7 @@ function getOrderHistory_DetailList(idx){
 		          			<th>상품정보</th>
 		          			<th>주문번호</th>
 		          			<th>주문금액(수량)</th>
-		          			<th>교환&환불</th>
+		          			<th>상태</th>
 		          		</tr>
 		          	</thead>
 		          	<tbody id="orderHistory_DetailtBody"></tbody>
@@ -224,7 +228,7 @@ function getOrderHistory_DetailList(idx){
 			<div id="sidebar">
 				<div class="sidebar2">
 					<h3>나의 쇼핑 활동</h3>
-					<a href="${ctp}/member/orderHistory_Detail">주문 내역 조회</a>
+					<a href="${ctp}/member/orderHistory_Detail">주문내역 상세조회</a>
 					<a href="#">구매후기</a>
 					<a href="#">래플 응모내역</a>
 					<a href="#">상품문의</a>
@@ -236,23 +240,13 @@ function getOrderHistory_DetailList(idx){
 				</div>
 			</div>
 			<div id="mainDiv">
-				<h2>주문 내역 조회</h2>
-				<div>
-					<a>입금/결제</a>
-					<a>배송중/픽업대기</a>
-					<a>배송완료/픽업완료</a>
-					<a>구매확정</a>
-					<a>교환</a>
-					<a>교환완료</a>
-					<a>환불</a>
-					<a>환불완료</a>
-				</div>
+				<h2>주문내역 조회</h2>
 				<table id="listTable">
 					<thead>
 						<tr>
 							<th>주문번호</th>
 							<th>주문일자</th>
-							<th>주문금액(수량)</th>
+							<th>결제금액</th>
 							<th>수령인 이름</th>
 							<th>수령인 전화번호</th>
 							<th>수령인 주소</th>
@@ -261,18 +255,35 @@ function getOrderHistory_DetailList(idx){
 					<tbody>
 						<c:forEach var="order" items="${vos}" varStatus="st">
 							<tr>
-								<td><button type="button" data-toggle="modal" data-target="#detailModal" onclick="getOrderHistory_DetailList(${order.idx})">${order.idx}</button></td>
+								<td><button type="button" data-toggle="modal" id="btn" data-target="#detailModal" onclick="getOrderHistory_DetailList(${order.idx})">${order.idx} ></button></td>
 								<td>${fn:substring(order.orderDate,2,11)}</td>
 								<td>₩<fmt:formatNumber value="${order.finalPrice}" pattern="#,###"/></td>
-								<td>${order.recipient_Name}</td>
-								<td>${order.recipient_TelNum}</td>
-								<td>${order.recipient_Address}</td>
+								<c:if test="${order.category eq '환불'}">
+									<td colspan="3">환불 처리</td>
+								</c:if>
+								<c:if test="${order.category ne '환불'}">
+									<td>${order.recipient_Name}</td>
+									<td>${order.recipient_TelNum}</td>
+									<td>${order.recipient_Address}</td>
+								</c:if>
 							</tr>
 						</c:forEach>
 					</tbody>
 				</table>
 			</div>
 		</div>
+		<div class="text-center m-4">
+		    <ul class="pagination justify-content-center pagination-sm">
+		       <c:if test="${pageVO.pag > 1}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/member/orderHistory_Detail?pageSize=${pageVO.pageSize}&pag=1&filter=${pageVO.filter}">첫페이지</a></li></c:if>
+		       <c:if test="${pageVO.curBlock > 0}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/member/orderHistory_Detail?pageSize=${pageVO.pageSize}&pag=${(pageVO.curBlock-1)*pageVO.blockSize + 1}&filter=${pageVO.filter}">이전블록</a></li></c:if>
+		       <c:forEach var="i" begin="${pageVO.curBlock*pageVO.blockSize + 1}" end="${pageVO.curBlock*pageVO.blockSize + pageVO.blockSize}" varStatus="st">
+	               <c:if test="${i <= pageVO.totPage && i == pageVO.pag}"><li class="page-item active"><a class="page-link text-white bg-secondary border-secondary" href="${ctp}/member/orderHistory_Detail?pageSize=${pageVO.pageSize}&pag=${i}&filter=${pageVO.filter}">${i}</a></li></c:if>
+		           <c:if test="${i <= pageVO.totPage && i != pageVO.pag}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/member/orderHistory_Detail?pageSize=${pageVO.pageSize}&pag=${i}&filter=${pageVO.filter}">${i}</a></li></c:if>
+		       </c:forEach>
+		       <c:if test="${pageVO.curBlock < pageVO.lastBlock}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/member/orderHistory_Detail?pageSize=${pageVO.pageSize}&pag=${(pageVO.curBlock+1)*pageVO.blockSize + 1}&filter=${pageVO.filter}">다음블록</a></li></c:if>
+		       <c:if test="${pageVO.pag < pageVO.totPage}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/member/orderHistory_Detail?pageSize=${pageVO.pageSize}&pag=${pageVO.totPage}&filter=${pageVO.filter}">마지막페이지</a></li></c:if>
+		    </ul>
+	    </div>
 	</div>
 	<jsp:include page="/WEB-INF/views/include/footer.jsp" />
 </body>

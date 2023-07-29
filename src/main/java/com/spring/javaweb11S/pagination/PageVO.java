@@ -26,4 +26,9 @@ public class PageVO {
 	private String mainCategory;
 	private String subCategory;
 	private String secondCategory;
+	
+	private int mainCategory_Idx;
+	private int subCategory_Idx;
+	private int secondCategory_Idx;
+	private int brand_Idx;
 }

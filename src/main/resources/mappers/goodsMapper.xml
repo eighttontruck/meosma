@@ -1,11 +1,138 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.spring.javaweb11S.dao.GoodsDAO">
+	<select id="goodsTotRecCnt" resultType="int">
+		<if test="brand_Idx == '' and mainCategory_Idx == '' and subCategory_Idx == '' and secondCategory_Idx == ''">
+			SELECT count(*) FROM goods
+		</if>
+		<if test="brand_Idx != '' and mainCategory_Idx == '' and subCategory_Idx == '' and secondCategory_Idx == ''">
+			SELECT count(*) FROM goods WHERE brand_idx = #{brand_Idx};
+		</if>
+		<if test="brand_Idx != '' and mainCategory_Idx != '' and subCategory_Idx == '' and secondCategory_Idx == ''">
+			SELECT COUNT(*)
+			FROM maincategory
+			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
+			JOIN brand ON brand.idx = goods.brand_idx
+			WHERE maincategory.Category_Idx = #{mainCategory_Idx} AND goods.brand_idx = #{brand_Idx};
+		</if>
+		<if test="brand_Idx != '' and mainCategory_Idx != '' and subCategory_Idx != '' and secondCategory_Idx == ''">
+			SELECT COUNT(*)
+			FROM subcategory
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
+			WHERE subcategory.subCategory_Idx = #{subCategory_Idx} AND goods.brand_idx = #{brand_Idx};
+		</if>
+		<if test="brand_Idx != '' and mainCategory_Idx != '' and subCategory_Idx != '' and secondCategory_Idx != ''">
+			SELECT COUNT(*)
+			FROM secondCategory
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcategory_idx
+			WHERE secondCategory.secondCategory_Idx = #{secondCategory_Idx} AND goods.brand_idx = #{brand_Idx};
+		</if>
+		<if test="brand_Idx == '' and mainCategory_Idx != '' and subCategory_Idx == '' and secondCategory_Idx == ''">
+			SELECT COUNT(*)
+			FROM maincategory
+			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
+			JOIN brand ON brand.idx = goods.brand_idx
+			WHERE maincategory.Category_Idx = #{mainCategory_Idx};
+		</if>
+		<if test="brand_Idx == '' and mainCategory_Idx != '' and subCategory_Idx != '' and secondCategory_Idx == ''">
+			SELECT COUNT(*)
+			FROM subcategory
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
+			WHERE subcategory.subCategory_Idx = #{subCategory_Idx};
+		</if>
+		<if test="brand_Idx == '' and mainCategory_Idx != '' and subCategory_Idx != '' and secondCategory_Idx != ''">
+			SELECT COUNT(*)
+			FROM secondCategory
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcategory_idx
+			WHERE secondCategory.secondCategory_Idx = #{secondCategory_Idx};
+		</if>
+	</select>
+	
 	<select id="getGoodsList" resultType="com.spring.javaweb11S.vo.GoodsVO">
+		<if test="pageVO.brand_Idx == '' and pageVO.mainCategory_Idx == '' and pageVO.subCategory_Idx == '' and pageVO.secondCategory_Idx == ''">
+			SELECT goods.*, brand.name AS brand_Name 
+			FROM goods 
+			JOIN brand ON goods.brand_idx = brand.idx
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+		</if>
+		<if test="pageVO.brand_Idx != '' and pageVO.mainCategory_Idx == '' and pageVO.subCategory_Idx == '' and pageVO.secondCategory_Idx == ''">
+			SELECT goods.*, brand.name AS brand_Name
+			FROM goods
+			JOIN brand ON goods.brand_idx = brand.idx
+			WHERE goods.brand_idx = #{pageVO.brand_Idx}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+		</if>
+		<if test="pageVO.brand_Idx != '' and pageVO.mainCategory_Idx != '' and pageVO.subCategory_Idx == '' and pageVO.secondCategory_Idx == ''">
+			SELECT goods.*, brand.name AS brand_Name
+			FROM maincategory
+			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
+			JOIN brand ON brand.idx = goods.brand_idx
+			WHERE maincategory.Category_Idx = #{pageVO.mainCategory_Idx} AND goods.brand_idx = #{pageVO.brand_Idx}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+		</if>
+		<if test="pageVO.brand_Idx != '' and pageVO.mainCategory_Idx != '' and pageVO.subCategory_Idx != '' and pageVO.secondCategory_Idx == ''">
+			SELECT goods.*, brand.name AS brand_Name
+			FROM subcategory
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
+			JOIN brand ON brand.idx = goods.brand_idx
+			WHERE subcategory.subCategory_Idx = #{pageVO.subCategory_Idx} AND goods.brand_idx = #{pageVO.brand_Idx}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+		</if>
+		<if test="pageVO.brand_Idx != '' and pageVO.mainCategory_Idx != '' and pageVO.subCategory_Idx != '' and pageVO.secondCategory_Idx != ''">
+			SELECT goods.*, brand.name AS brand_Name
+			FROM secondCategory
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcategory_idx
+			JOIN brand ON brand.idx = goods.brand_idx
+			WHERE secondCategory.secondCategory_Idx = #{pageVO.secondCategory_Idx} AND goods.brand_idx = #{pageVO.brand_Idx}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+		</if>
+		<if test="pageVO.brand_Idx == '' and pageVO.mainCategory_Idx != '' and pageVO.subCategory_Idx == '' and pageVO.secondCategory_Idx == ''">
+			SELECT goods.*, brand.name AS brand_Name
+			FROM maincategory
+			JOIN subcategory ON maincategory.Category_Idx = subcategory.category_idx
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
+			JOIN brand ON brand.idx = goods.brand_idx
+			WHERE maincategory.Category_Idx = #{pageVO.mainCategory_Idx}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+		</if>
+		<if test="pageVO.brand_Idx == '' and pageVO.mainCategory_Idx != '' and pageVO.subCategory_Idx != '' and pageVO.secondCategory_Idx == ''">
+			SELECT goods.*, brand.name AS brand_Name
+			FROM subcategory
+			JOIN secondcategory ON subcategory.subCategory_Idx = secondcategory.subcategory_idx
+			JOIN goods ON secondcategory.secondCategory_Idx = goods.secondcategory_idx
+			JOIN brand ON brand.idx = goods.brand_idx
+			WHERE subcategory.subCategory_Idx = #{pageVO.subCategory_Idx}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+		</if>
+		<if test="pageVO.brand_Idx == '' and pageVO.mainCategory_Idx != '' and pageVO.subCategory_Idx != '' and pageVO.secondCategory_Idx != ''">
+			SELECT goods.*, brand.name AS brand_Name
+			FROM secondCategory
+			JOIN goods ON secondCategory.secondCategory_Idx = goods.secondcategory_idx
+			JOIN brand ON brand.idx = goods.brand_idx
+			WHERE secondCategory.secondCategory_Idx = #{pageVO.secondCategory_Idx}
+			ORDER BY idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};
+		</if>
+	</select>
+	
+	<select id="reviewTotRecCnt" resultType="int">
+		SELECT count(*) FROM review WHERE goods_idx = #{goods_Idx};
+	</select>
+	
+	<!-- <select id="getGoodsList" resultType="com.spring.javaweb11S.vo.GoodsVO">
 		SELECT goods.idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
 		FROM goods
 		JOIN brand ON goods.brand_idx = brand.idx;
-	</select>
+	</select> -->
 	
 	<select id="getGoodsDetail" resultType="com.spring.javaweb11S.vo.GoodsVO">
 		SELECT goods.idx, goods.brand_idx, goods.name, goods.price, goods.Thumbnail, goods.goods_like, goods.secondcategory_idx, brand.name as brand_Name
@@ -26,14 +153,14 @@
 	</select>
 	
 	<select id="getSubCateArrayList" resultType="com.spring.javaweb11S.vo.SubCategoryVO">
-		SELECT sc.subcategory_idx, sc.subcategory_name, m.category_Name AS mainCategory_Name
+		SELECT sc.subcategory_idx, sc.subcategory_name, m.category_Name AS mainCategory_Name, m.category_idx AS mainCategory_Idx
 		FROM subCategory sc
 		JOIN maincategory m ON m.category_idx = sc.category_idx
 		WHERE sc.category_idx = #{mainCategory};
 	</select>
 	
 	<select id="getSecondCateArrayList" resultType="com.spring.javaweb11S.vo.SecondCategoryVO">
-		SELECT scc.secondcategory_idx, scc.secondcategory_name, sc.subCategory_Name AS subCategory_Name, m.category_Name AS mainCategory_Name 
+		SELECT scc.secondcategory_idx, scc.secondcategory_name, sc.subCategory_Name AS subCategory_Name, sc.subCategory_idx AS subCategory_Idx, m.category_Name AS mainCategory_Name, m.category_idx AS mainCategory_Idx
 		FROM secondcategory scc
 		JOIN subCategory sc ON sc.subcategory_idx = scc.subcategory_idx
 		JOIN mainCategory m ON m.category_idx = sc.category_idx
@@ -125,6 +252,22 @@
 		FROM orderhistory oh
 		LEFT JOIN orderhistory_detail od ON oh.idx = od.orderhistory_idx
 		WHERE oh.idx = #{sOhIdx};
+	</select>
+	
+	<select id="getReviewList" resultType="com.spring.javaweb11S.vo.ReviewVO">
+		SELECT r.*, g.name AS goods_Name, b.name AS brand_Name, go.goods_option AS option_Name, m.name AS member_Name, (SELECT count(*) FROM review r2 WHERE r2.goods_idx = 33) AS review_Cnt
+		FROM review r
+		JOIN goods g ON g.idx = r.goods_idx
+		JOIN orderHistory_detail oh ON oh.idx = r.orderHistory_detail_idx
+		JOIN goods_option go ON go.option_idx = oh.option_idx
+		JOIN brand b ON b.idx = g.brand_idx
+		JOIN member m ON m.idx = r.member_idx
+		WHERE r.goods_idx = #{goods_Idx}
+		ORDER BY wdate DESC, r.idx DESC LIMIT #{pageVO.startIndexNo}, #{pageVO.pageSize};;
+	</select>
+	
+	<select id="getBrandVO" resultType="com.spring.javaweb11S.vo.BrandVO">
+		SELECT * FROM brand WHERE idx = #{brand_Idx};
 	</select>
 	
 	<insert id="setOrderHistory">

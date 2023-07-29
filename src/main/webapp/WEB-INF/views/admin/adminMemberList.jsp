@@ -196,9 +196,10 @@
                             </a>
                             <div class="collapse" id="collapseLayouts1" aria-labelledby="headingOne22" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="${ctp}/admin/goodsList">상품 리스트</a>
+                                   	<a class="nav-link" href="${ctp}/admin/goodsList">상품 리스트</a>
                                     <a class="nav-link" href="${ctp}/admin/goodsRegister">상품 등록</a>
-		                            <a class="nav-link" href="layout-sidenav-light.html">분류 관리</a>
+		                            <a class="nav-link" href="${ctp}/admin/categoryList">분류 관리</a>
+		                            <a class="nav-link" href="${ctp}/admin/categoryRegister">분류 등록</a>
                                 </nav>
                             </div>
                             
@@ -209,9 +210,10 @@
                             </a>
                             <div class="collapse" id="collapseLayouts2" aria-labelledby="headingOne22" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="${ctp}/admin/orderHistoryList">주문 내역</a>
-                                    <a class="nav-link" href="${ctp}/admin/orderHistoryList">댓글 리스트</a>
-                                    <a class="nav-link" href="${ctp}/admin/orderHistoryList">문의 리스트</a>
+                                     <a class="nav-link" href="${ctp}/admin/orderHistoryList">주문 내역</a>
+                                    <a class="nav-link" href="${ctp}/admin/ReviewList">후기 리스트</a>
+                                    <a class="nav-link" href="${ctp}/admin/exchangeList">교환 신청 내역</a>
+                                    <a class="nav-link" href="${ctp}/admin/refundList">환불 신청 내역</a>
                                 </nav>
                             </div>
                             
@@ -235,7 +237,6 @@
                             <div class="collapse" id="collapseLayouts4" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" href="${ctp}/admin/memberList">회원 리스트</a>
-                                    <a class="nav-link" href="layout-sidenav-light.html">ㅇㅇ</a>
                                 </nav>
                             </div>
                         </div>

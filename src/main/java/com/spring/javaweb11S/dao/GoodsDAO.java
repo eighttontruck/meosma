@@ -13,6 +13,8 @@ import com.spring.javaweb11S.vo.OrderHistoryVO;
 import com.spring.javaweb11S.vo.OrderHistory_DetailVO;
 import com.spring.javaweb11S.vo.OrderVO;
 import com.spring.javaweb11S.vo.RefundVO;
+import com.spring.javaweb11S.vo.ReviewVO;
+import com.spring.javaweb11S.pagination.PageVO;
 import com.spring.javaweb11S.vo.BrandVO;
 import com.spring.javaweb11S.vo.CartVO;
 import com.spring.javaweb11S.vo.CategoryVO;
@@ -27,7 +29,7 @@ import com.spring.javaweb11S.vo.SubCategoryVO;
 
 public interface GoodsDAO {
 
-	public List<GoodsVO> getGoodsList();
+	public List<GoodsVO> getGoodsList(@Param("pageVO") PageVO pageVO);
 
 	public GoodsVO getGoodsDetail(@Param("goods_Idx") int goods_Idx);
 
@@ -118,6 +120,14 @@ public interface GoodsDAO {
 	public void setInsertRefundOrderHistory(@Param("refundVO") RefundVO refundVO);
 
 	public void setInsertRefundOrderHistory_Detail(@Param("vo") OrderVO vo);
+
+	public List<ReviewVO> getReviewList(@Param("pageVO") PageVO pageVO, @Param("goods_Idx") int goods_Idx);
+
+	public int goodsTotRecCnt(@Param("pag") int pag, @Param("pagSize") int pagSize, @Param("brand_Idx") int brand_Idx, @Param("mainCategory_Idx") int mainCategory_Idx, @Param("subCategory_Idx") int subCategory_Idx, @Param("secondCategory_Idx") int secondCategory_Idx);
+
+	public BrandVO getBrandVO(@Param("brand_Idx") int brand_Idx);
+
+	public int reviewTotRecCnt(@Param("pag") int pag, @Param("pageSize") int pageSize, @Param("goods_Idx") int goods_Idx);
 
 
 }

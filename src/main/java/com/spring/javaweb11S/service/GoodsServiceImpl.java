@@ -16,6 +16,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.javaweb11S.dao.GoodsDAO;
+import com.spring.javaweb11S.pagination.PageVO;
 import com.spring.javaweb11S.vo.BrandVO;
 import com.spring.javaweb11S.vo.CartVO;
 import com.spring.javaweb11S.vo.CategoryVO;
@@ -32,6 +33,7 @@ import com.spring.javaweb11S.vo.OrderHistoryVO;
 import com.spring.javaweb11S.vo.OrderHistory_DetailVO;
 import com.spring.javaweb11S.vo.OrderVO;
 import com.spring.javaweb11S.vo.RefundVO;
+import com.spring.javaweb11S.vo.ReviewVO;
 import com.spring.javaweb11S.vo.SecondCategoryVO;
 import com.spring.javaweb11S.vo.SubCategoryVO;
 
@@ -41,8 +43,8 @@ public class GoodsServiceImpl implements GoodsService {
 	GoodsDAO goodsDAO;
 	
 	@Override
-	public List<GoodsVO> getGoodsList() {
-		return goodsDAO.getGoodsList();
+	public List<GoodsVO> getGoodsList(PageVO pageVO) {
+		return goodsDAO.getGoodsList(pageVO);
 	}
 
 	@Override
@@ -306,6 +308,16 @@ public class GoodsServiceImpl implements GoodsService {
 	@Override
 	public void setInsertRefundOrderHistory_Detail(OrderVO vo) {
 		goodsDAO.setInsertRefundOrderHistory_Detail(vo);
+	}
+
+	@Override
+	public List<ReviewVO> getReviewList(PageVO pageVO, int goods_Idx) {
+		return goodsDAO.getReviewList(pageVO, goods_Idx);
+	}
+
+	@Override
+	public BrandVO getBrandVO(int brand_Idx) {
+		return goodsDAO.getBrandVO(brand_Idx);
 	}
 
 

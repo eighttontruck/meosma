@@ -15,16 +15,21 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.spring.javaweb11S.pagination.PageProcess;
+import com.spring.javaweb11S.pagination.PageVO;
 import com.spring.javaweb11S.service.MemberService;
 import com.spring.javaweb11S.vo.MemberVO;
 import com.spring.javaweb11S.vo.OrderHistoryVO;
 import com.spring.javaweb11S.vo.OrderHistory_DetailVO;
+import com.spring.javaweb11S.vo.ReviewVO;
 
 @Controller
 @RequestMapping("/member")
@@ -37,6 +42,9 @@ public class MemberController {
 	
 	@Autowired
 	BCryptPasswordEncoder passwordEncoder;
+	
+	@Autowired
+	PageProcess pageProcess;
 	
 	@RequestMapping(value="/memberLogin",method=RequestMethod.GET)
 	public String memberLoginGet(HttpServletRequest request, Model model) {
@@ -113,10 +121,16 @@ public class MemberController {
 		return "member/memberJoin";
 	}
 	
+	@Transactional
 	@RequestMapping(value="/memberJoin", method=RequestMethod.POST)
-	public String memberJoinPost(MemberVO vo) {
+	public String memberJoinPost(MemberVO vo, MultipartFile file) {
 		vo.setPwd(passwordEncoder.encode(vo.getPwd()));
 		
+		String fileName = memberService.fileUpload(file,vo);
+		
+		vo.setFName(file.getOriginalFilename());
+		vo.setFSname(fileName);
+	
 		memberService.setMemberJoinOk(vo);
 		memberService.setInsertMemberCoupon(vo,"가입기념",5); //가입기념 쿠폰 발급
 		return "member/memberLogin";
@@ -177,24 +191,64 @@ public class MemberController {
 	}
 	
 	@RequestMapping(value="/memberMyPage",method=RequestMethod.GET)
-	public String memberMyPageGet(Model model, HttpSession session) {
+	public String memberMyPageGet(Model model, HttpSession session,
+		@RequestParam(name="pag", defaultValue="1",required=false) int pag,
+		@RequestParam(name="pageSize", defaultValue="15",required=false) int pageSize
+			) {
 		int sIdx = (int) session.getAttribute("sIdx");
 		MemberVO vo = memberService.getMemberIdxCheck(sIdx);
-		List<OrderHistoryVO> ohVos=memberService.getMemberOrderHistory(sIdx);
-		model.addAttribute("vo",vo);
-		model.addAttribute("vos",ohVos);
 		
+		PageVO pageVO = pageProcess.totRecCnt(pag, pageSize, "orderHistory", sIdx);
+		List<OrderHistoryVO> vos=memberService.getMemberOrderHistory(pageVO, sIdx);
+		model.addAttribute("vo",vo);
+		model.addAttribute("vos",vos);
+		model.addAttribute("pageVO",pageVO);
 		return "member/memberMyPage";
 	}
 	
 	@RequestMapping(value="/orderHistory_Detail",method=RequestMethod.GET)
-	public String memberOrderHistory_DetailGet(Model model, HttpSession session) {
+	public String memberOrderHistory_DetailGet(Model model, HttpSession session,
+		@RequestParam(name="filter", defaultValue="",required=false) String filter,
+		@RequestParam(name="pag", defaultValue="1",required=false) int pag,
+		@RequestParam(name="pageSize", defaultValue="5",required=false) int pageSize
+			) {
 		int sIdx = (int) session.getAttribute("sIdx");
-		List<OrderHistory_DetailVO> ohVos=memberService.getMemberOrderHistory_Detail(sIdx);
+		
+		PageVO pageVO = pageProcess.totRecCnt(pag, pageSize, sIdx, filter);
+		
+		List<OrderHistory_DetailVO> ohVos=memberService.getMemberOrderHistory_Detail(pageVO, sIdx);
 		
 		model.addAttribute("ohVos",ohVos);
-		
+		model.addAttribute("pageVO",pageVO);
 		return "member/memberOrderHistory_DetailList";
+	}
+	
+	@RequestMapping(value="/review",method=RequestMethod.GET)
+	public String memberReviewGet(Model model,
+		@RequestParam(name="orderHistory_Detail_Idx", defaultValue="", required=false) int orderHistory_Detail_Idx
+			) {
+		OrderHistory_DetailVO vo = memberService.getMemberOrderHistory_DetailVO(orderHistory_Detail_Idx);
+		
+		model.addAttribute("vo", vo);
+		model.addAttribute("orderHistory_Detail_Idx", orderHistory_Detail_Idx);
+		return "member/memberReview";
+	}
+	
+	@RequestMapping(value="/review",method=RequestMethod.POST)
+	public String memberReviewPost(HttpSession session, ReviewVO vo, MultipartFile file) {
+		
+		int sIdx = (int) session.getAttribute("sIdx");
+		
+		String fileName = memberService.fileUpload(file,vo);
+		
+		vo.setMember_Idx(sIdx);
+		vo.setFName(file.getOriginalFilename());
+		vo.setFSname(fileName);
+		
+		memberService.setInsertGoodsReview(vo); //점수 수정해야됨
+		memberService.setUpdateReviewOrderHistory_Detail(vo.getOrderHistory_Detail_Idx()); //구매 후기 작성완료 처리
+		
+		return "redirect:/member/memberMyPage";
 	}
 	
 	@ResponseBody

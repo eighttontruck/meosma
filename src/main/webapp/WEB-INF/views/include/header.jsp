@@ -23,34 +23,39 @@
 		display:flex;
 		justify-content:center;
 		border-style: solid;
+		border-color:lightgray;
 		border-width: 0.5px 0px 0.5px 0px;
 		background-color:white;
 		opacity:0.95;
 	}
-	#navbar button{ /* 앞으로 이렇게 작성하자 */
+	
+	.navBtn{
 		width:100px;
 		height:100%;
 		margin: 0px 20px;
 		background-color:white;
 		border:none;
+		border-bottom:2px solid white;
 	}
-	#navbar button:hover{
-  		border-style: solid;
-		border-width: 0px 0px 2px 0px ;
+	.navBtn:hover{
+		border-bottom:2px solid black;
+	}
+	.borderBottom2{
+		border-bottom:2px solid black;
 	}
 </style>
 <body>
 	<div class="header">
-		<div class="">
+		<div>
 			<a href="${ctp}/goods/drawList">응모</a>
 			<a href="#">매장 정보</a>
 			<a href="#">에디토리얼</a>
+			<a href="${ctp}/admin/adminMain">관리자페이지</a>
 		</div>
 		<div class="text-center">
-			<a href="${ctp}/goods/goodsList"><img src="${ctp}/images/musma.png" style="width:200px; margin-top:5px;"></a>
+			<a href="${ctp}/"><img src="${ctp}/images/musma.png" style="width:200px; margin-top:5px;"></a>
 		</div>
 		<div class="text-right">
-			<a href="${ctp}/admin/adminMain">관리자페이지</a>
 			<a href="#">검색</a>
 			<a href="#">관심목록</a>
 			<a href="${ctp}/goods/cart">장바구니</a>
@@ -66,11 +71,10 @@
 		</div>
 	</div>
 	<div id="navbar">
-		<div><button>미드세일</button></div>
-		<div><button>남성</button></div>
-		<div><button>여성</button></div>
-		<div><button>생활</button></div>
-		<div><button>브랜드</button></div>
-		<div><button>세일</button></div>
+		<div><button type="button" class="navBtn <c:if test="${brand_Idx == 0 and mainCategory_Idx == 1}">borderBottom2</c:if>" onclick="location.href='${ctp}/goods/goodsList?mainCategory_Idx=1'">남성</button></div>
+		<div><button type="button" class="navBtn <c:if test="${brand_Idx == 0 and mainCategory_Idx == 2}">borderBottom2</c:if>" onclick="location.href='${ctp}/goods/goodsList?mainCategory_Idx=2'">여성</button></div>
+		<div><button type="button" class="navBtn <c:if test="${brand_Idx == 0 and mainCategory_Idx == 3}">borderBottom2</c:if>" onclick="location.href='${ctp}/goods/goodsList?mainCategory_Idx=3'">생활</button></div>
+		<div><button type="button" class="navBtn <c:if test="${brand_Idx != 0 and brand_Idx ne null}">borderBottom2</c:if>" onclick="location.href='${ctp}/goods/brandList'">브랜드</button></div>
+		<div><button type="button" class="navBtn">세일</button></div>
 	</div>
 </body>

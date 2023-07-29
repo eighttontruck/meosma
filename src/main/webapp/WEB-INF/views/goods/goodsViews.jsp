@@ -13,9 +13,19 @@
 	<jsp:include page="/WEB-INF/views/include/bs4.jsp"/>
 </head>
 <script>
-	function showPopup(){
-		window.open("${ctp}/goods/goodsList","test","width=400, height=400,left=0, top=0");
-	}
+	$(document).ready(function() {
+	    // 이동하고자 하는 스크롤 위치를 지정합니다. (단위: 픽셀)
+	    
+	    if(${pageVO.pag}!=1){
+	    	var targetScrollPosition = 1100;
+	    	
+		    // 스크롤 위치를 이동합니다.
+		    $('html, body').animate({
+		      scrollTop: targetScrollPosition
+		    }, 100); // 1000은 애니메이션 속도를 밀리초(ms) 단위로 지정합니다.
+	    }
+  	});
+	
 	
 	let option_IdxArray = new Array();
 	$(function(){
@@ -111,7 +121,6 @@
 		myform.submit();
 	}
 	
-	
 	$(document).ready(function() {
 		$("#dropdownMenu1").slideToggle(200);
 		
@@ -130,6 +139,15 @@
 		$("#dropdownButton5").click(function() {
 		  $("#dropdownMenu5").slideToggle(200);
 		});
+		
+		$(document).on('click', '.review-contents', function() {
+            if ($(this).hasClass('review-contents--active')) {
+            	$(this).removeClass('review-contents--active');
+            } else {
+                // 클릭한 div에 'review-contents--active' 클래스를 추가합니다.
+                $(this).addClass('review-contents--active');
+            }
+        });
 	});
 	
 	function insertCart() {
@@ -173,6 +191,9 @@
 		display:flex;
 		align-items:center;
 		justify-content: space-between;
+	}
+	.flex2{
+		display:flex;
 	}
 	#goods_qty{
 		vertical-align:middle;
@@ -311,9 +332,317 @@
 		margin-bottom:20px;
 		border:none;
 	}
+	#reviewDiv{
+		border:1px solid lightgray;
+		width:1000px;
+		padding:20px;
+		margin:0 auto;
+	}
+	#reviewDetailDiv{
+		border:1px solid lightgray;
+		width:960px;
+		margin:0 auto;
+		padding-top: 20px;
+	}
+	.review-profile__date {
+	    margin-left: auto;
+	    padding-top: 2px;
+	    font-size: 12px;
+	    color: #aaa;
+	}
+	.review-profile__text-wrap {
+	    box-sizing: border-box;
+	    width: calc(100% - 32px);
+	    padding-left: 8px
+	}
+	.review-profile {
+	    display: flex;
+	    padding: 0 15px 10px 13px;
+	    font-size: 14px;
+	    font-family: "Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+	    line-height: 1.5;
+	    align-items: center
+	}
+	p{
+		margin:0;
+	}
+	.review-profile__image {
+	    position: absolute;
+	    top: 50%;
+	    left: 0;
+	    width: 100%;
+	    transform: translateY(-50%)
+	}
+	.review-profile__link {
+    display: block;
+    overflow: hidden;
+    position: relative;
+    width: 32px;
+    height: 32px;
+    margin-top: 2px;
+    border-radius: 100%
+}
+.review-goods-information {
+    display: flex;
+    max-height: 54px;
+    padding: 0 15px 16px 53px;
+    align-items: center
+}
+.review-goods-information__item {
+    width: calc(100% - 51px);
+    margin-left: 10px;
+    padding-top: 1px;
+    font-size: 12px
+}
+.review-goods-information__image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 100%;
+    transform: translate(-50%,-50%);
+    -o-object-fit: contain;
+    object-fit: contain
+}
+.review-goods-information__link {
+    display: block;
+    height: 100%;
+}
+.review-goods-information__thumbnail {
+    overflow: hidden;
+    position: relative;
+    width: 45px;
+    height: 54px;
+    border-radius: 4px
+}
+		.star {
+			    position: relative;
+			    font-size: 2rem;
+			    color: #ddd;
+			    margin-left:60px;
+			  }
+	  .star span{
+	    width: 0;
+	    position: absolute; 
+	    left: 0;
+	    color: rgb(255,146,58);
+	    overflow: hidden;
+	    pointer-events: none;
+	  }
+	  .star input {
+	    width: 100%;
+	    height: 100%;
+	    position: absolute;
+	    left: 0;
+	    opacity: 0;
+	    cursor: pointer;
+	  }
+	  .review-content-photo {
+    margin: 16px 0 0;
+    padding-left: 53px
+}
+
+.review-list--mypage .review-content-photo {
+    padding-left: 21px
+}
+
+.review-content-photo__wrap {
+    position: relative;
+    padding: 144px 15px 0 0
+}
+
+.review-contents--active .review-content-photo__wrap {
+    padding-top: 0
+}
+
+.review-list--mypage .review-contents--active .review-content-photo__wrap {
+    padding-right: 21px
+}
+
+.review-content-photo__list {
+    display: flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0
+}
+
+.review-contents--active .review-content-photo__list {
+    display: block;
+    overflow: initial;
+    position: static;
+    height: auto
+}
+
+.review-content-photo__item {
+    overflow: hidden;
+    position: relative;
+    width: 144px;
+    height: 144px;
+    border-radius: 4px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    align-items: center;
+    justify-content: center
+}
+
+.review-content-photo__item+.review-content-photo__item {
+    margin-left: 5px
+}
+
+.review-content-photo__item>img {
+    display: none
+}
+
+.review-contents--active .review-content-photo__item>img {
+    display: block;
+    width: 100%
+}
+
+.review-content-photo__item.review-content-photo--more {
+    display: flex
+}
+
+.review-contents--active .review-content-photo__item {
+    display: block;
+    width: 307px;
+    height: auto;
+    background-image: none!important
+}
+
+.review-contents--active .review-content-photo__item+.review-content-photo__item {
+    margin: 10px 0 0 0
+}
+
+.review-content-photo__dim {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0,0,0,.3)
+}
+
+.review-contents--active .review-content-photo__dim {
+    display: none
+}
+
+.review-content-photo__count {
+    position: relative;
+    z-index: 1;
+    font-size: 28px;
+    color: #fff
+}
+
+.review-contents--active .review-content-photo__count {
+    display: none
+}
+.review-contents__text {
+    overflow: hidden;
+    position: relative;
+    max-height: 93px;
+    padding: 0 15px 0 53px;
+    font-size: 15px;
+    -webkit-text-size-adjust: none;
+    line-height: 23px;
+    word-break: break-all;
+    -moz-text-size-adjust: none;
+    text-size-adjust: none;
+}
+.review-content-photo {
+    margin: 16px 0 0;
+}
+
+
+.review-content-photo__wrap {
+    position: relative;
+    padding: 144px 15px 0 0
+}
+
+.review-content-photo__list {
+    display: flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0
+}
+
+.review-content-photo__item {
+    overflow: hidden;
+    position: relative;
+    width: 144px;
+    height: 144px;
+    border-radius: 4px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    align-items: center;
+    justify-content: center
+}
+
+.review-content-photo__item+.review-content-photo__item {
+    margin-left: 5px
+}
+
+.review-content-photo__item>img {
+    display: none
+}
+
+.review-contents--active .review-content-photo__item>img {
+    display: block;
+    width: 100%
+}
+
+.review-content-photo__item.review-content-photo--more {
+    display: flex
+}
+
+.review-contents--active .review-content-photo__item {
+    display: block;
+    width: 307px;
+    height: auto;
+    background-image: none!important
+}
+
+.review-contents--active .review-content-photo__item+.review-content-photo__item {
+    margin: 10px 0 0 0
+}
+
+.review-content-photo__dim {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0,0,0,.3)
+}
+
+.review-contents--active .review-content-photo__dim {
+    display: none
+}
+
+.review-content-photo__count {
+    position: relative;
+    z-index: 1;
+    font-size: 28px;
+    color: #fff
+}
+
+.review-contents--active .review-content-photo__count {
+    display: none
+}
+
+.reviewDetailDiv{
+	padding-bottom: 30px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid lightgray;
+}
 </style>
 <body>
 	<jsp:include page="/WEB-INF/views/include/header.jsp" />
+	<div>
 	<div class="container">
 		<div id="goodsImage">
 			<div id="demo" class="carousel slide" data-ride="carousel">
@@ -428,7 +757,7 @@
 							<p>
 								반품 신청은 상품 수령 후 7일 이내 신청하시면 기사님께서 빠른 시일 내에 수거하실 예정입니다.
 								단순 변심으로 인한 교환/반품 신청 시 택배비용은 고객님 부담이오니 이점 양해 바랍니다.
-								웍스아웃 (마이페이지 > 주문 내역 > 주문서 상세 페이지 조회 > 교환/환불 신청)
+								머스마 (마이페이지 > 주문 내역 > 주문서 상세 페이지 조회 > 교환/환불 신청)
 								(자세히 보기)
 							</p>
 						</div>
@@ -437,7 +766,7 @@
 						<div id="dropdownButton4" class="explainDiv">A/S 안내</div>
 						<div id="dropdownMenu4" class="hiddenExplainDiv">
 							<p>
-								(주)웍스아웃 및 정식 판매처를 통하여 구입한 모든 제품은 A/S를 받으실 수 있습니다.
+								(주)머스마 및 정식 판매처를 통하여 구입한 모든 제품은 A/S를 받으실 수 있습니다.
 								(자세히 보기)
 							</p>
 						</div>
@@ -449,129 +778,86 @@
 								제품 혼용율에 따라 세탁 및 취급 유의 사항이 변경될 수 있습니다.
 								반드시 부착되어 있는 케어라벨 내용을 확인하신 후 세탁하시기 바랍니다.
 								따라서 세탁시에는 반드시 세탁 및 취급 시 주의사항 페이지를 참고 부탁 드립니다.
-								(자세히 보기)
 							</p>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div id="productBrand">
-		</div>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		
-		<div id="reviewDiv">
-			<div>
-				<div></div>
-				<div></div>
-				<div></div>
-				<div></div>
-				<div></div>
-				<div></div>
-			</div>
-				<select name="score">
-					<option>5</option>
-					<option>4</option>
-					<option>3</option>
-					<option>2</option>
-					<option>1</option>
-				</select>
-				<input type="text" id="content" name="content" placeholder="댓글을 작성해주세요.">
-				<input type="text" id="Product_Idx" name="Product_Idx" value="${goodsVo.idx}">
-				<input type="text" id="Member_Idx" name="Member_Idx" value="${sIdx}">
-				<button>댓글 작성</button>
-			
-		</div>
-		<div id="inquiryDiv">
-			<table>
-				<thead>
-					<tr>
-						<th>번호</th>
-						<th>답변여부</th>
-						<th>구분</th>
-						<th>내용</th>
-						<th>작성자</th>
-						<th>등록일자</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>
-							<div>문의작성자가 문의한 내용이 들어간다.</div>
-							<p>머시깽이~</p>
-						</td>
-					</tr>
-					<tr>
-						<td>~~~앙 몰라~</td>
-					</tr>
-				</tbody>
-			</table>
-			
-			<button type="button" class="btn btn-primary" onclick="showPopup()">작성하기</button>
-		</div>
 	</div>
+	<div id="productBrand">
+	</div>
+	<div id="reviewDiv">
+		<c:if test="${!empty reviewVos}">
+		<h3 class="mb-4">구매후기(${reviewVos[0].review_Cnt})</h3>
+		<div id="reviewDetailDiv">
+			<c:forEach var="review" items="${reviewVos}" varStatus="st">
+				<div class="reviewDetailDiv">
+					<div class="review-profile">
+						<a class="review-profile__link"><img src="//image.msscdn.net/mfile_s01/_simbols/_basic/b.png" alt="프로필 이미지" class="review-profile__image"></a>
+						<div class="review-profile__text-wrap">
+							<div class="flex2">
+								<p>LV.${sLevel} ${review.member_Name}</p>
+								<p class="review-profile__date">${review.WDate}</p>
+							</div>
+							<div>
+								<div>남자 164cm ~~ dd</div>
+							</div>
+						</div>
+					</div>
+					<div class="review-goods-information">
+						<div class="review-goods-information__thumbnail">
+		                    <a href="https://www.musinsa.com/app/goods/2991552/0" class="review-goods-information__link">
+		                        <img src="//image.msscdn.net/images/goods_img/20221221/2991552/2991552_16741013612256_100.jpg" class="review-goods-information__image">
+		                    </a>
+		                </div>
+						<div class="review-goods-information__item">
+							<div>${review.brand_Name}</div>
+							<div>${review.goods_Name}</div>
+							<div>${review.option_Name}</div>
+						</div>
+					</div>
+					<div>
+						<span class="star">★★★★★<span>★★★★★</span>
+							<input type="range" oninput="drawStar(this)" value="1*2" step="1" min="0" max="10"  onload="drawStar(this)">
+						</span>
+						<script>
+							const drawStar = (target) => {
+							  const starSpan = document.querySelector('.star span');
+							  starSpan.style.width = target.value * 10 + '%';
+							}
+						</script>
+					</div>
+					<div class="review-contents" review_type="goods_estimate" data-review-no="46057695" data-goods-no="2991552">
+		                <div class="review-contents__text">${review.content}</div>
+		                <div class="review-content-photo">
+		                    <div class="review-content-photo__wrap">
+		                        <ul class="review-content-photo__list" style="padding-left: 0px;">
+		                            <li class="review-content-photo__item" data-img-index="0" style="background-image:url('${ctp}/images/${review.FSname}');">
+		                                <img src="${ctp}/images/${review.FSname}">
+		                            </li>
+		                        </ul>
+		                    </div>
+		                </div>
+		            </div>
+		        </div>
+	        </c:forEach>
+	        <div class="text-center m-4">
+			    <ul class="pagination justify-content-center pagination-sm">
+			       <c:if test="${pageVO.pag > 1}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=1&idx=${goodsVo.idx}">첫페이지</a></li></c:if>
+			       <c:if test="${pageVO.curBlock > 0}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=${(pageVO.curBlock-1)*pageVO.blockSize + 1}&idx=${goodsVo.idx}">이전블록</a></li></c:if>
+			       <c:forEach var="i" begin="${pageVO.curBlock*pageVO.blockSize + 1}" end="${pageVO.curBlock*pageVO.blockSize + pageVO.blockSize}" varStatus="st">
+		               <c:if test="${i <= pageVO.totPage && i == pageVO.pag}"><li class="page-item active"><a class="page-link text-white bg-secondary border-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=${i}&idx=${goodsVo.idx}">${i}</a></li></c:if>
+			           <c:if test="${i <= pageVO.totPage && i != pageVO.pag}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=${i}&idx=${goodsVo.idx}">${i}</a></li></c:if>
+			       </c:forEach>
+			       <c:if test="${pageVO.curBlock < pageVO.lastBlock}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=${(pageVO.curBlock+1)*pageVO.blockSize + 1}&idx=${goodsVo.idx}">다음블록</a></li></c:if>
+			       <c:if test="${pageVO.pag < pageVO.totPage}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=${pageVO.totPage}&idx=${goodsVo.idx}">마지막페이지</a></li></c:if>
+			    </ul>
+		    </div>
+	    </div>
+    </c:if>
+    </div>
+    </div>
 	<jsp:include page="/WEB-INF/views/include/footer.jsp" />
 </body>
 </html>

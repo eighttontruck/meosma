@@ -13,6 +13,8 @@ import com.spring.javaweb11S.vo.OrderHistoryVO;
 import com.spring.javaweb11S.vo.OrderHistory_DetailVO;
 import com.spring.javaweb11S.vo.OrderVO;
 import com.spring.javaweb11S.vo.RefundVO;
+import com.spring.javaweb11S.vo.ReviewVO;
+import com.spring.javaweb11S.pagination.PageVO;
 import com.spring.javaweb11S.vo.BrandVO;
 import com.spring.javaweb11S.vo.CartVO;
 import com.spring.javaweb11S.vo.CategoryVO;
@@ -27,7 +29,7 @@ import com.spring.javaweb11S.vo.SubCategoryVO;
 
 public interface GoodsService {
 
-	public List<GoodsVO> getGoodsList();
+	public List<GoodsVO> getGoodsList(PageVO pageVO);
 
 	public GoodsVO getGoodsDetail(int goods_Idx);
 	
@@ -116,6 +118,10 @@ public interface GoodsService {
 	public void setInsertRefundOrderHistory(RefundVO refundVO);
 
 	public void setInsertRefundOrderHistory_Detail(OrderVO vo);
+
+	public List<ReviewVO> getReviewList(PageVO pageVO, int goods_Idx);
+
+	public BrandVO getBrandVO(int brand_Idx);
 
 
 

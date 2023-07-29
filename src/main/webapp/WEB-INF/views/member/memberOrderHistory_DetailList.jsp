@@ -197,6 +197,9 @@
 		background-color:white;
 		color:black;
 	}
+	.borderBtn{
+		border-bottom:1px solid black;
+	}
 </style>
 <body>
 	<jsp:include page="/WEB-INF/views/include/header.jsp" />
@@ -268,7 +271,7 @@
 			<div id="sidebar">
 				<div class="sidebar2">
 					<h3>나의 쇼핑 활동</h3>
-					<a href="${ctp}/member/orderHistory_Detail">주문 내역 조회</a>
+					<a href="${ctp}/member/orderHistory_Detail">주문내역 상세 조회</a>
 					<a href="#">구매후기</a>
 					<a href="#">래플 응모내역</a>
 					<a href="#">상품문의</a>
@@ -280,16 +283,13 @@
 				</div>
 			</div>
 			<div id="mainDiv">
-				<h2>주문 내역 상세 조회</h2>
+				<h2>주문내역 상세 조회</h2>
 				<div>
-					<a>입금/결제</a>
-					<a>배송중/픽업대기</a>
-					<a>배송완료/픽업완료</a>
-					<a>구매확정</a>
-					<a>교환</a>
-					<a>교환완료</a>
-					<a>환불</a>
-					<a>환불완료</a>
+					<a class="<c:if test="${pageVO.filter eq 'pay'}">borderBtn</c:if>" href="${ctp}/member/orderHistory_Detail?filter=pay">입금/결제</a>
+					<a class="<c:if test="${pageVO.filter eq 'delivery'}">borderBtn</c:if>" href="${ctp}/member/orderHistory_Detail?filter=delivery">배송중/픽업대기</a>
+					<a class="<c:if test="${pageVO.filter eq 'confirm'}">borderBtn</c:if>" href="${ctp}/member/orderHistory_Detail?filter=confirm">구매확정</a>
+					<a class="<c:if test="${pageVO.filter eq 'exchange'}">borderBtn</c:if>" href="${ctp}/member/orderHistory_Detail?filter=exchange">교환</a>
+					<a class="<c:if test="${pageVO.filter eq 'refund'}">borderBtn</c:if>" href="${ctp}/member/orderHistory_Detail?filter=refund">환불</a>
 				</div>
 				<table id="listTable">
 					<thead>
@@ -330,7 +330,8 @@
 								</td>
 								<td>
 									<div>
-										${order.status}
+										${order.status}<br>
+										<c:if test="${order.review_Status eq '작성완료'}">(후기 ${order.review_Status})</c:if>
 									</div>
 									
 									<c:if test="${order.status eq '배송중'}">
@@ -345,8 +346,8 @@
 										<button onclick="goodsConfirm(${order.idx})" class="blackBtn">구매확정</button>
 										<button onclick="popUp(${order.idx},${order.goods_Idx},${order.orderHistory_Idx})" class="whiteBtn">교환 및 환불 요청</button>
 									</c:if>
-									<c:if test="${order.status eq '구매확정'}">
-										<button class="blackBtn">후기 작성</button>
+									<c:if test="${order.status eq '구매확정' and order.review_Status ne '작성완료'}">
+										<button type="button" onclick="location.href='${ctp}/member/review?orderHistory_Detail_Idx=${order.idx}'" class="blackBtn">후기 작성</button>
 									</c:if>
 								</td>
 							</tr>
@@ -355,6 +356,18 @@
 				</table>
 			</div>
 		</div>
+		<div class="text-center m-4">
+		    <ul class="pagination justify-content-center pagination-sm">
+		       <c:if test="${pageVO.pag > 1}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/member/orderHistory_Detail?pageSize=${pageVO.pageSize}&pag=1&filter=${pageVO.filter}">첫페이지</a></li></c:if>
+		       <c:if test="${pageVO.curBlock > 0}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/member/orderHistory_Detail?pageSize=${pageVO.pageSize}&pag=${(pageVO.curBlock-1)*pageVO.blockSize + 1}&filter=${pageVO.filter}">이전블록</a></li></c:if>
+		       <c:forEach var="i" begin="${pageVO.curBlock*pageVO.blockSize + 1}" end="${pageVO.curBlock*pageVO.blockSize + pageVO.blockSize}" varStatus="st">
+	               <c:if test="${i <= pageVO.totPage && i == pageVO.pag}"><li class="page-item active"><a class="page-link text-white bg-secondary border-secondary" href="${ctp}/member/orderHistory_Detail?pageSize=${pageVO.pageSize}&pag=${i}&filter=${pageVO.filter}">${i}</a></li></c:if>
+		           <c:if test="${i <= pageVO.totPage && i != pageVO.pag}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/member/orderHistory_Detail?pageSize=${pageVO.pageSize}&pag=${i}&filter=${pageVO.filter}">${i}</a></li></c:if>
+		       </c:forEach>
+		       <c:if test="${pageVO.curBlock < pageVO.lastBlock}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/member/orderHistory_Detail?pageSize=${pageVO.pageSize}&pag=${(pageVO.curBlock+1)*pageVO.blockSize + 1}&filter=${pageVO.filter}">다음블록</a></li></c:if>
+		       <c:if test="${pageVO.pag < pageVO.totPage}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/member/orderHistory_Detail?pageSize=${pageVO.pageSize}&pag=${pageVO.totPage}&filter=${pageVO.filter}">마지막페이지</a></li></c:if>
+		    </ul>
+	    </div>
 	</div>
 	<jsp:include page="/WEB-INF/views/include/footer.jsp" />
 </body>

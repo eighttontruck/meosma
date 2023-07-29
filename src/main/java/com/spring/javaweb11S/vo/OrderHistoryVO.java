@@ -9,8 +9,8 @@ public class OrderHistoryVO {
 	String orderDate;
 	int finalPrice;
 	int shipping_Num;
-	String status;
 	String recipient_Name;
 	String recipient_TelNum;
 	String recipient_Address;
+	String category;
 }

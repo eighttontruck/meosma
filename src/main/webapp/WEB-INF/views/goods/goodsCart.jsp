@@ -150,6 +150,24 @@
 	}
 </script>
 <style>
+	html,
+      body {
+        height: 100%;
+        padding: 0px;
+        margin: 0px;
+      }
+
+      header {
+        height: 120px;
+      }
+
+      .wrap {
+        min-height: calc(100% - 120px);
+      }
+
+      footer {
+        height: 284px;
+      }
 	#listTable{
 		margin-top:20px;
 		width:60%;
@@ -235,8 +253,8 @@
 	}
 </style>
 <body>
-	<jsp:include page="/WEB-INF/views/include/header.jsp" />
-	<div>
+	<header><jsp:include page="/WEB-INF/views/include/header.jsp" /></header>
+	<div class="wrap">
 		<div class="text-center mt-4"><h1><strong>CART</strong></h1></div>
 		<form method="post" name="myform" action="${ctp}/goods/goodsPayment">
 			<table id="listTable">
@@ -348,6 +366,6 @@
 			</div>
 		</c:if>
 	</div>
-	<jsp:include page="/WEB-INF/views/include/footer.jsp" />
+	<footer><jsp:include page="/WEB-INF/views/include/footer.jsp"/></footer>
 </body>
 </html>
