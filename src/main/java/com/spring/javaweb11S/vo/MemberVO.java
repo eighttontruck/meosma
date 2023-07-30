@@ -24,4 +24,8 @@ public class MemberVO {
 	private int point;
 	
 	private int order_Count;
+	
+	//마이페이지에 보여주기
+	private int coupon_Count;
+	private int review_Count;
 }

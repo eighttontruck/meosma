@@ -251,6 +251,17 @@
 		margin: 0 0 0 -1px;
 		display:block;
 	}
+	.blackBtn{
+		width:80px;
+		background-color:black;
+		color:white;
+		border:1px solid black;
+	}
+	.whiteBtn{
+		width:50px;
+		background-color:white;	
+		border:1px solid black;
+	}
 </style>
 <body>
 	<header><jsp:include page="/WEB-INF/views/include/header.jsp" /></header>
@@ -358,10 +369,10 @@
 			</div>
 			<div class="flex2 marginAuto" id="btnDiv">
 				<div>
-					<button type="button" onclick="deleteCart()">선택 삭제</button>
+					<button type="button" class="blackBtn" onclick="deleteCart()">선택 삭제</button>
 				</div>
 				<div class="flex2">
-					<button type="button" onclick="payMentCheck()">주문</button>
+					<button type="button" class="whiteBtn" onclick="payMentCheck()">주문</button>
 				</div>
 			</div>
 		</c:if>

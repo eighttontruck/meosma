@@ -21,4 +21,8 @@ public class ReviewVO {
 	private String option_Name;
 	private String brand_Name;
 	private int review_Cnt;
+	private String member_Gender;
+	private String member_File;
+	private int height;
+	private int weight;
 }

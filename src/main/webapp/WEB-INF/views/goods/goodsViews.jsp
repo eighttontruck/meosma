@@ -794,21 +794,21 @@
 			<c:forEach var="review" items="${reviewVos}" varStatus="st">
 				<div class="reviewDetailDiv">
 					<div class="review-profile">
-						<a class="review-profile__link"><img src="//image.msscdn.net/mfile_s01/_simbols/_basic/b.png" alt="프로필 이미지" class="review-profile__image"></a>
+						<a class="review-profile__link"><img src="${ctp}/images/${review.member_File}" class="review-profile__image"></a>
 						<div class="review-profile__text-wrap">
 							<div class="flex2">
 								<p>LV.${sLevel} ${review.member_Name}</p>
 								<p class="review-profile__date">${review.WDate}</p>
 							</div>
 							<div>
-								<div>남자 164cm ~~ dd</div>
+								<div>${review.member_Gender} ${review.height}CM  ${review.weight}KG</div>
 							</div>
 						</div>
 					</div>
 					<div class="review-goods-information">
 						<div class="review-goods-information__thumbnail">
 		                    <a href="https://www.musinsa.com/app/goods/2991552/0" class="review-goods-information__link">
-		                        <img src="//image.msscdn.net/images/goods_img/20221221/2991552/2991552_16741013612256_100.jpg" class="review-goods-information__image">
+		                        <img src="${ctp}/images/${goodsVo.thumbNail}" class="review-goods-information__image">
 		                    </a>
 		                </div>
 						<div class="review-goods-information__item">

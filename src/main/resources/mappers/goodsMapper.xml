@@ -255,7 +255,7 @@
 	</select>
 	
 	<select id="getReviewList" resultType="com.spring.javaweb11S.vo.ReviewVO">
-		SELECT r.*, g.name AS goods_Name, b.name AS brand_Name, go.goods_option AS option_Name, m.name AS member_Name, (SELECT count(*) FROM review r2 WHERE r2.goods_idx = 33) AS review_Cnt
+		SELECT r.*, g.name AS goods_Name, b.name AS brand_Name, go.goods_option AS option_Name, m.name AS member_Name, (SELECT count(*) FROM review r2 WHERE r2.goods_idx = 33) AS review_Cnt, m.fsname AS member_File, m.height, m.weight, m.gender AS member_Gender
 		FROM review r
 		JOIN goods g ON g.idx = r.goods_idx
 		JOIN orderHistory_detail oh ON oh.idx = r.orderHistory_detail_idx
@@ -278,7 +278,7 @@
 		INSERT INTO orderHistory_detail
 		VALUES
 		<foreach collection="vos" item="item" separator=",">
-			(default,(SELECT idx FROM orderHistory ORDER BY idx DESC LIMIT 0, 1) ,#{item.goods_Idx}, #{item.option_Idx}, #{item.order_Stock}, default, default)
+			(default,(SELECT idx FROM orderHistory ORDER BY idx DESC LIMIT 0, 1) ,#{item.goods_Idx}, #{item.option_Idx}, #{item.order_Stock}, default, default, default)
 		</foreach>
 		;
 	</insert>

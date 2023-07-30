@@ -24,6 +24,19 @@
 		let address1 = $.trim($("#sample6_postcode").val());
 		let address2 = $.trim($("#sample6_address").val());
 		let address3 = $.trim($("#sample6_detailAddress").val());
+		
+		let recipient_TelNum = $("#recipient_TelNum").val();
+		let recipient_Name = $("#recipient_Name").val();	
+		let agree = $("#agree");
+		if(address1==''||address2==''||address3==''||recipient_TelNum==''||recipient_Name==''){
+			alert("배송지 정보를 모두 입력해주세요.");
+			return false;
+		}
+		if(!agree.checked){
+			alert("약관에 동의해주세요.");
+			return false;
+		}
+		
 		let address = address2+" "+address3;
 		$("#recipient_Address").val(address1+"/"+address2+"/"+address3);
 		
@@ -109,9 +122,15 @@
 	
 	function usePoint2(){
 		let memberPoint = ${memberVo.point};
-		let usedPoint = $("#pointInput").val().replace(/(^0+)/, "");
+		let usedPoint = $("#pointInput").val().replace(/(^0+)/, ""); //앞이 0이 들어가면 안되서?
 		let usedPoint2 = $("#pointInput").val();
-		if(usedPoint >= memberPoint){
+		let finalPrice = ${finalPrice}/2; //적립금은 상품 가격에 절반만
+		if(usedPoint >= finalPrice){
+			$("#pointInput").val(finalPrice);
+			$("#usedPoint").val(finalPrice);
+			ontotal2();
+			return false;
+		} else if(usedPoint >= memberPoint){
 			$("#pointInput").val(${memberVo.point});
 			$("#usedPoint").val(${memberVo.point});
 			$("#pointCheckBox").prop("checked", true);
@@ -120,6 +139,7 @@
 		} else{
 			$("#pointCheckBox").prop("checked", false);
 		}
+		
 		$("#usedPoint").val(usedPoint2);
 		$("#pointInput").val(usedPoint);
 		if(usedPoint==""){
@@ -354,7 +374,7 @@
 		          		</c:forEach>
 		          		<c:if test="${empty couponVos}"> <!-- List가 비어있는지 확인 -->
 						    <tr>
-						      	<td colspan="4"><h4>적용 가능한 쿠폰이 없습니다.</h4></td> <!-- "없음" 메시지를 표시 -->
+						      	<td colspan="6"><h4>적용 가능한 쿠폰이 없습니다.</h4></td> <!-- "없음" 메시지를 표시 -->
 						    </tr>
 						</c:if>
 		          	</tbody>
@@ -448,7 +468,7 @@
 										</div>
 									</div>
 								</td>
-								<td>${vo.order_Stock}</td>
+								<td>${vo.order_Stock}개</td>
 								<td>₩<fmt:formatNumber value="${vo.order_Price}" pattern="#,###"/></td>
 								<td>
 									<c:set var="accumulatedPoints" value="${vo.order_Price * vo.order_Stock * 0.05}" />
@@ -498,24 +518,24 @@
 			
 			<div id="deliveryInfo" class="flexDiv">
 				<div class="bigText"><h1><strong>배송지 정보</strong></h1></div>
-				<div class="col">
-					<div class="labelText">배송지 확인&nbsp;<button type="button" class="whiteBigBtn" data-toggle="modal" data-target="#deliveryModal">배송지 목록</button></div>
+				<!-- <div class="col">
+					<div class="labelText">배송지 확인&nbsp;</div>
 					<div>
 						<input type="radio" name="myGroup" class="inputText" checked>&nbsp;직접 입력
 						<input type="radio" name="myGroup" class="inputText">&nbsp;최근 이용한 주소 가져오기
 					</div>
-				</div>
+				</div> -->
 				<div class="col">
-					<div class="labelText">수령인</div>
-					<div><input type="text" name="recipient_Name" class="inputText"></div>
+					<div class="labelText">수령인&nbsp;<button type="button" class="whiteBigBtn" data-toggle="modal" data-target="#deliveryModal">배송지 목록</button></div>
+					<div><input type="text" name="recipient_Name" id="recipient_Name" class="inputText"></div>
 				</div>
 				<div class="col">
 					<div class="labelText">주소 결제시 / 기준으로 짤라서 저장하기</div>
 					<div>
-			        	<input type="text" id="sample6_postcode" style="width:295px;"class="inputText">
+			        	<input type="text" id="sample6_postcode" id="sample6_postcode" style="width:295px;"class="inputText">
 			          	<button type="button" onclick="sample6_execDaumPostcode()" id="postCodeBtn">우편번호 찾기</button>
-			      		<input type="text" id="sample6_address" size="50" class="inputText">
-			        	<input type="text" id="sample6_detailAddress" class="inputText">
+			      		<input type="text" id="sample6_address" id="sample6_address" size="50" class="inputText">
+			        	<input type="text" id="sample6_detailAddress" id="sample6_detailAddress" class="inputText">
 			        	<input type="hidden" name="recipient_Address" id="recipient_Address"> <!-- 보내기 전에 합쳐서/ 로 구분해서 보내기 -->
 			          	<input type="hidden" id="sample6_extraAddress" class="inputText">
 					</div>
@@ -526,7 +546,7 @@
 				</div>
 				<div class="col">
 					<div class="labelText">휴대폰 번호</div>
-					<div><input type="text" name="recipient_TelNum" class="inputText"></div>
+					<div><input type="text" name="recipient_TelNum" id="recipient_TelNum" class="inputText"></div>
 				</div>
 				<!-- <div class="col">
 					<div class="labelText">전화번호</div>
@@ -539,19 +559,19 @@
 			</div>
 			
 			<div id="paymentInfo" class="flexDiv">
-				<div class="bigText"><h1><strong>결제 정보</strong></h1></div>
+				<div class="bigText"><h1>결제 정보</h1></div>
 				<div class="col">
 					<div class="labelText">상품 합계 금액</div>
-					<div class="ml-4"><strong>₩<fmt:formatNumber value="${finalPrice}" pattern="#,###"/></strong></div>
+					<div class="ml-4">₩<fmt:formatNumber value="${finalPrice}" pattern="#,###"/></div>
 				</div>
 				<div class="col">
 					<div class="labelText">배송비</div>
-					<div><strong class="ml-4">₩<span id="shipFeeText">3,000</span></strong></div>
+					<div class="ml-4">₩<span id="shipFeeText">3,000</span></div>
 				</div>
 				<div class="col">
 					<div>할인 및 적립</div>
-					<div>할인 : <strong id="discountPrice">0</strong></div>
-					<div>예상적립금 : <strong id="expectPoint"></strong></div>
+					<div>할인 : <span id="discountPrice">0</span></div>
+					<div>예상적립금 : <span id="expectPoint"></span></div>
 				</div>
 				<div class="col">
 					<div class="labelText">적립금 사용</div>
@@ -564,7 +584,7 @@
 				</div>
 				<div class="col">
 					<div class="labelText">최종 결제 금액</div>
-					<div><strong class="ml-4" id="finalPriceDiv">${finalPrice}</strong></div>
+					<div class="ml-4"><span  id="finalPriceDiv">₩<fmt:formatNumber value="${finalPrice}" pattern="#,###"/></span></div>
 				</div>
 			</div>
 			
@@ -577,7 +597,7 @@
 				</div>
 				<div id="finalPriceDiv2">₩<fmt:formatNumber value="${finalPrice}" pattern="#,###"/></div>
 				<input type="hidden" id="usedCoupon">
-				<input type="text" value="0" name="usedPoint" id="usedPoint">
+				<input type="hidden" value="0" name="usedPoint" id="usedPoint">
 				<input type="hidden" id="finalPriceInput" name="finalPrice" value="${finalPrice}" readonly>
 				<input type="hidden" value="0" id="coupon_Idx" name="coupon_Idx">
 				<input type="hidden" name="buyStatus" value="${buyStatus}">
@@ -586,7 +606,7 @@
 				<input type="hidden" name="payMentInfo3" id="payMentInfo3">
 				<input type="hidden" name="payMentInfo4" id="payMentInfo4">
 				<div class="col mb-2">
-					<input type="checkbox">&nbsp;(필수) 구매하실 상품의 결제정보를 확인하였으며, 구매진행에 동의합니다. 주문이 폭주하여 실재고보다 많은 주문이 들어올 경우 결제가 취소 될 수 있습니다.
+					<input type="checkbox" id="agree">&nbsp;(필수) 구매하실 상품의 결제정보를 확인하였으며, 구매진행에 동의합니다. 주문이 폭주하여 실재고보다 많은 주문이 들어올 경우 결제가 취소 될 수 있습니다.
 				</div>
 				<div>
 					<button type="button" id="paymentBtn" onclick="fCheck2()">결제하기</button>

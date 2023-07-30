@@ -128,7 +128,7 @@
 		<p>결제 금액 : ${payMentInfo3}</p>
 		<p>카드 승인번호 : ${payMentInfo4}</p>
 		<div>
-			<button type="button" class="blackBtn" onclick="location.href='${ctp}/goods/goodsList'">홈으로 가기</button>
+			<button type="button" class="blackBtn" onclick="location.href='${ctp}/'">홈으로 가기</button>
 			<button type="button" class="whiteBtn" onclick="location.href='${ctp}/member/memberMyPage'">마이페이지</button>
 		</div>
 	</div>

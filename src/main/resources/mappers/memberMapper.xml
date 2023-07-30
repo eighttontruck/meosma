@@ -14,7 +14,13 @@
 	</select>
 	
 	<select id="getMemberIdxCheck" resultType="com.spring.javaweb11S.vo.MemberVO">
-		SELECT * FROM member WHERE idx = #{sIdx};
+		SELECT *,
+		    (SELECT COUNT(*) FROM COUPON WHERE member_idx = #{sIdx}) AS coupon_Count,
+		    (SELECT COUNT(*) FROM orderhistory_detail ohd 
+		    JOIN orderhistory oh ON oh.idx = ohd.orderhistory_idx 
+		    WHERE ohd.status = '구매확정' AND ohd.review_status = '미작성' AND oh.member_idx = #{sIdx}) AS review_Count
+		FROM member 
+		WHERE idx = #{sIdx};
 	</select>
 	
 	<select id="getMemberOrderHistory" resultType="com.spring.javaweb11S.vo.OrderHistoryVO">
@@ -93,8 +99,8 @@
 	</insert>
 	
 	<insert id="setInsertMemberCoupon">
-		INSERT INTO coupon(idx, member_idx, name, dcpercentage, issuedDate, usageDate, status, usedDate) 
-		VALUES(default, #{vo.idx}, #{coupon_Name}, #{percentage}, default, default, default);
+		INSERT INTO coupon(idx, member_idx, name, dcpercentage, issuedDate, usageDate, status) 
+		VALUES(default, (SELECT idx FROM member ORDER BY idx DESC LIMIT 0, 1), #{coupon_Name}, #{percentage}, default, default, default);
 	</insert>
 	
 	<insert id="setInsertGoodsReview">

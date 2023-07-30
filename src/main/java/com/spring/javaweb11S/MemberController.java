@@ -213,11 +213,13 @@ public class MemberController {
 		@RequestParam(name="pageSize", defaultValue="5",required=false) int pageSize
 			) {
 		int sIdx = (int) session.getAttribute("sIdx");
+		MemberVO vo = memberService.getMemberIdxCheck(sIdx);
 		
 		PageVO pageVO = pageProcess.totRecCnt(pag, pageSize, sIdx, filter);
 		
 		List<OrderHistory_DetailVO> ohVos=memberService.getMemberOrderHistory_Detail(pageVO, sIdx);
 		
+		model.addAttribute("vo",vo);
 		model.addAttribute("ohVos",ohVos);
 		model.addAttribute("pageVO",pageVO);
 		return "member/memberOrderHistory_DetailList";

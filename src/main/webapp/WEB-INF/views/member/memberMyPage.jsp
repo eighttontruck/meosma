@@ -56,7 +56,7 @@ function getOrderHistory_DetailList(idx){
 		display:flex;
 		background-color:lightgray;
 		width:100%;
-		height:300px;
+		height:320px;
 		padding:30px;
 	}
 	#memberInfo2{
@@ -117,10 +117,10 @@ function getOrderHistory_DetailList(idx){
 	}
 	#headerRightDiv > div{
 		width:33%;
-		padding:50px;
+		padding: 80px 50px 50px 120px;
 	}
 	#headerLeftDiv{
-		padding-left:100px;
+		margin-left:50px;
 	}
 	#mainDiv a{
 		margin:0 15px;
@@ -131,8 +131,8 @@ function getOrderHistory_DetailList(idx){
 		height:100%;
 	}
 	.circle-container {
-	  width: 150px; /* 원의 지름을 설정 */
-	  height: 150px; /* 원의 지름을 설정 */
+	  width: 180px;
+      height: 180px;
 	  border-radius: 50%; /* 정확한 원 모양을 생성 */
 	  overflow: hidden; /* 이미지가 원 밖으로 넘치지 않도록 숨김 처리 */
 	  float:left;
@@ -164,29 +164,30 @@ function getOrderHistory_DetailList(idx){
 		<div id="memberInfo">
 			<div class="headerDiv" id="headerLeftDiv">
 				<div><h3><strong>My Page</strong></h3></div>
-				<div>
+				<div style="margin-left: 50px;">
 					<div class="circle-container">
-						<img alt="" class="round-image" src="${ctp}/images/1_1.jpg">
+					
+						<img alt="" class="round-image" src="${ctp}/images/${vo.FSname}">
 					</div>
 					<div class="flex"><h1><strong>${vo.name}</strong></h1><a>회원정보변경</a></div>
-					<div class="flex">LV.${vo.level}</div>
+					<div class="flex" style="font-size: 25px;">LV.${vo.level}&nbsp;${strLevel}</div>
 				</div>
 			</div>
 			<div class="headerDiv" id="headerRightDiv">
 				<div>
 					<img alt="" src="${ctp}/images/coin.png" style="width:50px;">
 					<h4>적립금 ></h4>
-					<h1><strong>${vo.point}</strong></h1>
+					<h1><fmt:formatNumber value="${vo.point}" pattern="#,###"/></h1>
 				</div>
 				<div>
 					<img alt="" src="${ctp}/images/coupon.png" style="width:70px;">
 					<h4>쿠폰 ></h4>
-					<h1><strong>${vo.level}</strong></h1>
+					<h1>${vo.coupon_Count}</h1>
 				</div>
 				<div>
 					<img alt="" src="${ctp}/images/review.png" style="width:50px;">
 					<h4>후기작성 ></h4>
-					<h1><strong>2</strong></h1>
+					<h1>${vo.review_Count}</h1>
 				</div>
 			</div>
 		</div>
@@ -253,6 +254,7 @@ function getOrderHistory_DetailList(idx){
 						</tr>
 					</thead>
 					<tbody>
+						<c:if test="${empty vos}"><tr><td colspan="6">주문 내역 없음</td></tr></c:if>
 						<c:forEach var="order" items="${vos}" varStatus="st">
 							<tr>
 								<td><button type="button" data-toggle="modal" id="btn" data-target="#detailModal" onclick="getOrderHistory_DetailList(${order.idx})">${order.idx} ></button></td>

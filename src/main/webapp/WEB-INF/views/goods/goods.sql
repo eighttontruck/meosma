@@ -13,6 +13,20 @@ create table goods(
 select * from goods_option;
 drop table review;
 
+create table draw(
+	idx int not null auto_increment,
+	brand_idx int not null,
+	name varchar(50) not null,
+	price int not null,
+	fsname text not null,
+	fname text not null,
+);
+
+delete from orderhistory;
+delete from orderhistory_detail;
+delete from review;
+SELECT idx FROM member ORDER BY idx DESC LIMIT 0, 1;
+
 SELECT r.*, g.name AS goods_Name, b.name AS brand_Name, go.goods_option AS option_Name, m.name AS member_Name, count(*) AS review_Cnt
 		FROM review r
 		JOIN goods g ON g.idx = r.goods_idx
@@ -22,6 +36,19 @@ SELECT r.*, g.name AS goods_Name, b.name AS brand_Name, go.goods_option AS optio
 		JOIN member m ON m.idx = r.member_idx
 		WHERE r.goods_idx = 33; 
 		
+SELECT *, (SELECT count(*) FROM COUPON WHERE member_idx = 16;) AS coupon_Count, (SELECT count(*) FROM orderhistory_detail ohd JOIN orderhistory oh ON oh.idx = ohd.orderhistory_idx WHERE ohd.status = '구매확정' AND ohd.review_status = '미작성' AND oh.member_idx = 16;) AS review_Count
+		FROM member 
+		WHERE idx = 16;
+
+SELECT *,
+    (SELECT COUNT(*) FROM COUPON WHERE member_idx = 16) AS coupon_Count,
+    (SELECT COUNT(*) FROM orderhistory_detail ohd 
+    JOIN orderhistory oh ON oh.idx = ohd.orderhistory_idx 
+    WHERE ohd.status = '구매확정' AND ohd.review_status = '미작성' AND oh.member_idx = 16) AS review_Count
+FROM member 
+WHERE idx = 16;
+		
+
 SELECT r.*, g.name AS goods_Name, b.name AS brand_Name, go.goods_option AS option_Name, m.name AS member_Name, (SELECT count(*) FROM review r2 WHERE r2.goods_idx = 33) AS review_Cnt
 FROM review r
 JOIN goods g ON g.idx = r.goods_idx

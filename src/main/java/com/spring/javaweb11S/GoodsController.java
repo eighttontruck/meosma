@@ -241,6 +241,7 @@ public class GoodsController {
 				vo.setOrder_ThumbNail(goodsVo.getThumbNail());
 				vo.setOrder_Name(goodsVo.getName());
 				vo.setOrder_Price(goodsVo.getPrice());
+				vo.setOrder_Brand(goodsVo.getBrand_Name());
 				vo.setOrder_Option(order_Option[i]);
 				vo.setOrder_Stock(order_Stock[i]);
 				vo.setGoods_Idx(goods_Idx[i]);
@@ -288,19 +289,23 @@ public class GoodsController {
 		List<OrderVO> vos = (List<OrderVO>) session.getAttribute("sVos");
 		
 		vo.setMember_Idx(sIdx);
-		System.out.println(vo.toString());
+		
 		if(buyStatus.equals("cart")) {
 			goodsService.setDeleteCart(cart_Idx); //카트에서 주문한거면 처리해야
 		}
+		
 		goodsService.setUpdateGoodsStock(vos); //수량 감소 처리
 		goodsService.setOrderHistory(vo); //주문 내역 작성
 		goodsService.setOrderHistory_Detail(vos); //주문 세부내역 작성
+		
 		if(usedPoint != 0) {
 			goodsService.setMinusPoint(sIdx, usedPoint); //포인트 사용처리
 		}
+		
 		if(coupon_Idx!=0) {
 			goodsService.setUsedCoupon(coupon_Idx); //쿠폰 사용처리
 		}
+		
 		model.addAttribute("vos",vos);
 		model.addAttribute("payMentInfo1",payMentInfo1);
 		model.addAttribute("payMentInfo2",payMentInfo2);
@@ -326,6 +331,12 @@ public class GoodsController {
 		
 		model.addAttribute("vos",vos);
 		return "goods/goodsBrandList";
+	}
+	
+	@RequestMapping(value="/drawList", method=RequestMethod.GET)
+	public String goodsDrawListGet() {
+		
+		return "goods/goodsDrawList";
 	}
 	
 	// 상품 뷰 창에서 옵션 장바구니에 넣기
