@@ -32,7 +32,7 @@
 			alert("배송지 정보를 모두 입력해주세요.");
 			return false;
 		}
-		if(!agree.checked){
+		if(!agree.prop("checked")){
 			alert("약관에 동의해주세요.");
 			return false;
 		}
@@ -46,7 +46,6 @@
 			goods_Name = goods_Name+" 외 "+parseInt($('.goodsNames').length-1)+"개";
 		}
 		
-		alert(goods_Name);
 		var IMP = window.IMP; 
 		IMP.init("imp18020804");
 		IMP.request_pay({
@@ -55,7 +54,7 @@
 		    pay_method : 'card',
 		    merchant_uid : 'merchant_' + new Date().getTime(),
 		    name : goods_Name,
-		    amount : 10, //판매 가격
+		    amount : 10, //$("#finalPriceInput").val(), //판매 가격
 		    buyer_email : '${memberVo.emailId}',
 		    buyer_name : '${memberVo.name}',
 		    buyer_tel : '${memberVo.telNum}',
@@ -65,11 +64,15 @@
 			  var paySw = 'no';
 		    if ( rsp.success ) {
 		        paySw = 'ok';
+		       	$("#payMentInfo1").val(rsp.imp_uid);
+		       	$("#payMentInfo2").val(rsp.merchant_uid);
+		       	$("#payMentInfo3").val(rsp.paid_amount);
+		       	$("#payMentInfo4").val(rsp.apply_num);
 		    } else {
 		        var msg = '결제에 실패하였습니다.';
 		        msg += '에러내용 : ' + rsp.error_msg;
+		        alert(msg);
 		    }
-		    alert(msg);
 		    if(paySw == 'no') {
 			    alert("결제를 취소하셨습니다.");
 		    }
@@ -175,8 +178,19 @@
 	}
 	
 	function numberWithCommas(x) {
-	      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-	    }
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+	
+	function selectShipAddress(name, telNum, address){
+		
+		$("#recipient_Name").val(name);
+		$("#recipient_TelNum").val(telNum);
+		
+		let addressArr=address.split("/");
+		$("#sample6_postcode").val(addressArr[0]);
+  		$("#sample6_address").val(addressArr[1]);
+  		$("#sample6_detailAddress").val(addressArr[2]);
+	}
 </script>
 <style>
 	#couponModal td{
@@ -392,7 +406,7 @@
   		
   		<!-- The Modal -->
 		<div class="modal" id="deliveryModal">
-		  <div class="modal-dialog modal-dialog-centered">
+		  <div class="modal-dialog modal-lg modal-dialog-centered">
 		    <div class="modal-content">
 		
 		      <!-- Modal Header -->
@@ -418,7 +432,7 @@
 								<td>${ShipAdd.ship_Name}</td>
 								<td>${ShipAdd.ship_TelNum}</td>
 								<td>${ShipAdd.ship_Address}</td>
-								<td><button type="button">선택</button></td>
+								<td><button type="button" onclick="selectShipAddress('${ShipAdd.ship_Name}','${ShipAdd.ship_TelNum}','${ShipAdd.ship_Address}')">선택</button></td>
 							</tr>		        		
 		        		</c:forEach>
 		        		<c:if test="${empty member_ShipAddVos}"> <!-- List가 비어있는지 확인 -->
@@ -609,7 +623,7 @@
 					<input type="checkbox" id="agree">&nbsp;(필수) 구매하실 상품의 결제정보를 확인하였으며, 구매진행에 동의합니다. 주문이 폭주하여 실재고보다 많은 주문이 들어올 경우 결제가 취소 될 수 있습니다.
 				</div>
 				<div>
-					<button type="button" id="paymentBtn" onclick="fCheck2()">결제하기</button>
+					<button type="button" id="paymentBtn" onclick="fCheck()">결제하기</button>
 				</div>
 			</div>
 		</form>

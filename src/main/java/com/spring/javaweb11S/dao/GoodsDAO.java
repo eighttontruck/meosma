@@ -87,7 +87,7 @@ public interface GoodsDAO {
 
 	public void setRefundGoods(@Param("refundVO") RefundVO refundVO, @Param("order_Stock") int order_Stock);
 
-	public void setExchangeGoods(@Param("exchangeVO") ExchangeVO exchangeVO, @Param("vos") List<Exchange_DetailVO> vos);
+	public void setExchangeGoods(@Param("exchangeVO") ExchangeVO exchangeVO);
 
 	public void setExchange_DetailGoods(@Param("exchange_DetailVO") Exchange_DetailVO exchange_DetailVO, @Param("vos") List<Exchange_DetailVO> vos);
 
@@ -128,6 +128,10 @@ public interface GoodsDAO {
 	public BrandVO getBrandVO(@Param("brand_Idx") int brand_Idx);
 
 	public int reviewTotRecCnt(@Param("pag") int pag, @Param("pageSize") int pageSize, @Param("goods_Idx") int goods_Idx);
+
+	public int getSelectSameMemberAddress(@Param("vo") OrderHistoryVO vo);
+
+	public void setInsertMemberAddress(@Param("vo") OrderHistoryVO vo);
 
 
 }

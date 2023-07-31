@@ -13,6 +13,27 @@ create table goods(
 select * from goods_option;
 drop table review;
 
+SELECT cart.idx AS idx, goods.thumbnail AS order_ThumbNail, brand.name AS order_Brand, goods.name AS order_Name, goods_option.goods_option AS order_Option, goods.price AS order_Price,  cart.stock, cart.goods_idx, cart.option_idx, goods_stock.stock
+		FROM cart
+		JOIN goods ON goods.idx = cart.goods_idx
+		JOIN goods_option ON goods_option.option_idx = cart.option_idx
+		JOIN goods_stock ON goods_stock.option_idx = goods_option.option_idx
+		JOIN brand ON brand.idx = goods.brand_idx
+		WHERE cart.member_idx = 11;
+		
+SELECT cart.idx AS idx, goods.thumbnail AS order_ThumbNail, brand.name AS order_Brand, goods.name AS order_Name, goods_option.goods_option AS order_Option, goods.price AS order_Price,  cart.stock, cart.goods_idx, cart.option_idx, (SELECT stock FROM goods_stock WHERE goods_idx = cart.goods_idx AND option_idx = cart.option_idx) AS goods_Stock
+		FROM cart
+		JOIN goods ON goods.idx = cart.goods_idx
+		JOIN goods_option ON goods_option.option_idx = cart.option_idx
+		JOIN brand ON brand.idx = goods.brand_idx
+		WHERE cart.member_idx = 11;
+
+select * from member;
+select * from goods_option;
+select * from goods_stock;
+		
+DELETE FROM orderhistory_detail WHERE idx = 133;
+
 create table draw(
 	idx int not null auto_increment,
 	brand_idx int not null,

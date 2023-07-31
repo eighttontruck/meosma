@@ -104,7 +104,7 @@
 	</insert>
 	
 	<insert id="setInsertGoodsReview">
-		INSERT INTO review VALUES(default, #{vo.goods_Idx}, #{vo.member_Idx}, #{vo.orderHistory_Detail_Idx}, #{vo.FSname}, #{vo.FName}, #{vo.content}, 5, default, default);
+		INSERT INTO review VALUES(default, #{vo.goods_Idx}, #{vo.member_Idx}, #{vo.orderHistory_Detail_Idx}, #{vo.FSname}, #{vo.FName}, #{vo.content}, #{vo.score}, default, default);
 	</insert>
 	
 	<update id="setUpdateReviewOrderHistory_Detail">

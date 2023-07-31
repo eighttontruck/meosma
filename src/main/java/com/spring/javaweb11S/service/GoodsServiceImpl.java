@@ -215,8 +215,8 @@ public class GoodsServiceImpl implements GoodsService {
 	}
 
 	@Override
-	public void setExchangeGoods(ExchangeVO exchangeVO, List<Exchange_DetailVO> vos) {
-		goodsDAO.setExchangeGoods(exchangeVO, vos);
+	public void setExchangeGoods(ExchangeVO exchangeVO) {
+		goodsDAO.setExchangeGoods(exchangeVO);
 		
 	}
 
@@ -318,6 +318,17 @@ public class GoodsServiceImpl implements GoodsService {
 	@Override
 	public BrandVO getBrandVO(int brand_Idx) {
 		return goodsDAO.getBrandVO(brand_Idx);
+	}
+
+	@Override
+	public int getSelectSameMemberAddress(OrderHistoryVO vo) {
+		return goodsDAO.getSelectSameMemberAddress(vo);
+	}
+
+	@Override
+	public void setInsertMemberAddress(OrderHistoryVO vo) {
+		goodsDAO.setInsertMemberAddress(vo);
+		
 	}
 
 

@@ -306,8 +306,8 @@
 								<span id="goods_qty">
 									<input type="text" id="cntInput${vo.idx}" name="order_Stock" value="${vo.stock}" class="goodsCnt" readonly>
 									<span class="stockCntBtn">
-										<button type="button" class="upgoods_cnt" onclick="updateCartStock(${vo.idx}, 'plus')" id="upgoods_cnt2"></button>
-										<button type="button" class="downgoods_cnt" onclick="updateCartStock(${vo.idx}, 'minus')"></button>
+										<button type="button" class="upgoods_cnt" onclick="updateCartStock(${vo.idx},${vo.goods_Stock} , 'plus')" id="upgoods_cnt2"></button>
+										<button type="button" class="downgoods_cnt" onclick="updateCartStock(${vo.idx}, ${vo.goods_Stock}, 'minus')"></button>
 									</span>
 								</span>
 							</td>

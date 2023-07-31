@@ -212,7 +212,7 @@
 	</select>
 	
 	<select id="getCartList" resultType="com.spring.javaweb11S.vo.CartVO">
-		SELECT cart.idx AS idx, goods.thumbnail AS order_ThumbNail, brand.name AS order_Brand, goods.name AS order_Name, goods_option.goods_option AS order_Option, goods.price AS order_Price,  cart.stock, cart.goods_idx, cart.option_idx
+		SELECT cart.idx AS idx, goods.thumbnail AS order_ThumbNail, brand.name AS order_Brand, goods.name AS order_Name, goods_option.goods_option AS order_Option, goods.price AS order_Price,  cart.stock, cart.goods_idx, cart.option_idx, (SELECT stock FROM goods_stock WHERE goods_idx = cart.goods_idx AND option_idx = cart.option_idx) AS goods_Stock
 		FROM cart
 		JOIN goods ON goods.idx = cart.goods_idx
 		JOIN goods_option ON goods_option.option_idx = cart.option_idx
@@ -270,6 +270,14 @@
 		SELECT * FROM brand WHERE idx = #{brand_Idx};
 	</select>
 	
+	<select id="getSelectSameMemberAddress" resultType="int">
+		SELECT count(*) FROM member_shippingaddress WHERE ship_name = #{vo.recipient_Name} AND ship_telNum = #{vo.recipient_TelNum} AND ship_address = #{vo.recipient_Address};
+	</select>
+	
+	<insert id="setInsertMemberAddress">
+		INSERT INTO member_shippingaddress VALUES(default, #{vo.member_Idx}, #{vo.recipient_Name}, #{vo.recipient_TelNum}, #{vo.recipient_Address});
+	</insert>
+	
 	<insert id="setOrderHistory">
 		INSERT INTO orderHistory(idx, member_idx, orderdate, finalprice, recipient_name, recipient_telnum, recipient_address) VALUES(default, #{vo.member_Idx}, default, #{vo.finalPrice}, #{vo.recipient_Name}, #{vo.recipient_TelNum}, #{vo.recipient_Address});
 	</insert>
@@ -287,7 +295,7 @@
 		INSERT INTO orderHistory_detail
 		VALUES
 		<foreach collection="vos" item="item" separator=",">
-			(default,(SELECT idx FROM orderHistory ORDER BY idx DESC LIMIT 0, 1) ,#{item.goods_Idx}, #{item.option_Idx}, #{item.order_Stock}, default, '교환상품')
+			(default,(SELECT idx FROM orderHistory ORDER BY idx DESC LIMIT 0, 1) ,#{item.goods_Idx}, #{item.option_Idx}, #{item.order_Stock}, default, '교환상품', default)
 		</foreach>
 		;
 	</insert>
@@ -324,7 +332,7 @@
 	</insert>
 	
 	<insert id="setInsertRefundOrderHistory_Detail">
-		INSERT INTO orderHistory_detail VALUES(default,(SELECT idx FROM orderHistory ORDER BY idx DESC LIMIT 0, 1) ,#{vo.goods_Idx}, #{vo.option_Idx}, #{vo.order_Stock}, default, '환불상품');
+		INSERT INTO orderHistory_detail VALUES(default,(SELECT idx FROM orderHistory ORDER BY idx DESC LIMIT 0, 1) ,#{vo.goods_Idx}, #{vo.option_Idx}, #{vo.order_Stock}, default, '환불상품', default);
 	</insert>
 	
 	<update id="setUpdateCart">
@@ -367,12 +375,12 @@
 	</update>
 	
 	<update id="setUpdateCartStock">
-		<if test="str == plus">
+		<if test="str == 'plus'">
 			UPDATE cart
 			SET stock = stock + 1
 			WHERE idx = #{cart_Idx};
 		</if>
-		<if test="str == minus">
+		<if test="str == 'minus'">
 			UPDATE cart
 			SET stock = stock - 1
 			WHERE idx = #{cart_Idx};

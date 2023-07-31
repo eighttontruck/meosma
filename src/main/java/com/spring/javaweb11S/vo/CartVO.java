@@ -15,5 +15,6 @@ public class CartVO {
 	private String order_Name;
 	private String order_Option;
 	private int order_Price;
+	private int goods_Stock;
 	
 }

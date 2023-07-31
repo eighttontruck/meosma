@@ -85,7 +85,7 @@ public interface GoodsService {
 
 	public void setRefundGoods(RefundVO refundVO, int order_Stock);
 
-	public void setExchangeGoods(ExchangeVO exchangeVO, List<Exchange_DetailVO> vos);
+	public void setExchangeGoods(ExchangeVO exchangeVO);
 
 	public void setExchange_DetailGoods(Exchange_DetailVO exchange_DetailVO, List<Exchange_DetailVO> vos);
 
@@ -122,6 +122,10 @@ public interface GoodsService {
 	public List<ReviewVO> getReviewList(PageVO pageVO, int goods_Idx);
 
 	public BrandVO getBrandVO(int brand_Idx);
+
+	public int getSelectSameMemberAddress(OrderHistoryVO vo);
+
+	public void setInsertMemberAddress(OrderHistoryVO vo);
 
 
 

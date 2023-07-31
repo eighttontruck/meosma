@@ -682,7 +682,7 @@
 			<div class="item-detail_list">
 				<dl>
 					<dt>CATEGORY.</dt>
-					<dt style="width:200px;"><a href="#">${categoryVo.category_Name}</a> > <a href="#">${categoryVo.subCategory_Name}</a> > <a href="#">${categoryVo.secondCategory_Name}</a></dt>
+					<dt style="width:auto;"><a href="#">${categoryVo.category_Name}</a> > <a href="#">${categoryVo.subCategory_Name}</a> > <a href="#">${categoryVo.secondCategory_Name}</a></dt>
 				</dl>
 				<dl>
 					<dt>PRICE.</dt>
@@ -818,15 +818,15 @@
 						</div>
 					</div>
 					<div>
-						<span class="star">★★★★★<span>★★★★★</span>
+						<span class="star">★★★★★<span style="width:${review.score*10}%;">★★★★★</span>
 							<input type="range" oninput="drawStar(this)" value="1*2" step="1" min="0" max="10"  onload="drawStar(this)">
 						</span>
-						<script>
+						<!-- <script>
 							const drawStar = (target) => {
 							  const starSpan = document.querySelector('.star span');
 							  starSpan.style.width = target.value * 10 + '%';
 							}
-						</script>
+						</script> -->
 					</div>
 					<div class="review-contents" review_type="goods_estimate" data-review-no="46057695" data-goods-no="2991552">
 		                <div class="review-contents__text">${review.content}</div>

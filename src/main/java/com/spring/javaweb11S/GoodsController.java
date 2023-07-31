@@ -136,8 +136,8 @@ public class GoodsController {
 	public String inquiryPopUpPost(HttpSession session, Model model, RefundVO refundVO, ExchangeVO exchangeVO, Exchange_DetailVO exchange_DetailVO,
 			@RequestParam(name="category", defaultValue="", required=false) String category,
 			@RequestParam(name="goods_Idx", defaultValue="", required=false) int goods_Idx,
-			@RequestParam(name="exchangeOption_Idx", defaultValue="", required=false) String[] exchangeOption_Idx,
-			@RequestParam(name="refundOption_Idx", defaultValue="", required=false) String refundOption_Idx,
+			@RequestParam(name="exchangeOption_Idx", defaultValue="0", required=false) int[] exchangeOption_Idx,
+			@RequestParam(name="refundOption_Idx", defaultValue="0", required=false) int refundOption_Idx,
 			@RequestParam(name="order_Stock", defaultValue="", required=false) int[] order_Stock,
 			@RequestParam(name="idx", defaultValue="", required=false) int orderHistory_Detail_Idx
 			) {
@@ -145,8 +145,10 @@ public class GoodsController {
 		int sOhdIdx = (int) session.getAttribute("sOhdIdx");
 		int sGoods_Idx = (int) session.getAttribute("sGoods_Idx");
 		int sOhIdx = (int) session.getAttribute("sOhIdx");
-		OrderHistory_DetailVO ohdVO = goodsService.getIdxOrderHistory_Detail(orderHistory_Detail_Idx);
-		GoodsVO goodsVO = goodsService.getGoodsDetail(sGoods_Idx);
+		OrderHistory_DetailVO ohdVO = goodsService.getIdxOrderHistory_Detail(sOhdIdx);
+		GoodsVO goodsVO = goodsService.getGoodsDetail(goods_Idx);
+		
+		System.out.println(sOhdIdx+""+sGoods_Idx+""+sOhIdx);
 		
 		if(category.equals("exchange")) {
 			exchangeVO.setMember_Idx(sIdx);
@@ -157,17 +159,27 @@ public class GoodsController {
 				vo = new OrderVO();
 				vo.setOrder_Stock(order_Stock[i]);
 				vo.setGoods_Idx(goods_Idx);
-				vo.setOption_Idx(Integer.parseInt(exchangeOption_Idx[i]));
+				vo.setOption_Idx(exchangeOption_Idx[i]);
 				totalStock += order_Stock[i];
-				System.out.println("교환물량"+totalStock);
 				vos.add(vo);
 			}
-			System.out.println("값이 오냥~!??"+ohdVO.getGoods_Stock());
+			exchangeVO.setIdx(sOhdIdx);
 			goodsService.setInsertExchangeOrderHistory(exchangeVO);
 			goodsService.setInsertExchangeOrderHistory_Detail(vos);
 			
+//			List<Exchange_DetailVO> edVos = new ArrayList<>();
+//			Exchange_DetailVO edVo;
+//			for(int i=0; i<exchangeOption_Idx.length; i++) {
+//				edVo = new Exchange_DetailVO();
+//				edVo.setGoods_Idx(sGoods_Idx);
+//				edVo.setOption_Idx(exchangeOption_Idx[i]);
+//				edVo.setStock(order_Stock[i]);
+//				edVos.add(edVo);
+//			}
+//			goodsService.setExchangeGoods(exchangeVO);
+//			goodsService.setExchange_DetailGoods(exchange_DetailVO, edVos);
+			
 			if(ohdVO.getGoods_Stock()==totalStock) {
-				System.out.println("교환 다함");
 				int cnt = goodsService.getOrderHistory_DetailCnt(sOhIdx);
 				goodsService.setDeleteOrderHistory_Detail(sOhdIdx);
 				if(cnt==1) {
@@ -176,7 +188,6 @@ public class GoodsController {
 					goodsService.setUpdateOrderHistory(sOhIdx, sOhdIdx, totalStock, goodsVO.getPrice()*totalStock);
 				}
 			} else {
-				System.out.println("교환 적당히함");
 				goodsService.setUpdateOrderHistory_Detail(sOhdIdx, totalStock);
 				goodsService.setUpdateOrderHistory(sOhIdx, sOhdIdx, totalStock, goodsVO.getPrice()*totalStock);
 			}
@@ -187,11 +198,12 @@ public class GoodsController {
 			OrderVO vo = new OrderVO();
 			vo.setOrder_Stock(order_Stock[0]);
 			vo.setGoods_Idx(goods_Idx);
-			vo.setOption_Idx(Integer.parseInt(refundOption_Idx));
+			vo.setOption_Idx(refundOption_Idx);
 			
+			refundVO.setIdx(sOhdIdx);
 			goodsService.setInsertRefundOrderHistory(refundVO);
 			goodsService.setInsertRefundOrderHistory_Detail(vo);
-			
+//			goodsService.setRefundGoods(refundVO, order_Stock[0]);
 			//기존 주문내역 수정 or 삭제하기
 			if(ohdVO.getGoods_Stock()==order_Stock[0]) { //만약 기존 주문내역에서 모두 환불을 했을 시 
 				int cnt = goodsService.getOrderHistory_DetailCnt(sOhIdx); //주문내역의 상세 개수를 가져온다.
@@ -298,6 +310,11 @@ public class GoodsController {
 		goodsService.setOrderHistory(vo); //주문 내역 작성
 		goodsService.setOrderHistory_Detail(vos); //주문 세부내역 작성
 		
+		int res = goodsService.getSelectSameMemberAddress(vo);
+		if(res==0) {
+			goodsService.setInsertMemberAddress(vo);
+		}
+		
 		if(usedPoint != 0) {
 			goodsService.setMinusPoint(sIdx, usedPoint); //포인트 사용처리
 		}
@@ -379,6 +396,7 @@ public class GoodsController {
 	@RequestMapping(value="/updateCartStockAJAX", method=RequestMethod.POST)
 	public String updateCartStockAJAXPost(int cart_Idx, String str) {
 		
+		System.out.println(str);
 		goodsService.setUpdateCartStock(cart_Idx, str);
 		return "굿";
 	}

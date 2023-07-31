@@ -260,7 +260,7 @@
 					<div class="flex2" style="width:280px;">
 						<p style="line-height:45px;">별점을 매겨주세요.</p>
 						<span class="star">★★★★★<span>★★★★★</span>
-	  						<input type="range" oninput="drawStar(this)" value="1*2" step="1" min="0" max="10"  onload="drawStar(this)">
+	  						<input type="range" oninput="drawStar(this)" name="score" value="1*2" step="1" min="0" max="10"  onload="drawStar(this)">
 						</span>
 						<script>
 							const drawStar = (target) => {
