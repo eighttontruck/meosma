@@ -43,6 +43,28 @@
 		
 	}
 	
+	function cancelOrder(orderHistory_Detail_Idx, orderHistory_Idx){
+		let orderConfirm = confirm("주문을 취소하시겠습니까?");
+		
+		if(orderConfirm){
+			$.ajax({
+				type : "post",
+				url : "${ctp}/member/cancelOrderAJAX",
+				data : {
+					orderHistory_Detail_Idx : orderHistory_Detail_Idx,
+					orderHistory_Idx : orderHistory_Idx
+				},
+				success : function(data){
+					alert("주문이 취소 됐습니다.");
+					location.reload();
+				},
+				error : function() {
+					alert("전송오류!");
+				}
+			});
+		}
+	}
+	
 	function getOrderHistory_DetailList(idx){
 		$.ajax({
 			type : "post",
@@ -197,6 +219,13 @@
 		background-color:white;
 		color:black;
 	}
+	.grayBtn{
+		width:100px;
+		height:30px;
+		border:none;
+		background-color:lightgray;
+		color:black;
+	}
 	.borderBtn{
 		border-bottom:1px solid black;
 	}
@@ -344,6 +373,9 @@
 									
 								</td>
 								<td>
+									<c:if test="${order.status eq '결제완료'}">
+										<button onclick="cancelOrder(${order.idx},${order.orderHistory_Idx})" class="grayBtn">주문취소</button>
+									</c:if>
 									<c:if test="${order.status eq '배송중'}">
 										<button onclick="goodsConfirm(${order.idx})" class="blackBtn">구매확정</button>
 										<button onclick="popUp(${order.idx},${order.goods_Idx},${order.orderHistory_Idx})" class="whiteBtn">교환 및 환불 요청</button>

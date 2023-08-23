@@ -254,6 +254,18 @@ public class MemberController {
 	}
 	
 	@ResponseBody
+	@RequestMapping(value="/cancelOrderAJAX",method=RequestMethod.POST)
+	public String memberCancelOrderAJAXPost(int orderHistory_Detail_Idx, int orderHistory_Idx) {
+		
+		int cnt = memberService.getSeleteOrderHistory_DetailCnt(orderHistory_Idx);
+		memberService.setDeleteOrderHistory_DetailAJAX(orderHistory_Detail_Idx);
+		if(cnt==1) {
+			memberService.setDeleteOrderHistoryAJAX(orderHistory_Idx);
+		}
+		return "";
+	}
+	
+	@ResponseBody
 	@RequestMapping(value="/goodsConfirmAJAX",method=RequestMethod.POST)
 	public String memberGoodsConfirmAJAXPost(int orderHistory_Detail_Idx) {
 		

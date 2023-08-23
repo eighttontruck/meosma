@@ -57,6 +57,12 @@ public interface MemberDAO {
 
 	public int orderHistoryTotRecCnt(@Param("pag") int pag, @Param("pageSize") int pageSize, @Param("sIdx") int sIdx);
 
+	public void setDeleteOrderHistory_DetailAJAX(@Param("orderHistory_Detail_Idx") int orderHistory_Detail_Idx);
+
+	public int getSeleteOrderHistory_DetailCnt(@Param("orderHistory_Idx") int orderHistory_Idx);
+
+	public void setDeleteOrderHistoryAJAX(@Param("orderHistory_Idx") int orderHistory_Idx);
+
 
 
 }

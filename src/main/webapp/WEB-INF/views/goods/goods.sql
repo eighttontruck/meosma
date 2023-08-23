@@ -10,8 +10,21 @@ create table goods(
 	foreign key(brand_idx) REFERENCES brand(idx),
 	foreign key(secondcatagory_idx) REFERENCES secondcategory(secondCategory_Idx)
 );
-select * from goods_option;
-drop table review;
+
+create table inquiry(
+	idx int not null auto_increment,
+	goods_idx int not null,
+	member_idx int not null,
+	title varchar(50) not null,
+	content varchar(255) not null,
+	category varchar(20) not null,
+	wDate datetime default now(),
+	fsname text not null,
+	fname text not null,
+	primary key(idx),
+	foreign key(goods_idx) references goods(idx),
+	foreign key(member_idx) references member(idx)
+);
 
 SELECT cart.idx AS idx, goods.thumbnail AS order_ThumbNail, brand.name AS order_Brand, goods.name AS order_Name, goods_option.goods_option AS order_Option, goods.price AS order_Price,  cart.stock, cart.goods_idx, cart.option_idx, goods_stock.stock
 		FROM cart

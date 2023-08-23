@@ -12,21 +12,12 @@
 	<title>머스마(Musma) - 글로벌 멀티 컬쳐 선두주자 나야나</title>
 	<jsp:include page="/WEB-INF/views/include/bs4.jsp"/>
 </head>
-<script>
-	$(document).ready(function() {
-	    // 이동하고자 하는 스크롤 위치를 지정합니다. (단위: 픽셀)
-	    
-	    if(${pageVO.pag}!=1){
-	    	var targetScrollPosition = 1100;
-	    	
-		    // 스크롤 위치를 이동합니다.
-		    $('html, body').animate({
-		      scrollTop: targetScrollPosition
-		    }, 100); // 1000은 애니메이션 속도를 밀리초(ms) 단위로 지정합니다.
-	    }
-  	});
-	
-	
+<script>	
+
+	function popUp(){
+		window.open("${ctp}/goods/goodsInquiryPopUp?&goods_Idx="+${goodsVo.idx},"test","width=600, height=800,left=650px, top=200px");
+	}
+
 	let option_IdxArray = new Array();
 	$(function(){
 		$("#optionSelect").change(function(){
@@ -148,6 +139,45 @@
                 $(this).addClass('review-contents--active');
             }
         });
+		
+		$("#brandGoodsTabBtn").click(function() {
+			$("#reviewDiv").removeClass("active");
+			$("#reviewDiv").addClass("tab-pane");
+			$("#questionDiv").removeClass("active");
+			$("#questionDiv").addClass("tab-pane");
+		    $("#brandGoodsDiv").removeClass("tab-pane");
+		    $("#brandGoodsDiv").addClass("active");
+		});
+		$("#goodsReviewTabBtn").click(function() {
+			$("#brandGoodsDiv").removeClass("active");
+			$("#brandGoodsDiv").addClass("tab-pane");
+			$("#questionDiv").removeClass("active");
+			$("#questionDiv").addClass("tab-pane");
+		    $("#reviewDiv").removeClass("tab-pane");
+		    $("#reviewDiv").addClass("active");
+		});
+		$("#goodsQnATabBtn").click(function() {
+			$("#brandGoodsDiv").removeClass("active");
+			$("#brandGoodsDiv").addClass("tab-pane");
+			$("#reviewDiv").removeClass("active");
+			$("#reviewDiv").addClass("tab-pane");
+		    $("#questionDiv").removeClass("tab-pane");
+		    $("#questionDiv").addClass("active");
+		});
+		
+		
+		
+		/* <button type="button" id="brandGoodsTabBtn">브랜드 상품</button>
+		<button type="button" id="goodsReviewTabBtn">상품 후기</button>
+		<button type="button" id="goodsQnATabBtn">Q&A</button>
+		
+		<div id="brandGoodsDiv" class="active">
+		
+		</div>
+		<div id="questionDiv" class="tab-pane">
+			
+		</div>
+		<div id="reviewDiv" class="tab-pane"> */
 	});
 	
 	function insertCart() {
@@ -639,6 +669,35 @@
     margin-bottom: 30px;
     border-bottom: 1px solid lightgray;
 }
+#goodsAnother{
+	display:flex;
+	width:100%;
+}
+#goodsAnother > button{
+	width:100%;
+	text-align:center;
+	height:50px;
+	line-height:50px;
+	border:none;
+}
+#goodsAnother > button:hover{
+	background-color:black;
+	color:white;
+}
+.tab-content {
+  > .tab-pane {
+    display: none;
+  }
+  > .active {
+    display: block;
+  }
+}
+
+#questionTable{
+	width:800px;
+	margin:0 auto;
+	text-align:center;
+}
 </style>
 <body>
 	<jsp:include page="/WEB-INF/views/include/header.jsp" />
@@ -784,78 +843,114 @@
 				</div>
 			</div>
 		</div>
+		<div id="goodsAnother">
+			<button type="button" id="brandGoodsTabBtn">브랜드 상품</button>
+			<button type="button" id="goodsReviewTabBtn">상품 후기</button>
+			<button type="button" id="goodsQnATabBtn">Q&A</button>
+		</div>
 	</div>
-	<div id="productBrand">
-	</div>
-	<div id="reviewDiv">
-		<c:if test="${!empty reviewVos}">
-		<h3 class="mb-4">구매후기(${reviewVos[0].review_Cnt})</h3>
-		<div id="reviewDetailDiv">
-			<c:forEach var="review" items="${reviewVos}" varStatus="st">
-				<div class="reviewDetailDiv">
-					<div class="review-profile">
-						<a class="review-profile__link"><img src="${ctp}/images/${review.member_File}" class="review-profile__image"></a>
-						<div class="review-profile__text-wrap">
-							<div class="flex2">
-								<p>LV.${sLevel} ${review.member_Name}</p>
-								<p class="review-profile__date">${review.WDate}</p>
-							</div>
-							<div>
-								<div>${review.member_Gender} ${review.height}CM  ${review.weight}KG</div>
+	
+	<div class="tab-content">
+		<div id="brandGoodsDiv" class="active">
+			
+		</div>
+		<div id="reviewDiv" class="tab-pane">
+			<c:if test="${!empty reviewVos}">
+			<h3 class="mb-4">구매후기(${reviewVos[0].review_Cnt})</h3>
+			<div id="reviewDetailDiv">
+				<c:forEach var="review" items="${reviewVos}" varStatus="st">
+					<div class="reviewDetailDiv">
+						<div class="review-profile">
+							<a class="review-profile__link"><img src="${ctp}/images/${review.member_File}" class="review-profile__image"></a>
+							<div class="review-profile__text-wrap">
+								<div class="flex2">
+									<p>LV.${sLevel} ${review.member_Name}</p>
+									<p class="review-profile__date">${review.WDate}</p>
+								</div>
+								<div>
+									<div>${review.member_Gender} ${review.height}CM  ${review.weight}KG</div>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="review-goods-information">
-						<div class="review-goods-information__thumbnail">
-		                    <a href="https://www.musinsa.com/app/goods/2991552/0" class="review-goods-information__link">
-		                        <img src="${ctp}/images/${goodsVo.thumbNail}" class="review-goods-information__image">
-		                    </a>
-		                </div>
-						<div class="review-goods-information__item">
-							<div>${review.brand_Name}</div>
-							<div>${review.goods_Name}</div>
-							<div>${review.option_Name}</div>
+						<div class="review-goods-information">
+							<div class="review-goods-information__thumbnail">
+			                    <a href="https://www.musinsa.com/app/goods/2991552/0" class="review-goods-information__link">
+			                        <img src="${ctp}/images/${goodsVo.thumbNail}" class="review-goods-information__image">
+			                    </a>
+			                </div>
+							<div class="review-goods-information__item">
+								<div>${review.brand_Name}</div>
+								<div>${review.goods_Name}</div>
+								<div>${review.option_Name}</div>
+							</div>
 						</div>
-					</div>
-					<div>
-						<span class="star">★★★★★<span style="width:${review.score*10}%;">★★★★★</span>
-							<input type="range" oninput="drawStar(this)" value="1*2" step="1" min="0" max="10"  onload="drawStar(this)">
-						</span>
-						<!-- <script>
-							const drawStar = (target) => {
-							  const starSpan = document.querySelector('.star span');
-							  starSpan.style.width = target.value * 10 + '%';
-							}
-						</script> -->
-					</div>
-					<div class="review-contents" review_type="goods_estimate" data-review-no="46057695" data-goods-no="2991552">
-		                <div class="review-contents__text">${review.content}</div>
-		                <div class="review-content-photo">
-		                    <div class="review-content-photo__wrap">
-		                        <ul class="review-content-photo__list" style="padding-left: 0px;">
-		                            <li class="review-content-photo__item" data-img-index="0" style="background-image:url('${ctp}/images/${review.FSname}');">
-		                                <img src="${ctp}/images/${review.FSname}">
-		                            </li>
-		                        </ul>
-		                    </div>
-		                </div>
-		            </div>
-		        </div>
-	        </c:forEach>
-	        <div class="text-center m-4">
-			    <ul class="pagination justify-content-center pagination-sm">
-			       <c:if test="${pageVO.pag > 1}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=1&idx=${goodsVo.idx}">첫페이지</a></li></c:if>
-			       <c:if test="${pageVO.curBlock > 0}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=${(pageVO.curBlock-1)*pageVO.blockSize + 1}&idx=${goodsVo.idx}">이전블록</a></li></c:if>
-			       <c:forEach var="i" begin="${pageVO.curBlock*pageVO.blockSize + 1}" end="${pageVO.curBlock*pageVO.blockSize + pageVO.blockSize}" varStatus="st">
-		               <c:if test="${i <= pageVO.totPage && i == pageVO.pag}"><li class="page-item active"><a class="page-link text-white bg-secondary border-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=${i}&idx=${goodsVo.idx}">${i}</a></li></c:if>
-			           <c:if test="${i <= pageVO.totPage && i != pageVO.pag}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=${i}&idx=${goodsVo.idx}">${i}</a></li></c:if>
-			       </c:forEach>
-			       <c:if test="${pageVO.curBlock < pageVO.lastBlock}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=${(pageVO.curBlock+1)*pageVO.blockSize + 1}&idx=${goodsVo.idx}">다음블록</a></li></c:if>
-			       <c:if test="${pageVO.pag < pageVO.totPage}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=${pageVO.totPage}&idx=${goodsVo.idx}">마지막페이지</a></li></c:if>
-			    </ul>
+						<div>
+							<span class="star">★★★★★<span style="width:${review.score*10}%;">★★★★★</span>
+								<input type="range" oninput="drawStar(this)" value="1*2" step="1" min="0" max="10"  onload="drawStar(this)">
+							</span>
+							<!-- <script>
+								const drawStar = (target) => {
+								  const starSpan = document.querySelector('.star span');
+								  starSpan.style.width = target.value * 10 + '%';
+								}
+							</script> -->
+						</div>
+						<div class="review-contents" review_type="goods_estimate" data-review-no="46057695" data-goods-no="2991552">
+			                <div class="review-contents__text">${review.content}</div>
+			                <div class="review-content-photo">
+			                    <div class="review-content-photo__wrap">
+			                        <ul class="review-content-photo__list" style="padding-left: 0px;">
+			                            <li class="review-content-photo__item" data-img-index="0" style="background-image:url('${ctp}/images/${review.FSname}');">
+			                                <img src="${ctp}/images/${review.FSname}">
+			                            </li>
+			                        </ul>
+			                    </div>
+			                </div>
+			            </div>
+			        </div>
+		        </c:forEach>
+		        <div class="text-center m-4">
+				    <ul class="pagination justify-content-center pagination-sm">
+				       <c:if test="${pageVO.pag > 1}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=1&idx=${goodsVo.idx}">첫페이지</a></li></c:if>
+				       <c:if test="${pageVO.curBlock > 0}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=${(pageVO.curBlock-1)*pageVO.blockSize + 1}&idx=${goodsVo.idx}">이전블록</a></li></c:if>
+				       <c:forEach var="i" begin="${pageVO.curBlock*pageVO.blockSize + 1}" end="${pageVO.curBlock*pageVO.blockSize + pageVO.blockSize}" varStatus="st">
+			               <c:if test="${i <= pageVO.totPage && i == pageVO.pag}"><li class="page-item active"><a class="page-link text-white bg-secondary border-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=${i}&idx=${goodsVo.idx}">${i}</a></li></c:if>
+				           <c:if test="${i <= pageVO.totPage && i != pageVO.pag}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=${i}&idx=${goodsVo.idx}">${i}</a></li></c:if>
+				       </c:forEach>
+				       <c:if test="${pageVO.curBlock < pageVO.lastBlock}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=${(pageVO.curBlock+1)*pageVO.blockSize + 1}&idx=${goodsVo.idx}">다음블록</a></li></c:if>
+				       <c:if test="${pageVO.pag < pageVO.totPage}"><li class="page-item"><a class="page-link text-secondary" href="${ctp}/goods/goodsViews?pageSize=${pageVO.pageSize}&pag=${pageVO.totPage}&idx=${goodsVo.idx}">마지막페이지</a></li></c:if>
+				    </ul>
+			    </div>
 		    </div>
+	    </c:if>
 	    </div>
-    </c:if>
+	    <div id="questionDiv" class="tab-pane">
+			<table id="questionTable">
+				<thead>
+					<tr>
+						<th>번호</th>
+						<th>답변여부</th>
+						<th>구분</th>
+						<th>내용</th>
+						<th>작성자</th>
+						<th>등록일자</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<c:forEach var="inquiry" items="${inquiryVos}" varStatus="st">
+							<td>${inquiry.idx}</td>
+							<td></td>
+							<td>${inquiry.category}</td>
+							<td>${inquiry.title}</td>
+							<td>${inquiry.member_Idx}</td>
+							<td>${inquiry.wdate}</td>
+						</c:forEach>
+					</tr>
+				</tbody>
+			</table>
+			<button type="button" onclick="popUp()">작성하기</button>
+		</div>
     </div>
     </div>
 	<jsp:include page="/WEB-INF/views/include/footer.jsp" />

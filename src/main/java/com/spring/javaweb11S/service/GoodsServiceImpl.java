@@ -26,6 +26,7 @@ import com.spring.javaweb11S.vo.Exchange_DetailVO;
 import com.spring.javaweb11S.vo.GoodsVO;
 import com.spring.javaweb11S.vo.Goods_ImageVO;
 import com.spring.javaweb11S.vo.Goods_StockVO;
+import com.spring.javaweb11S.vo.InquiryVO;
 import com.spring.javaweb11S.vo.MainCategoryVO;
 import com.spring.javaweb11S.vo.MemberVO;
 import com.spring.javaweb11S.vo.Member_ShippingAddressVO;
@@ -95,6 +96,25 @@ public class GoodsServiceImpl implements GoodsService {
 		UUID uid = UUID.randomUUID();
 		String oFileName = fName.getOriginalFilename();
 		String saveFileName = vo.getBrand_Idx()+"_"+vo.getName()+"_"+uid+"_"+oFileName;
+		System.out.println("파일명:"+oFileName);
+		
+		try {
+			writeFile(fName,saveFileName);
+			fileName = saveFileName;
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		
+		return fileName;
+	}
+	
+	@Override
+	public String fileUpload(MultipartFile fName, InquiryVO vo) {
+		String fileName="";
+		
+		UUID uid = UUID.randomUUID();
+		String oFileName = fName.getOriginalFilename();
+		String saveFileName = vo.getMember_Idx()+"_"+vo.getTitle()+"_"+uid+"_"+oFileName;
 		System.out.println("파일명:"+oFileName);
 		
 		try {
@@ -329,6 +349,17 @@ public class GoodsServiceImpl implements GoodsService {
 	public void setInsertMemberAddress(OrderHistoryVO vo) {
 		goodsDAO.setInsertMemberAddress(vo);
 		
+	}
+
+	@Override
+	public void setInsertInquiry(InquiryVO vo) {
+		goodsDAO.setInsertInquiry(vo);
+		
+	}
+
+	@Override
+	public List<InquiryVO> getSelectInquiry(int goods_Idx) {
+		return goodsDAO.getSelectInquiry(goods_Idx);
 	}
 
 

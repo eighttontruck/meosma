@@ -177,4 +177,21 @@ public class MemberServiceImpl implements MemberService{
 		memberDAO.setUpdateReviewOrderHistory_Detail(orderHistory_Detail_Idx);
 		
 	}
+
+	@Override
+	public void setDeleteOrderHistory_DetailAJAX(int orderHistory_Detail_Idx) {
+		memberDAO.setDeleteOrderHistory_DetailAJAX(orderHistory_Detail_Idx);
+		
+	}
+
+	@Override
+	public int getSeleteOrderHistory_DetailCnt(int orderHistory_Idx) {
+		return memberDAO.getSeleteOrderHistory_DetailCnt(orderHistory_Idx);
+	}
+
+	@Override
+	public void setDeleteOrderHistoryAJAX(int orderHistory_Idx) {
+		memberDAO.setDeleteOrderHistoryAJAX(orderHistory_Idx);
+		
+	}
 }

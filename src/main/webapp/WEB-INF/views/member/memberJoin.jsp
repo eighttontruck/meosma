@@ -12,9 +12,9 @@
 	<jsp:include page="/WEB-INF/views/include/bs4.jsp"/>
 <script>
 	'use strict';
-	let telNum1=$("#telNum1").val()
-	let telNum2=$("#telNum2").val()
-	let telNum3=$("#telNum3").val()
+	let telNum1=$("#telNum1").val();
+	let telNum2=$("#telNum2").val();
+	let telNum3=$("#telNum3").val();
 	
 	function telNumAutoFocus(num){
 		if(num==1){

@@ -24,6 +24,7 @@ import com.spring.javaweb11S.vo.Exchange_DetailVO;
 import com.spring.javaweb11S.vo.GoodsVO;
 import com.spring.javaweb11S.vo.Goods_ImageVO;
 import com.spring.javaweb11S.vo.Goods_StockVO;
+import com.spring.javaweb11S.vo.InquiryVO;
 import com.spring.javaweb11S.vo.SecondCategoryVO;
 import com.spring.javaweb11S.vo.SubCategoryVO;
 
@@ -126,6 +127,12 @@ public interface GoodsService {
 	public int getSelectSameMemberAddress(OrderHistoryVO vo);
 
 	public void setInsertMemberAddress(OrderHistoryVO vo);
+
+	public String fileUpload(MultipartFile fName, InquiryVO vo);
+
+	public void setInsertInquiry(InquiryVO vo);
+
+	public List<InquiryVO> getSelectInquiry(int goods_Idx);
 
 
 

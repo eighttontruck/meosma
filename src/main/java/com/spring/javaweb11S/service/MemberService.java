@@ -53,5 +53,11 @@ public interface MemberService {
 
 	public String fileUpload(MultipartFile file, MemberVO vo);
 
+	public void setDeleteOrderHistory_DetailAJAX(int orderHistory_Detail_Idx);
+
+	public int getSeleteOrderHistory_DetailCnt(int orderHistory_Idx);
+
+	public void setDeleteOrderHistoryAJAX(int orderHistory_Idx);
+
 
 }

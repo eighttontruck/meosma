@@ -145,7 +145,7 @@
 		SELECT gs.goods_idx, gs.option_idx, gs.stock, go.goods_option
 		FROM goods_stock gs
 		JOIN goods_option go ON gs.option_idx = go.option_idx
-		WHERE gs.goods_idx=#{goods_Idx};
+		WHERE gs.goods_idx = #{goods_Idx};
 	</select>
 	
 	<select id="getMainCateArrayList" resultType="com.spring.javaweb11S.vo.MainCategoryVO">
@@ -274,6 +274,10 @@
 		SELECT count(*) FROM member_shippingaddress WHERE ship_name = #{vo.recipient_Name} AND ship_telNum = #{vo.recipient_TelNum} AND ship_address = #{vo.recipient_Address};
 	</select>
 	
+	<select id="getSelectInquiry" resultType="com.spring.javaweb11S.vo.InquiryVO">
+		SELECT * FROM inquiry WHERE goods_Idx = #{goods_Idx};
+	</select>
+	
 	<insert id="setInsertMemberAddress">
 		INSERT INTO member_shippingaddress VALUES(default, #{vo.member_Idx}, #{vo.recipient_Name}, #{vo.recipient_TelNum}, #{vo.recipient_Address});
 	</insert>
@@ -333,6 +337,10 @@
 	
 	<insert id="setInsertRefundOrderHistory_Detail">
 		INSERT INTO orderHistory_detail VALUES(default,(SELECT idx FROM orderHistory ORDER BY idx DESC LIMIT 0, 1) ,#{vo.goods_Idx}, #{vo.option_Idx}, #{vo.order_Stock}, default, '환불상품', default);
+	</insert>
+	
+	<insert id="setInsertInquiry">
+		INSERT INTO inquiry(idx, goods_idx, member_idx, title, content, category, wdate, fsname, fname) VALUES(default, #{vo.goods_Idx}, #{vo.member_Idx}, #{vo.title}, #{vo.content}, #{vo.category}, default, #{vo.fsname}, #{vo.fsname});
 	</insert>
 	
 	<update id="setUpdateCart">

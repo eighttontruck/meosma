@@ -86,6 +86,13 @@
 		WHERE member_idx = #{sIdx};
 	</select>
 	
+	<select id="getSeleteOrderHistory_DetailCnt" resultType="int">
+		SELECT COUNT(od.idx) as orderhistory_detail_count
+		FROM orderhistory oh
+		LEFT JOIN orderhistory_detail od ON oh.idx = od.orderhistory_idx
+		WHERE oh.idx = #{orderHistory_Idx};
+	</select>
+	
 	<insert id="setInsertMemberBirthdayCoupon">
 		INSERT INTO coupon(idx, member_idx, name, dcpercentage, issuedDate, usageDate, status, usedDate) 
 		<foreach collection="vos" item="item" separator=",">
@@ -126,4 +133,12 @@
 	<update id="setMemberGoodsConfirmAJAX">
 		UPDATE orderhistory_detail SET status = '구매확정' WHERE idx = #{orderHistory_Detail_Idx}; 
 	</update>
+	
+	<delete id="setDeleteOrderHistory_DetailAJAX">
+		DELETE FROM orderhistory_detail WHERE idx = ${orderHistory_Detail_Idx};
+	</delete>
+	
+	<delete id="setDeleteOrderHistoryAJAX">
+		DELETE FROM orderhistory WHERE idx= ${orderHistory_Idx};
+	</delete>
 </mapper>
