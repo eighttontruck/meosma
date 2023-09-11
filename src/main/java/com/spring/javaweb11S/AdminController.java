@@ -44,6 +44,27 @@ public class AdminController {
 		return "admin/adminMain";
 	}
 	
+	
+	//=======================================관리자페이지(브랜드)===================================================
+	
+	@RequestMapping(value="/brandList", method=RequestMethod.GET)
+	public String brandListGet(Model model,
+			@RequestParam(name = "sortFilter", defaultValue="",required=false) String sortFilter,
+			@RequestParam(name = "searchString", defaultValue="",required=false) String searchString,
+			@RequestParam(name = "searchKeyword", defaultValue="",required=false) String searchKeyword,
+			@RequestParam(name = "pag", defaultValue="1",required=false) int pag,
+			@RequestParam(name = "pagSize", defaultValue="15",required=false) int pagSize
+			) {
+		
+		PageVO pageVO = pageProcess.totRecCnt(pag, pagSize, "brand", sortFilter, searchKeyword, searchString, "","");
+		System.out.println(pageVO.getPageSize()+"dddd");
+		List<BrandVO> brandVos = adminService.getBrandFilterList(pageVO);
+		
+		model.addAttribute("brandVos",brandVos);
+		model.addAttribute("pageVO",pageVO);
+		return "admin/adminBrandList";
+	}
+	
 	@RequestMapping(value="/brandRegister", method=RequestMethod.GET)
 	public String brandRegisterGet() {
 		return "admin/adminBrandRegister";
@@ -56,6 +77,94 @@ public class AdminController {
 		return "admin/adminBrandRegister";
 	}
 	
+	@RequestMapping(value="/brandUpdate", method=RequestMethod.GET)
+	public String adminBrandrUpdateGet(Model model,
+			@RequestParam(name = "brand_Idx", defaultValue="",required=false) int brand_Idx
+			) {
+		BrandVO vo = adminService.getBrandVO(brand_Idx);
+		
+		model.addAttribute("vo",vo);
+		return "admin/adminBrandUpdate";
+	}
+	
+	@RequestMapping(value="/brandUpdate", method=RequestMethod.POST)
+	public String adminBrandrUpdatePost(Model model,BrandVO brandVO) {
+		System.out.println(brandVO.getName());
+		System.out.println(brandVO.getContent());
+		adminService.setBrandUpdate(brandVO);
+		
+		return "redirect:/admin/brandList";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/brandDeleteAJAX", method=RequestMethod.POST)
+	public String adminBrandrDeletePost(int brand_Idx) {
+		
+		adminService.setBrandDelete(brand_Idx);
+		
+		return "굿";
+	}
+	
+	//===================================상품====================================================
+	
+	@RequestMapping(value="/goodsList", method=RequestMethod.GET)
+	public String goodsTableListGet(Model model,
+			@RequestParam(name = "mainCategory", defaultValue="",required=false) String mainCategory,
+			@RequestParam(name = "subCategory", defaultValue="",required=false) String subCategory,
+			@RequestParam(name = "secondCategory", defaultValue="",required=false) String secondCategory,
+			@RequestParam(name = "searchString", defaultValue="",required=false) String searchString,
+			@RequestParam(name = "searchKeyword", defaultValue="",required=false) String searchKeyword,
+			@RequestParam(name = "startPrice", defaultValue="",required=false) String startPrice,
+			@RequestParam(name = "endPrice", defaultValue="",required=false) String endPrice,
+			@RequestParam(name = "pag", defaultValue="1",required=false) int pag,
+			@RequestParam(name = "pagSize", defaultValue="5",required=false) int pagSize
+			) {
+		
+		PageVO pageVO = pageProcess.totRecCnt(pag, pagSize, "goods", mainCategory, subCategory, secondCategory, searchKeyword, searchString, startPrice, endPrice);
+		
+		List<GoodsVO> goodsVos= adminService.getGoodsTableList(pageVO);
+		List<MainCategoryVO> mainCategory_vos= adminService.getMainCateArrayList(); //필터에서 메인카테고리 가져오기
+		
+		model.addAttribute("pageVO",pageVO);
+		model.addAttribute("goodsVos",goodsVos);
+		model.addAttribute("mainCategory_vos",mainCategory_vos);
+		
+		return "admin/adminGoodsList";
+	}
+	
+	@RequestMapping(value="/goodsRegister", method=RequestMethod.GET)
+	public String goodsRegisterGet(Model model) {
+		List<MainCategoryVO> mainCategory_vos= adminService.getMainCateArrayList();
+		List<BrandVO> brand_vos= adminService.getBrandList();
+		model.addAttribute("mainCategory_vos",mainCategory_vos);
+		model.addAttribute("brand_vos",brand_vos);
+		return "admin/adminGoodsRegister";
+	}
+	
+	@Transactional
+	@RequestMapping(value="/goodsRegister", method=RequestMethod.POST)
+	public String goodsRegisterPost(GoodsVO vo, MultipartFile file,
+			@RequestParam(name = "goodsSize", defaultValue="",required=false) String[] goodsSize,
+			@RequestParam(name = "goodsStock", defaultValue="",required=false) int[] goodsStock
+			) {
+		String fileName = adminService.fileUpload(file,vo);
+		vo.setThumbNail(fileName);
+		
+		Map<String, Integer> vos=new HashMap<>();
+		for(int i=0; i<goodsSize.length; i++) {
+			vos.put(goodsSize[i], goodsStock[i]);
+			System.out.println(goodsSize[i]+" "+goodsStock[i]);
+		}
+
+		adminService.setGoodsRegister(vo);
+		adminService.setGoodsStockRegister(vos);
+		
+		adminService.imgCheck(vo.getImages(), 0);
+		vo.setImages(vo.getImages().replace("/data/ckeditor/", "/data/goods/"));
+		
+		return "redirect:/admin/goodsList";
+		
+	}
 	
 	@RequestMapping(value="/goodsUpdate", method=RequestMethod.GET)
 	public String goodsUpdateGet(Model model,
@@ -126,40 +235,6 @@ public class AdminController {
 		return "redirect:/admin/goodsList";
 	}
 	
-	@RequestMapping(value="/goodsRegister", method=RequestMethod.GET)
-	public String goodsRegisterGet(Model model) {
-		List<MainCategoryVO> mainCategory_vos= adminService.getMainCateArrayList();
-		List<BrandVO> brand_vos= adminService.getBrandList();
-		model.addAttribute("mainCategory_vos",mainCategory_vos);
-		model.addAttribute("brand_vos",brand_vos);
-		return "admin/adminGoodsRegister";
-	}
-	
-	@Transactional
-	@RequestMapping(value="/goodsRegister", method=RequestMethod.POST)
-	public String goodsRegisterPost(GoodsVO vo, MultipartFile file,
-			@RequestParam(name = "goodsSize", defaultValue="",required=false) String[] goodsSize,
-			@RequestParam(name = "goodsStock", defaultValue="",required=false) int[] goodsStock
-			) {
-		String fileName = adminService.fileUpload(file,vo);
-		vo.setThumbNail(fileName);
-		
-		Map<String, Integer> vos=new HashMap<>();
-		for(int i=0; i<goodsSize.length; i++) {
-			vos.put(goodsSize[i], goodsStock[i]);
-			System.out.println(goodsSize[i]+" "+goodsStock[i]);
-		}
-
-		adminService.setGoodsRegister(vo);
-		adminService.setGoodsStockRegister(vos);
-		
-		adminService.imgCheck(vo.getImages(), 0);
-		vo.setImages(vo.getImages().replace("/data/ckeditor/", "/data/goods/"));
-		
-		return "redirect:/admin/goodsList";
-		
-	}
-	
 	@Transactional
 	@ResponseBody
 	@RequestMapping(value="/goodsDeleteAJAX", method=RequestMethod.POST)
@@ -174,30 +249,7 @@ public class AdminController {
 		return "굿";
 	}
 	
-	@RequestMapping(value="/goodsList", method=RequestMethod.GET)
-	public String goodsTableListGet(Model model,
-			@RequestParam(name = "mainCategory", defaultValue="",required=false) String mainCategory,
-			@RequestParam(name = "subCategory", defaultValue="",required=false) String subCategory,
-			@RequestParam(name = "secondCategory", defaultValue="",required=false) String secondCategory,
-			@RequestParam(name = "searchString", defaultValue="",required=false) String searchString,
-			@RequestParam(name = "searchKeyword", defaultValue="",required=false) String searchKeyword,
-			@RequestParam(name = "startPrice", defaultValue="",required=false) String startPrice,
-			@RequestParam(name = "endPrice", defaultValue="",required=false) String endPrice,
-			@RequestParam(name = "pag", defaultValue="1",required=false) int pag,
-			@RequestParam(name = "pagSize", defaultValue="5",required=false) int pagSize
-			) {
-		
-		PageVO pageVO = pageProcess.totRecCnt(pag, pagSize, "goods", mainCategory, subCategory, secondCategory, searchKeyword, searchString, startPrice, endPrice);
-		
-		List<GoodsVO> goodsVos= adminService.getGoodsTableList(pageVO);
-		List<MainCategoryVO> mainCategory_vos= adminService.getMainCateArrayList(); //필터에서 메인카테고리 가져오기
-		
-		model.addAttribute("pageVO",pageVO);
-		model.addAttribute("goodsVos",goodsVos);
-		model.addAttribute("mainCategory_vos",mainCategory_vos);
-		
-		return "admin/adminGoodsList";
-	}
+	//============================================주문내역==================================================
 	
 	@RequestMapping(value="/orderHistoryList", method=RequestMethod.GET)
 	public String goodsOrderHistoryListGet(Model model,
@@ -209,11 +261,8 @@ public class AdminController {
 			@RequestParam(name = "pag", defaultValue="1",required=false) int pag,
 			@RequestParam(name = "pagSize", defaultValue="15",required=false) int pagSize
 			) {
-		System.out.println(startDate);
-		System.out.println(endDate);
 		PageVO pageVO = pageProcess.totRecCnt(pag, pagSize, "orderHistory", delivery_Status, searchKeyword, searchString, startDate, endDate);
 		
-		//List<OrderHistoryVO> vos= adminService.getgoodsOrderHistoryList(delivery_Status,searchKeyword,searchString,startDate,endDate);
 		List<OrderHistoryVO> vos= adminService.getgoodsOrderHistoryList2(delivery_Status,pageVO);
 
 		
@@ -228,23 +277,6 @@ public class AdminController {
 		return "admin/adminOrderHistoryList";
 	}
 	
-	@RequestMapping(value="/brandList", method=RequestMethod.GET)
-	public String brandListGet(Model model,
-			@RequestParam(name = "sortFilter", defaultValue="",required=false) String sortFilter,
-			@RequestParam(name = "searchString", defaultValue="",required=false) String searchString,
-			@RequestParam(name = "searchKeyword", defaultValue="",required=false) String searchKeyword,
-			@RequestParam(name = "pag", defaultValue="1",required=false) int pag,
-			@RequestParam(name = "pagSize", defaultValue="15",required=false) int pagSize
-			) {
-		
-		PageVO pageVO = pageProcess.totRecCnt(pag, pagSize, "brand", sortFilter, searchKeyword, searchString, "","");
-		System.out.println(pageVO.getPageSize()+"dddd");
-		List<BrandVO> brandVos = adminService.getBrandFilterList(pageVO);
-		
-		model.addAttribute("brandVos",brandVos);
-		model.addAttribute("pageVO",pageVO);
-		return "admin/adminBrandList";
-	}
 	
 	@RequestMapping(value="/memberList", method=RequestMethod.GET)
 	public String adminMemberListGet(Model model
@@ -297,25 +329,6 @@ public class AdminController {
 		List<MainCategoryVO> mainCategory_vos= adminService.getMainCateArrayList();
 		model.addAttribute("mainCategory_vos",mainCategory_vos);
 		return "admin/adminCategoryRegister";
-	}
-	
-	@RequestMapping(value="/brandUpdate", method=RequestMethod.GET)
-	public String adminBrandrUpdateGet(Model model,
-			@RequestParam(name = "brand_Idx", defaultValue="",required=false) int brand_Idx
-			) {
-		BrandVO vo = adminService.getBrandVO(brand_Idx);
-		
-		model.addAttribute("vo",vo);
-		return "admin/adminBrandUpdate";
-	}
-	
-	@RequestMapping(value="/brandUpdate", method=RequestMethod.POST)
-	public String adminBrandrUpdatePost(Model model,BrandVO brandVO) {
-		System.out.println(brandVO.getName());
-		System.out.println(brandVO.getContent());
-		adminService.setBrandUpdate(brandVO);
-		
-		return "redirect:/admin/brandList";
 	}
 	
 	@RequestMapping(value="/exchangeList", method=RequestMethod.GET)
@@ -378,14 +391,7 @@ public class AdminController {
 		return "굿";
 	}
 	
-	@ResponseBody
-	@RequestMapping(value="/brandDeleteAJAX", method=RequestMethod.POST)
-	public String adminBrandrDeletePost(int brand_Idx) {
-		
-		adminService.setBrandDelete(brand_Idx);
-		
-		return "굿";
-	}
+	
 	
 	@RequestMapping(value="/memberUpdate", method=RequestMethod.GET)
 	public String adminMemberUpdateGet(Model model,

@@ -49,6 +49,7 @@ public class GoodsController {
 	@Autowired
 	PageProcess pageProcess;
 	
+	//메인페이지
 	@RequestMapping(value="/goodsList", method=RequestMethod.GET)
 	public String goodsListGet(Model model,
 		@RequestParam(name="brand_Idx", defaultValue="0", required=false) int brand_Idx,
@@ -60,14 +61,15 @@ public class GoodsController {
 			) {
 		PageVO pageVO = pageProcess.totRecCnt(pag, pagSize, brand_Idx, mainCategory_Idx, subCategory_Idx, secondCategory_Idx);
 		
-		//List<MainCategoryVO> vos1 = goodsService.getMainCateArrayList();
-		if(brand_Idx!=0&&mainCategory_Idx==0) {
+		//List<MainCategoryVO> vos1 = goodsService.getMainCateArrayList(
+		//대분류 / 중분류 / 소분류 처리
+		if(brand_Idx!=0&&mainCategory_Idx == 0) {
 			List<MainCategoryVO> mainCategory = goodsService.getMainCateArrayList();
 			model.addAttribute("mainCategory",mainCategory);
-		} else if(mainCategory_Idx != 0 && subCategory_Idx==0) {
+		} else if(mainCategory_Idx != 0 && subCategory_Idx == 0) {
 			List<SubCategoryVO> subCategory = goodsService.getSubCateArrayList(mainCategory_Idx);
 			model.addAttribute("subCategory",subCategory);
-		} else if(subCategory_Idx!=0) {
+		} else if(subCategory_Idx != 0) {
 			List<SecondCategoryVO> secondCategory = goodsService.getSecondCateArrayList(subCategory_Idx);
 			model.addAttribute("secondCategory",secondCategory);
 			
@@ -85,6 +87,7 @@ public class GoodsController {
 		return "goods/goodsList";
 	}
 	
+	//상품 상세페이지
 	@RequestMapping(value="/goodsViews",method=RequestMethod.GET)
 	public String goodsViewGet(Model model,
 			@RequestParam(name="idx", defaultValue="", required=false) int goods_Idx,
@@ -94,13 +97,13 @@ public class GoodsController {
 		
 		PageVO pageVO = pageProcess.totRecCnt(pag, pageSize, "goods", goods_Idx);
 		
-		List<Goods_StockVO> stockVos = goodsService.getGoodsStock(goods_Idx);
-		List<Goods_ImageVO> imageVos = goodsService.getGoodsImages(goods_Idx);
-		List<ReviewVO> reviewVos = goodsService.getReviewList(pageVO, goods_Idx);
-		GoodsVO goodsVo = goodsService.getGoodsDetail(goods_Idx);
-		CategoryVO categoryVo = goodsService.getGoodsCategory(goodsVo.getSecondCategory_Idx());
-		BrandVO brandVo = goodsService.getBrandContent(goods_Idx);
-		List<InquiryVO> inquiryVos = goodsService.getSelectInquiry(goods_Idx);
+		List<Goods_StockVO> stockVos = goodsService.getGoodsStock(goods_Idx); //상품 재고
+		List<Goods_ImageVO> imageVos = goodsService.getGoodsImages(goods_Idx); //상품 이미지캐러셀
+		List<ReviewVO> reviewVos = goodsService.getReviewList(pageVO, goods_Idx); //상품 후기리스트
+		GoodsVO goodsVo = goodsService.getGoodsDetail(goods_Idx); //상품 상세정보
+		CategoryVO categoryVo = goodsService.getGoodsCategory(goodsVo.getSecondCategory_Idx()); //상품 분류
+		BrandVO brandVo = goodsService.getBrandContent(goods_Idx); //브랜드 설명
+		List<InquiryVO> inquiryVos = goodsService.getSelectInquiry(goods_Idx); //상품 문의
 		
 		model.addAttribute("stockVos", stockVos);
 		model.addAttribute("imageVos", imageVos);
@@ -337,14 +340,7 @@ public class GoodsController {
 		return "goods/goodsPayMentOk";
 	}
 	
-	@RequestMapping(value="/cart", method=RequestMethod.GET)
-	public String goodsCartGet(Model model, HttpSession session) {
-		int sIdx = (int) session.getAttribute("sIdx");
-		List<CartVO> vos = goodsService.getCartList(sIdx);
-	    //System.out.println(sIdx);
-	    model.addAttribute("vos",vos);
-		return "goods/goodsCart";
-	}
+	
 	
 	@RequestMapping(value="/brandList", method=RequestMethod.GET)
 	public String goodsBrandListGet(Model model) {
@@ -389,7 +385,17 @@ public class GoodsController {
 		return "goods/goodsInquiryPopUp";
 	}
 	
-	// 상품 뷰 창에서 옵션 장바구니에 넣기
+	
+	@RequestMapping(value="/cart", method=RequestMethod.GET)
+	public String goodsCartGet(Model model, HttpSession session) {
+		int sIdx = (int) session.getAttribute("sIdx");
+		List<CartVO> vos = goodsService.getCartList(sIdx);
+	    //System.out.println(sIdx);
+	    model.addAttribute("vos",vos);
+		return "goods/goodsCart";
+	}
+	
+	// 상품 상세페이지에서 장바구니 AJAX처리
 	@ResponseBody
 	@RequestMapping(value="/insertCartAJAX", method=RequestMethod.POST)
 	public String insertCartAJAXPost(
@@ -401,6 +407,7 @@ public class GoodsController {
 		List<OrderVO> vos = new ArrayList<>();
 		
 		OrderVO vo;
+		//동일한 상품을 장바구니에 넣었을 시 수량 증가처리
 		for(int i = 0; i < goods_Idx.length; i++) {
 			vo = new OrderVO();
 			vo.setOrder_Stock(stock[i]);
@@ -414,7 +421,7 @@ public class GoodsController {
 				goodsService.setUpdateCart(vo,member_Idx);
 			}
 		}
-		return "가즈아~";
+		return "";
 	}
 	
 	@ResponseBody
@@ -422,7 +429,7 @@ public class GoodsController {
 	public String deleteCartAJAXPost(@RequestParam(name = "cartArray[]", defaultValue="",required=false) int[] cartArray) {
 		
 		goodsService.setDeleteCart(cartArray);
-		return "굿";
+		return "";
 	}
 	
 	@ResponseBody
@@ -431,7 +438,7 @@ public class GoodsController {
 		
 		System.out.println(str);
 		goodsService.setUpdateCartStock(cart_Idx, str);
-		return "굿";
+		return "";
 	}
 	
 	@ResponseBody

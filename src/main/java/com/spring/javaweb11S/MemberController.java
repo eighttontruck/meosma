@@ -105,7 +105,6 @@ public class MemberController {
 			return "redirect:/goods/goodsList";
 			
 		} else {
-			
 			return "member/memberLogin";
 		}
 	}

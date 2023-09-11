@@ -694,9 +694,16 @@
 }
 
 #questionTable{
-	width:800px;
+	width:1000px;
 	margin:0 auto;
 	text-align:center;
+}
+#questionTable tr{
+	border:1px solid #ddd;
+}
+.conect_detail_comment td{
+	text-align:left;
+	padding:10px 14px 7px 14px;
 }
 </style>
 <body>
@@ -937,16 +944,22 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<c:forEach var="inquiry" items="${inquiryVos}" varStatus="st">
+					<c:forEach var="inquiry" items="${inquiryVos}" varStatus="st">
+						<tr>
 							<td>${inquiry.idx}</td>
 							<td></td>
 							<td>${inquiry.category}</td>
 							<td>${inquiry.title}</td>
 							<td>${inquiry.member_Idx}</td>
 							<td>${inquiry.wdate}</td>
-						</c:forEach>
-					</tr>
+						</tr>
+						<tr class="conect_detail_comment">
+							<td colspan="6">
+								<div class="content_object">${goodsVo.name}</div>
+								<p>${inquiry.content}</p>
+							</td>
+						</tr>
+					</c:forEach>
 				</tbody>
 			</table>
 			<button type="button" onclick="popUp()">작성하기</button>
