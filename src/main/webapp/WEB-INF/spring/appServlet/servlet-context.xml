@@ -36,11 +36,33 @@
 	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<beans:property name="maxUploadSize" value="20971520" />
 		<beans:property name="defaultEncoding" value="utf-8" />
-  </beans:bean>
+  	</beans:bean>
 	
 	<context:component-scan base-package="com.spring.javaweb11S" />
 	
 	<beans:bean id="bCryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+	
+	<beans:bean id="adminInterceptor" class="com.spring.javaweb11S.interceptor.AdminInterceptor"/>
+	<beans:bean id="memberInterceptor" class="com.spring.javaweb11S.interceptor.MemberInterceptor"/>
+	
+	<interceptors>
+		<interceptor>
+			<mapping path="/admin/**"/>
+			<beans:ref bean="adminInterceptor"/>
+		</interceptor>
+		
+		<interceptor>
+			<mapping path="/member/**"/>
+			<mapping path="/goods/cart"/>
+			 <exclude-mapping path="/member/memberLogin" />
+			 <exclude-mapping path="/member/memberJoin" />
+			 <exclude-mapping path="/member/memberIdFind" />
+			 <exclude-mapping path="/member/memberPwdFind" />
+			 <exclude-mapping path="/member/memberPwdUpdate" />
+			 
+			<beans:ref bean="memberInterceptor"/>
+		</interceptor>
+	</interceptors>
 	
 	<!-- 트랜잭션을 어노테이션으로 처리하기위해 참조하는 클래스를 등록시켜준다. -->
 	<tx:annotation-driven transaction-manager="transactionManager"/>

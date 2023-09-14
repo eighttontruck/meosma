@@ -8,7 +8,7 @@
  	<meta name="viewport" content="width=device-width, initial-scale=1">
  	<link rel="icon" href="${ctp}/resources/images/tabimage.png">
  	<link rel="apple-touch-icon" href="${ctp}/resources/images/tabimage.png">
-	<title>머스마(Musma) - 글로벌 멀티 컬쳐 선두주자 나야나</title>
+	<title>머스마(Meosma) - 글로벌 멀티 컬쳐 선두주자 나야나</title>
 	<jsp:include page="/WEB-INF/views/include/bs4.jsp"/>
 <script>
 	'use strict';

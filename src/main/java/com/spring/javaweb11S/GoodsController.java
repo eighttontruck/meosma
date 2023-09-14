@@ -235,12 +235,12 @@ public class GoodsController {
 	//결제창으로 들어오기
 	@RequestMapping(value="/goodsPayment", method=RequestMethod.POST)
 	public String goodsPaymentPost(Model model, HttpServletRequest request, HttpSession session,
-			@RequestParam(name = "order_Stock", defaultValue="", required=false) int[] order_Stock,
-			@RequestParam(name = "goods_Idx", defaultValue="", required=false) int[] goods_Idx,
-			@RequestParam(name = "option_Idx", defaultValue="", required=false) int[] option_Idx,
+			@RequestParam(name = "order_Stock", defaultValue="0", required=false) int[] order_Stock,
+			@RequestParam(name = "goods_Idx", defaultValue="0", required=false) int[] goods_Idx,
+			@RequestParam(name = "option_Idx", defaultValue="0", required=false) int[] option_Idx,
 			@RequestParam(name = "order_Option", defaultValue="", required=false) String[] order_Option,
-			@RequestParam(name = "sIdx", defaultValue="", required=false) int sIdx,
-			@RequestParam(name = "finalPrice", defaultValue="", required=false) int finalPrice,
+			@RequestParam(name = "sIdx", defaultValue="0", required=false) int sIdx,
+			@RequestParam(name = "finalPrice", defaultValue="0", required=false) int finalPrice,
 			@RequestParam(name = "buyStatus", defaultValue="", required=false) String buyStatus
 			) {
 		
